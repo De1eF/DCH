@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin("http://localhost:5500")
+@CrossOrigin("http://127.0.0.1:5500")
 @RequestMapping("square")
 public class SquareController {
     @GetMapping("/{num}")
