@@ -7,6 +7,7 @@ let last_timestamp = 0;
 
 class Character{
     id;
+    timestamp = 0;
     name;
 }
 
@@ -20,11 +21,11 @@ function parse_character_params(params){
 
 
 function check_for_updates(){
-    fetch("http://93.175.234.30:1290/characters/check-update?id="+id, {method: "GET"}).then(async (response)=> {
+    fetch("http://93.175.234.30:1290/characters/check-update?id="+id+"&timestamp="+last_timestamp, {method: "GET"}).then(async (response)=> {
         await response.json().then(async (response_data) => {
             if (last_timestamp != response_data.timestamp){
                 last_timestamp = response_data.timestamp;
-                parse_character_params(response_data.params);
+                parse_character_params(response_data.object);
             }else{
                 console.log("No updates");
             }
