@@ -18,8 +18,7 @@ public class CharacterServiceIml implements CharacterService {
     @Override
     public GameCharacter find(Long id) {
         return gameCharacterRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Unable to find game character by id " + id));
+                .orElseThrow(() -> new RuntimeException("Unable to find game character by id " + id));
     }
 
     @Override

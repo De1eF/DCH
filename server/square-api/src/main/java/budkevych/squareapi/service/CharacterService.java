@@ -5,6 +5,7 @@ import java.util.List;
 
 public interface CharacterService {
     GameCharacter find(Long id);
+
     void save(GameCharacter gameCharacter);
 
     void saveAll(List<GameCharacter> gameCharacterList);
