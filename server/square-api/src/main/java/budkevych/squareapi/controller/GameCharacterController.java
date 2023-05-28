@@ -1,6 +1,5 @@
 package budkevych.squareapi.controller;
 
-import budkevych.squareapi.dto.GameCharacterResponseDto;
 import budkevych.squareapi.dto.TimestampResponseDto;
 import budkevych.squareapi.mapper.GameCharacterMapper;
 import budkevych.squareapi.model.GameCharacter;
@@ -22,12 +21,12 @@ public class GameCharacterController {
 
     @GetMapping("/check-update")
     public TimestampResponseDto update(@RequestParam Long id,
-                                           @RequestParam Long timestamp) {
+                                       @RequestParam Long timestamp) {
         GameCharacter gameCharacter = characterService.find(id);
         TimestampResponseDto timestampResponseDto = new TimestampResponseDto();
         timestampResponseDto.setTimestamp(gameCharacter.getLastUpdate());
         if (gameCharacter.getLastUpdate().equals(timestamp)) {
-            timestampResponseDto.setObject(mapper.toDto(gameCharacter));;
+            timestampResponseDto.setObject(mapper.toDto(gameCharacter));
         }
         return timestampResponseDto;
     }
