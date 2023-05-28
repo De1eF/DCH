@@ -5,7 +5,7 @@ let id = 1;
 last_id = 1;
 let last_timestamp = 0;
 
-let adress = "http://93.175.234.30:1290";
+let address = "http://93.175.234.30:1290";
 
 class Character {
     timestamp = 0;
@@ -21,7 +21,7 @@ function parse_character_params(params) {
 }
 //networking
 function check_for_updates() {
-    fetch(adress + "/characters/check-update/" + id + "?timestamp=" + last_timestamp, {
+    fetch(address + "/characters/check-update/" + id + "?timestamp=" + last_timestamp, {
         method: "GET"
     }).then(async (response) => {
         await response.json().then(async (response_data) => {
@@ -39,23 +39,20 @@ function send_and_save() {
     console.log("Sending and saving");
     console.log(typeof (JSON.stringify(character)));
     console.log(JSON.stringify(character));
-    fetch(adress + "/characters/save", {
+    fetch(address + "/characters/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(character)
-    }).then(async (response) => {
-    }
-    )
+    })
 }
-function send_param() {
-    fetch(adress + "/characters/update/" + id, {
+function send_param(n_id) {
+    fetch(address + "/characters/update/" + n_id, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(character)
-    }).then(async (response) => {
-    }
-    )
+    })
 }
+
 
 //update
 function update() {
