@@ -21,12 +21,14 @@ public class GameCharacterController {
     private final GameCharacterMapper mapper;
 
     @GetMapping("/check-update")
-    public GameCharacterResponseDto update(@RequestParam Long id,
+    public TimestampResponseDto update(@RequestParam Long id,
                                            @RequestParam Long timestamp) {
         GameCharacter gameCharacter = characterService.find(id);
+        TimestampResponseDto timestampResponseDto = new TimestampResponseDto();
+        timestampResponseDto.setTimestamp(gameCharacter.getLastUpdate());
         if (gameCharacter.getLastUpdate().equals(timestamp)) {
-            return null;
+            timestampResponseDto.setObject(mapper.toDto(gameCharacter));;
         }
-        return mapper.toDto(gameCharacter);
+        return timestampResponseDto;
     }
 }
