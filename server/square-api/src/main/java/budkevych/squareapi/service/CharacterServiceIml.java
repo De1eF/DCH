@@ -1,5 +1,6 @@
 package budkevych.squareapi.service;
 
+import budkevych.squareapi.mapper.GameCharacterMapper;
 import budkevych.squareapi.model.GameCharacter;
 import budkevych.squareapi.repository.GameCharacterRepository;
 import jakarta.annotation.PostConstruct;
@@ -28,6 +29,12 @@ public class CharacterServiceIml implements CharacterService {
     @Override
     public void saveAll(List<GameCharacter> gameCharacterList) {
         gameCharacterRepository.saveAll(gameCharacterList);
+    }
+
+    @Override
+    public void update(Long id, GameCharacter gameCharacter) {
+        gameCharacter.setId(id);
+        gameCharacterRepository.save(gameCharacter);
     }
 
     @PostConstruct

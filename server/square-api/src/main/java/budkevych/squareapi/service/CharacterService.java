@@ -8,4 +8,6 @@ public interface CharacterService {
     void save(GameCharacter gameCharacter);
 
     void saveAll(List<GameCharacter> gameCharacterList);
+
+    void update(Long id, GameCharacter gameCharacter);
 }
