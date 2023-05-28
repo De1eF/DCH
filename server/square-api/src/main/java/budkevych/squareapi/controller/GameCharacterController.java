@@ -25,7 +25,7 @@ public class GameCharacterController {
         GameCharacter gameCharacter = characterService.find(id);
         TimestampResponseDto timestampResponseDto = new TimestampResponseDto();
         timestampResponseDto.setTimestamp(gameCharacter.getLastUpdate());
-        if (gameCharacter.getLastUpdate().equals(timestamp)) {
+        if (!gameCharacter.getLastUpdate().equals(timestamp)) {
             timestampResponseDto.setObject(mapper.toDto(gameCharacter));
         }
         return timestampResponseDto;
