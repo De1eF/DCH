@@ -5,6 +5,7 @@ import budkevych.squareapi.dto.TimestampResponseDto;
 import budkevych.squareapi.mapper.GameCharacterMapper;
 import budkevych.squareapi.model.GameCharacter;
 import budkevych.squareapi.service.CharacterService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ public class GameCharacterController {
     private final GameCharacterMapper mapper;
 
     @GetMapping("/check-update/{id}")
+    @Operation(summary = "checks if incoming object is up to date, returns new version if not")
     public TimestampResponseDto getUpToDate(@PathVariable Long id,
                                        @RequestParam Long timestamp) {
         GameCharacter gameCharacter = characterService.find(id);
@@ -37,12 +39,14 @@ public class GameCharacterController {
     }
 
     @PostMapping("/save")
+    @Operation(summary = "save object to db")
     public void save(@RequestBody GameCharacterRequestDto dto) {
         GameCharacter gameCharacter = mapper.toModel(dto);
         characterService.save(gameCharacter);
     }
 
     @PutMapping("/update/{id}")
+    @Operation(summary = "replace object in db")
     public void update(@PathVariable Long id,
                        @RequestBody GameCharacterRequestDto dto) {
         characterService.update(id, mapper.toModel(dto));

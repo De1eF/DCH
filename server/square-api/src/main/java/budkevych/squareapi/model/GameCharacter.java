@@ -16,4 +16,5 @@ public class GameCharacter {
     private Long id;
     private Long lastUpdate;
     private String name;
+
 }

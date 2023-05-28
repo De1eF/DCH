@@ -6,6 +6,7 @@ import budkevych.squareapi.repository.GameCharacterRepository;
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,17 +24,21 @@ public class CharacterServiceIml implements CharacterService {
 
     @Override
     public void save(GameCharacter gameCharacter) {
+        gameCharacter.setLastUpdate(System.currentTimeMillis());
         gameCharacterRepository.save(gameCharacter);
     }
 
     @Override
     public void saveAll(List<GameCharacter> gameCharacterList) {
+        gameCharacterList.forEach(gameCharacter ->
+                gameCharacter.setLastUpdate(System.currentTimeMillis()));
         gameCharacterRepository.saveAll(gameCharacterList);
     }
 
     @Override
     public void update(Long id, GameCharacter gameCharacter) {
         gameCharacter.setId(id);
+        gameCharacter.setLastUpdate(System.currentTimeMillis());
         gameCharacterRepository.save(gameCharacter);
     }
 
