@@ -13,4 +13,5 @@ document.getElementById("send").addEventListener("click", function () {
 
     output.innerHTML = "Your number is "+number;
 
+    
 });
