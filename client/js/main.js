@@ -8,7 +8,6 @@ document.getElementById("send").addEventListener("click", function () {
         await response.json().then(async (value) => {
             console.log(value.value);
             number = value.value;
-            
         });
     });
 
