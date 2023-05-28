@@ -14,14 +14,14 @@ document.getElementById("send").addEventListener("click", function () {
 
    
 });
-get_timestemp(){
+function get_timestemp(){
     fetch("http://localhost:1290/timestamp", {method: "GET"}).then(async (response)=> {
         await response.json().then(async (value) => {
             console.log(value.value);
             last_timestamp = value.value;
         });
     });
-}
+};
 function update(){
 
     output.innerHTML = "Your number is "+number;
