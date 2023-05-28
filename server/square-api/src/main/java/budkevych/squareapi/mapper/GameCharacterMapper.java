@@ -17,7 +17,6 @@ public class GameCharacterMapper {
 
     public GameCharacter toModel(GameCharacterRequestDto dto) {
         GameCharacter gameCharacter = new GameCharacter();
-        gameCharacter.setId(dto.getId());
         gameCharacter.setLastUpdate(dto.getTimestamp());
         gameCharacter.setName(dto.getName());
         return gameCharacter;
