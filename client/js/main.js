@@ -17,16 +17,17 @@ document.getElementById("send").addEventListener("click", function () {
 function get_timestemp(){
     fetch("http://localhost:1290/timestamp", {method: "GET"}).then(async (response)=> {
         await response.json().then(async (value) => {
-            console.log(value.value);
-            last_timestamp = value.value;
+            console.log(value.timestamp);
+            last_timestamp = value.timestamp;
         });
     });
 };
 function update(){
-
+    
     output.innerHTML = "Your number is "+number;
     console.log("Last timestamp: "+last_timestamp);
     setTimeout(update, 1/10);
 }
 
+get_timestemp();
 update();
