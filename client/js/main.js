@@ -1,33 +1,44 @@
 let input = document.getElementById("input");
 let output = document.getElementById("output");
 let number = 0;
+let id;
 let last_timestamp = 0;
 
-document.getElementById("send").addEventListener("click", function () {
-
-    fetch("http://localhost:1290/square/"+input.value, {method: "GET"}).then(async (response)=> {
-        await response.json().then(async (value) => {
-            console.log(value.value);
-            number = value.value;
+function inject(){
+    fetch("http://localhost:1290/characters/inject?id="+id, {method: "GET"}).then(async (response)=> {
+        await response.json().then(async (response_data) => {
+            last_timestamp = response_data.timestamp;
         });
-    });
-
-   
-});
-function get_timestemp(){
-    fetch("http://localhost:1290/timestamp", {method: "GET"}).then(async (response)=> {
-        await response.json().then(async (value) => {
-            console.log(value.timestamp);
-            last_timestamp = value.timestamp;
-        });
-    });
-};
-function update(){
-    
-    output.innerHTML = "Your number is "+number;
-    console.log("Last timestamp: "+last_timestamp);
-    setTimeout(update, 1/10);
+    }
+    );
 }
 
-get_timestemp();
+function check_for_updates(){
+    fetch("http://localhost:1290/characters/check-update?id="+id+"&timestamp="+last_timestamp, {method: "GET"}).then(async (response)=> {
+        await response.json().then(async (response_data) => {
+            console.log(value.timestamp);
+            if (last_timestamp != response_data.timestamp){
+                last_timestamp = response_data.timestamp;
+            }else{
+                console.log("No updates");
+            }
+        });
+    });
+}
+function send_update(param_name, value){
+    fetch("http://localhost:1290/characters/send-update?id="+id+"&param-name="+param_name+"&value="+value, {method: "GET"}).then(async (response)=> {
+        await response.json().then(async (response_data) => {
+            last_timestamp = response_data.timestamp; 
+            console.log(last_timestamp);
+        });
+    });
+}
+
+function update(){
+    check_for_updates();
+
+
+    console.log("Last timestamp: "+last_timestamp);
+    setTimeout(update, 1000/10);
+}
 update();
