@@ -1,4 +1,4 @@
-package budkevych.squareapi.dto;
+package budkevych.squareapi.dto.response;
 
 import lombok.Data;
 
@@ -6,5 +6,6 @@ import lombok.Data;
 public class GameCharacterResponseDto {
     private Long id;
     private Long timestamp;
+    private Long userId;
     private String name;
 }

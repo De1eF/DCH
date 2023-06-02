@@ -1,12 +1,11 @@
-package budkevych.squareapi.service;
+package budkevych.squareapi.service.impl;
 
-import budkevych.squareapi.mapper.GameCharacterMapper;
 import budkevych.squareapi.model.GameCharacter;
 import budkevych.squareapi.repository.GameCharacterRepository;
+import budkevych.squareapi.service.CharacterService;
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +17,19 @@ public class CharacterServiceIml implements CharacterService {
     @Override
     public GameCharacter find(Long id) {
         return gameCharacterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Unable to find game character by id " + id));
+                .orElseThrow(() ->
+                        new RuntimeException("Unable to find game character by id " + id));
     }
 
     @Override
-    public void save(GameCharacter gameCharacter) {
+    public List<GameCharacter> findAllByUserId(Long userId) {
+        return gameCharacterRepository.findAllByUserId(userId);
+    }
+
+    @Override
+    public GameCharacter save(GameCharacter gameCharacter) {
         gameCharacter.setLastUpdate(System.currentTimeMillis());
-        gameCharacterRepository.save(gameCharacter);
+        return gameCharacterRepository.save(gameCharacter);
     }
 
     @Override

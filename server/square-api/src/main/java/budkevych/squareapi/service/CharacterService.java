@@ -6,7 +6,9 @@ import java.util.List;
 public interface CharacterService {
     GameCharacter find(Long id);
 
-    void save(GameCharacter gameCharacter);
+    List<GameCharacter> findAllByUserId(Long userId);
+
+    GameCharacter save(GameCharacter gameCharacter);
 
     void saveAll(List<GameCharacter> gameCharacterList);
 

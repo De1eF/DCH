@@ -15,6 +15,7 @@ public class GameCharacter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long lastUpdate;
+    private Long userId;
     private String name;
 
 }

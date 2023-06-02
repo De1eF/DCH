@@ -1,7 +1,7 @@
-package budkevych.squareapi.mapper;
+package budkevych.squareapi.dto.mapper;
 
-import budkevych.squareapi.dto.GameCharacterRequestDto;
-import budkevych.squareapi.dto.GameCharacterResponseDto;
+import budkevych.squareapi.dto.request.GameCharacterRequestDto;
+import budkevych.squareapi.dto.response.GameCharacterResponseDto;
 import budkevych.squareapi.model.GameCharacter;
 import org.springframework.stereotype.Component;
 
@@ -11,12 +11,14 @@ public class GameCharacterMapper {
         GameCharacterResponseDto dto = new GameCharacterResponseDto();
         dto.setId(character.getId());
         dto.setTimestamp(character.getLastUpdate());
+        dto.setUserId(character.getUserId());
         dto.setName(character.getName());
         return dto;
     }
 
     public GameCharacter toModel(GameCharacterRequestDto dto) {
         GameCharacter gameCharacter = new GameCharacter();
+        gameCharacter.setUserId(dto.getUserId());
         gameCharacter.setName(dto.getName());
         return gameCharacter;
     }

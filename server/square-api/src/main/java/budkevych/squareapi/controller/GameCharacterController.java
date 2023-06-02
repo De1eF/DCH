@@ -1,11 +1,13 @@
 package budkevych.squareapi.controller;
 
-import budkevych.squareapi.dto.GameCharacterRequestDto;
-import budkevych.squareapi.dto.TimestampResponseDto;
-import budkevych.squareapi.mapper.GameCharacterMapper;
+import budkevych.squareapi.dto.mapper.GameCharacterMapper;
+import budkevych.squareapi.dto.request.GameCharacterRequestDto;
+import budkevych.squareapi.dto.response.GameCharacterResponseDto;
+import budkevych.squareapi.dto.response.TimestampResponseDto;
 import budkevych.squareapi.model.GameCharacter;
 import budkevych.squareapi.service.CharacterService;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,14 +40,29 @@ public class GameCharacterController {
         return timestampResponseDto;
     }
 
-    @PostMapping("/save")
-    @Operation(summary = "save object to db")
-    public void save(@RequestBody GameCharacterRequestDto dto) {
-        GameCharacter gameCharacter = mapper.toModel(dto);
-        characterService.save(gameCharacter);
+    @GetMapping("{id}")
+    @Operation(summary = "get all characters of specific user")
+    public GameCharacterResponseDto get(@PathVariable Long id) {
+        return mapper.toDto(characterService.find(id));
     }
 
-    @PutMapping("/update/{id}")
+    @GetMapping("/for-user/{user-id}")
+    @Operation(summary = "get all characters of specific user")
+    public List<GameCharacterResponseDto> getForUser(@PathVariable("user-id") Long userId) {
+        return characterService.findAllByUserId(userId)
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
+
+    @PostMapping()
+    @Operation(summary = "save object to db")
+    public GameCharacterResponseDto save(@RequestBody GameCharacterRequestDto dto) {
+        GameCharacter gameCharacter = mapper.toModel(dto);
+        return mapper.toDto(characterService.save(gameCharacter));
+    }
+
+    @PutMapping("{id}")
     @Operation(summary = "replace object in db")
     public void update(@PathVariable Long id,
                        @RequestBody GameCharacterRequestDto dto) {

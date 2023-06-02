@@ -1,4 +1,4 @@
-package budkevych.squareapi.dto;
+package budkevych.squareapi.dto.response;
 
 import lombok.Data;
 
