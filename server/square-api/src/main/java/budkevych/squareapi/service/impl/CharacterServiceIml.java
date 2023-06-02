@@ -27,6 +27,11 @@ public class CharacterServiceIml implements CharacterService {
     }
 
     @Override
+    public Long countAllByUserId(Long userId) {
+        return gameCharacterRepository.countAllByUserId(userId);
+    }
+
+    @Override
     public GameCharacter save(GameCharacter gameCharacter) {
         gameCharacter.setLastUpdate(System.currentTimeMillis());
         return gameCharacterRepository.save(gameCharacter);

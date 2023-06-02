@@ -9,6 +9,8 @@ import budkevych.squareapi.service.CharacterService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,9 +59,16 @@ public class GameCharacterController {
 
     @PostMapping()
     @Operation(summary = "save object to db")
-    public GameCharacterResponseDto save(@RequestBody GameCharacterRequestDto dto) {
+    public ResponseEntity<?> save(@RequestBody GameCharacterRequestDto dto) {
+        if (characterService.countAllByUserId(dto.getUserId()) >= 10) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body("You cannot create more than 10 characters");
+        }
         GameCharacter gameCharacter = mapper.toModel(dto);
-        return mapper.toDto(characterService.save(gameCharacter));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(mapper.toDto(characterService.save(gameCharacter)));
     }
 
     @PutMapping("{id}")

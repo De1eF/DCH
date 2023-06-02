@@ -7,5 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GameCharacterRepository extends JpaRepository<GameCharacter, Long> {
-    public List<GameCharacter> findAllByUserId(Long userId);
+    List<GameCharacter> findAllByUserId(Long userId);
+
+    Long countAllByUserId(Long userId);
 }

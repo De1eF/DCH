@@ -8,6 +8,8 @@ public interface CharacterService {
 
     List<GameCharacter> findAllByUserId(Long userId);
 
+    Long countAllByUserId(Long userId);
+
     GameCharacter save(GameCharacter gameCharacter);
 
     void saveAll(List<GameCharacter> gameCharacterList);
