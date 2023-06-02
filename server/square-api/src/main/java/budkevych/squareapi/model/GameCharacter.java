@@ -4,12 +4,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Table;
-import lombok.Data;
+import java.util.Map;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@Entity
+@MappedSuperclass
 @Table(name = "characters")
+@Getter
+@Setter
+@EqualsAndHashCode
 public class GameCharacter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,4 +23,5 @@ public class GameCharacter {
     private Long lastUpdate;
     private Long userId;
     private String name;
+    private String paramMap;
 }

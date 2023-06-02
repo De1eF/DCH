@@ -8,4 +8,5 @@ public class GameCharacterResponseDto {
     private Long timestamp;
     private Long userId;
     private String name;
+    private String paramMap;
 }

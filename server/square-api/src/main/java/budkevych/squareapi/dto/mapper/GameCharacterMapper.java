@@ -13,6 +13,7 @@ public class GameCharacterMapper {
         dto.setTimestamp(character.getLastUpdate());
         dto.setUserId(character.getUserId());
         dto.setName(character.getName());
+        dto.setParamMap(character.getParamMap());
         return dto;
     }
 
@@ -20,6 +21,7 @@ public class GameCharacterMapper {
         GameCharacter gameCharacter = new GameCharacter();
         gameCharacter.setUserId(dto.getUserId());
         gameCharacter.setName(dto.getName());
+        gameCharacter.setParamMap(dto.getParamMap());
         return gameCharacter;
     }
 }
