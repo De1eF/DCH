@@ -1,3 +1,4 @@
+html,
 body {
     font-size: 48px;
     font-family: Arial, Helvetica, sans-serif;
@@ -29,4 +30,45 @@ button {
     justify-content: center;
     height: 90vh;
     margin: 5px;
+}
+
+.login-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 7vh;
+    margin: 5px;
+    width: 500px;
+}
+
+.login-input {
+    padding: 10px;
+    font-size: 42px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+
+.login-input:focus {
+    outline: none;
+    border-bottom: 5px solid;
+    border-color: #67B2B4;
+    margin-bottom: -5px;
+}
+
+.login-button {
+    width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+    font-size: 42px;
+}
+
+.login-button:hover {
+    background-color: #67B2B4;
+}
+
+.login-button:active {
+    background-color: #2b5455;
+    color: rgb(189, 189, 189);
 }
