@@ -29,6 +29,10 @@ function send_login_data(login_data) {
 function login() {
     login_data.login = login_input.value;
     login_data.password = password_input.value;
+    if (login_data.login == "" || login_data.password == "") {
+        alert("Login or password is empty");
+        return;
+    }
     send_login_data(login_data);
 
 }
