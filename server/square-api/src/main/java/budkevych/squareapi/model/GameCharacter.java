@@ -17,5 +17,4 @@ public class GameCharacter {
     private Long lastUpdate;
     private Long userId;
     private String name;
-
 }

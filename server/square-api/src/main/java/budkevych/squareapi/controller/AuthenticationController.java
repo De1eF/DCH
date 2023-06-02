@@ -10,6 +10,7 @@ import budkevych.squareapi.security.AuthenticationService;
 import budkevych.squareapi.security.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,10 +31,14 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     @Operation(summary = "login as an existing user")
-    public ResponseEntity<?> login(@RequestBody UserLoginRequestDto userLoginDto)
-            throws AuthenticationException {
-        User user = authenticationService.login(userLoginDto.getLogin(),
-                userLoginDto.getPassword());
+    public ResponseEntity<?> login(@RequestBody UserLoginRequestDto userLoginDto) {
+        User user;
+        try {
+            user = authenticationService.login(userLoginDto.getLogin(),
+                    userLoginDto.getPassword());
+        } catch (AuthenticationException e) {
+            return ResponseEntity.badRequest().body("Incorrect username or password");
+        }
         String token = jwtTokenProvider.createToken(user.getUsername(), user.getRoles().stream()
                 .map(role -> role.getRoleName().name())
                 .collect(Collectors.toList()));
@@ -47,7 +52,7 @@ public class AuthenticationController {
     @Operation(summary = "register a user")
     public UserResponseDto register(@RequestBody @Valid UserRequestDto requestDto) {
         User user = authenticationService.register(
-                requestDto.getUsername(),
+                requestDto.getLogin(),
                 requestDto.getPassword()
         );
         return userMapper.mapToDto(user);

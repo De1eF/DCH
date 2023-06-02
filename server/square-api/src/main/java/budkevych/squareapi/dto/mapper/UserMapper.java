@@ -28,7 +28,7 @@ public class UserMapper {
 
     public User mapToModel(UserRequestDto requestDto) {
         User user = new User();
-        user.setUsername(requestDto.getUsername());
+        user.setUsername(requestDto.getLogin());
         user.setPassword(requestDto.getPassword());
         return user;
     }

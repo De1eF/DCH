@@ -67,8 +67,7 @@ public class GameCharacterController {
         }
         GameCharacter gameCharacter = mapper.toModel(dto);
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(mapper.toDto(characterService.save(gameCharacter)));
+                .ok(mapper.toDto(characterService.save(gameCharacter)));
     }
 
     @PutMapping("{id}")
