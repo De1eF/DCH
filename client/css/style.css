@@ -72,3 +72,12 @@ button {
     background-color: #2b5455;
     color: rgb(189, 189, 189);
 }
+
+.login-link {
+    font-size: 32px;
+}
+
+
+.redirect-link {
+    color: black;
+}

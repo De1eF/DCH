@@ -7,10 +7,11 @@ class Login_data {
     password = "";
 }
 
-let login_button = document.getElementById("login-button");
+
 let login_data = new Login_data();
 let login_input = document.getElementById("login-input");
 let password_input = document.getElementById("password-input");
+let password_confirm_input = document.getElementById("password-input-confirm");
 
 
 function send_login_data(login_data) {
@@ -25,6 +26,19 @@ function send_login_data(login_data) {
     })
 }
 
+function send_register_data(login_data) {
+    fetch(address + "/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(login_data)
+    }).then(async (response) => {
+        await response.json().then(async (response_data) => {
+            console.log(response_data);
+        });
+    })
+}
+
+
 
 function login() {
     login_data.login = login_input.value;
@@ -36,5 +50,25 @@ function login() {
     send_login_data(login_data);
 
 }
+function register() {
+    login_data.login = login_input.value;
+    login_data.password = password_input.value;
+    login_data.password_confirm = password_confirm_input.value;
+    if (login_data.login == "" || login_data.password == "" || login_data.password_confirm == "") {
+        alert("Login or password is empty");
+        return;
+    } else if (login_data.password != login_data.password_confirm) {
+        alert("Passwords do not match");
+        return;
+    }
+    send_register_data(login_data);
+}
 
-login_button.addEventListener("click", login);
+let login_button = document.getElementById("login-button");
+if (login_button != null) {
+    login_button.addEventListener("click", login);
+}
+let register_button = document.getElementById("register-button");
+if (register_button != null) {
+    register_button.addEventListener("click", register);
+}
