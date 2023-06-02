@@ -1,9 +1,9 @@
 package budkevych.squareapi.repository;
 
 import budkevych.squareapi.model.GameCharacter;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GameCharacterRepository extends JpaRepository<GameCharacter, Long> {
+public interface GameCharacterRepository extends MongoRepository<GameCharacter, String> {
 }

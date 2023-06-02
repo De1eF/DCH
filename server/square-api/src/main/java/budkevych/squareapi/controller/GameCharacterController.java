@@ -27,7 +27,7 @@ public class GameCharacterController {
 
     @GetMapping("/check-update/{id}")
     @Operation(summary = "checks if incoming object is up to date, returns new version if not")
-    public TimestampResponseDto getUpToDate(@PathVariable Long id,
+    public TimestampResponseDto getUpToDate(@PathVariable String id,
                                        @RequestParam Long timestamp) {
         GameCharacter gameCharacter = characterService.find(id);
         TimestampResponseDto timestampResponseDto = new TimestampResponseDto();
@@ -47,7 +47,7 @@ public class GameCharacterController {
 
     @PutMapping("/update/{id}")
     @Operation(summary = "replace object in db")
-    public void update(@PathVariable Long id,
+    public void update(@PathVariable String id,
                        @RequestBody GameCharacterRequestDto dto) {
         characterService.update(id, mapper.toModel(dto));
     }
