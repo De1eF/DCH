@@ -38,18 +38,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .headers(headers ->
+                        headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/**").permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
-                                .requestMatchers(HttpMethod.GET,"/users/me")
-                                    .hasAnyRole("CUSTOMER", "MANAGER")
-                                .requestMatchers(HttpMethod.PUT,"/users/me")
-                                    .hasAnyRole("CUSTOMER", "MANAGER")
-                                .requestMatchers(HttpMethod.PUT,"/users/{id}/role")
-                                    .hasRole("MANAGER")
+                                .requestMatchers(HttpMethod.GET, "/users/me")
+                                .hasAnyRole("CUSTOMER", "MANAGER")
+                                .requestMatchers(HttpMethod.PUT, "/users/me")
+                                .hasAnyRole("CUSTOMER", "MANAGER")
+                                .requestMatchers(HttpMethod.PUT, "/users/{id}/role")
+                                .hasRole("MANAGER")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->

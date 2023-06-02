@@ -10,7 +10,6 @@ import budkevych.squareapi.security.AuthenticationService;
 import budkevych.squareapi.security.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
