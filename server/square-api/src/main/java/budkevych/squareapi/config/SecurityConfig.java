@@ -76,7 +76,6 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList(
                 addressProvider.getAddress(),
                 "http://127.0.0.1:5500"));
-        configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList(
                 "GET",
                 "POST",
@@ -87,7 +86,7 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(Arrays.asList(
                 "authorization",
                 "content-type",
-                "x-auth-token"));
+                "Access-Control-Allow-Origin"));
         configuration.setExposedHeaders(List.of("x-auth-token"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

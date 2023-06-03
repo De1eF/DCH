@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +34,7 @@ public class GameCharacterController {
     private final UserService userService;
 
     @GetMapping("/check-update/{id}")
+    @CrossOrigin
     @Operation(summary = "checks if incoming object is up to date, returns new version if not")
     public TimestampResponseDto getUpToDate(@PathVariable Long id,
                                             @RequestParam Long timestamp) {

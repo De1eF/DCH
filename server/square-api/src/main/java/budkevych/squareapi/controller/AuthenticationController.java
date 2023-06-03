@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,7 @@ public class AuthenticationController {
     private final UserMapper userMapper;
 
     @PostMapping("/login")
+    @CrossOrigin
     @Operation(summary = "login as an existing user")
     public ResponseEntity<?> login(@RequestBody UserLoginRequestDto userLoginDto) {
         User user;

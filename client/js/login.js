@@ -1,4 +1,4 @@
-let address = "http://93.175.234.30:1290";
+let address = "http://127.0.0.1:1290";
 
 class Login_data {
     login = "";
