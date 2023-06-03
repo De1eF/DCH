@@ -4,6 +4,12 @@ username = get_username();
 console.log("Token: " + token);
 console.log("Username: " + username);
 
+create_button = document.getElementById("create-button");
+
+
+character_name_element = document.getElementById("character-name");
+character_name = character_name_element.value;
+
 class character {
     userId = 0;
     name = "";
@@ -12,7 +18,12 @@ class character {
 
 let character1 = new character();
 
-//generate random name
-character1.name = "Character" + Math.floor(Math.random() * 1000);
+character1.name = character_name;
 
-create_character_server(character1);
+function create_character() {
+    character1.name = character_name_element.value;
+    console.log(character1.name);
+    create_character_server(character1);
+}
+
+create_button.addEventListener("click", create_character);
