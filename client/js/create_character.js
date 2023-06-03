@@ -1,5 +1,6 @@
 token = ""
 token = get_token();
+
 username = get_username();
 userId = get_user_id();
 console.log("Token: " + token);
