@@ -47,3 +47,30 @@ function create_character_server(new_character) {
     }
     )
 }
+function get_character_server(id) {
+    fetch(address + "/characters/" + id, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    }).then(async (response) => {
+        await response.json().then(async (response_data) => {
+            console.log(response_data);
+            parse_character_params(response_data);
+        });
+    })
+}
+
+function get_all_user_character_ids(user_id) {
+    fetch(address + "/characters/for-user/" + user_id, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    }).then(async (response) => {
+        await response.json().then(async (response_data) => {
+            console.log(response_data);
+            id = response_data[0];
+        });
+    })
+}

@@ -1,5 +1,6 @@
 token = ""
 token = get_token();
+
 username = get_username();
 userId = get_user_id();
 console.log("Token: " + token);
@@ -10,13 +11,6 @@ create_button = document.getElementById("create-button");
 
 character_name_element = document.getElementById("character-name");
 character_name = character_name_element.value;
-
-class character {
-    userId = 0;
-    name = "";
-    paramsMap = {};
-}
-
 
 
 function create_character() {
