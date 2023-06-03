@@ -74,3 +74,4 @@ function register() {
     send_register_data(login_data);
 }
 
+token = get_token();

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(origins = {"http://93.175.234.30:5500/", "http://127.0.0.1:5500"})
+@CrossOrigin(origins = { "http://127.0.0.1:5500" })
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
@@ -52,8 +52,7 @@ public class AuthenticationController {
     public UserResponseDto register(@RequestBody @Valid UserRequestDto requestDto) {
         User user = authenticationService.register(
                 requestDto.getLogin(),
-                requestDto.getPassword()
-        );
+                requestDto.getPassword());
         return userMapper.mapToDto(user);
     }
 }
