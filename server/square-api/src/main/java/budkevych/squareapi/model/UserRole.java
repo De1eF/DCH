@@ -26,7 +26,7 @@ public class UserRole {
     private RoleName roleName;
 
     public enum RoleName {
-        MANAGER,
-        CUSTOMER
+        ADMIN,
+        USER
     }
 }

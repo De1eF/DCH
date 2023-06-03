@@ -1,5 +1,6 @@
 package budkevych.squareapi.dto.response;
 
+import java.util.Map;
 import lombok.Data;
 
 @Data
@@ -8,5 +9,5 @@ public class GameCharacterResponseDto {
     private Long timestamp;
     private Long userId;
     private String name;
-    private String paramMap;
+    private Map<String, Object> paramMap;
 }

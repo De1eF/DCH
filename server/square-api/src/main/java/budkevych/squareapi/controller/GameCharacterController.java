@@ -5,12 +5,16 @@ import budkevych.squareapi.dto.request.GameCharacterRequestDto;
 import budkevych.squareapi.dto.response.GameCharacterResponseDto;
 import budkevych.squareapi.dto.response.TimestampResponseDto;
 import budkevych.squareapi.model.GameCharacter;
+import budkevych.squareapi.model.User;
 import budkevych.squareapi.service.CharacterService;
+import budkevych.squareapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,11 +32,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class GameCharacterController {
     private final CharacterService characterService;
     private final GameCharacterMapper mapper;
+    private final UserService userService;
 
     @GetMapping("/check-update/{id}")
     @Operation(summary = "checks if incoming object is up to date, returns new version if not")
     public TimestampResponseDto getUpToDate(@PathVariable Long id,
-                                       @RequestParam Long timestamp) {
+                                            @RequestParam Long timestamp) {
         GameCharacter gameCharacter = characterService.find(id);
         TimestampResponseDto timestampResponseDto = new TimestampResponseDto();
         timestampResponseDto.setTimestamp(gameCharacter.getLastUpdate());
@@ -60,12 +65,22 @@ public class GameCharacterController {
     @PostMapping()
     @Operation(summary = "save object to db")
     public ResponseEntity<?> save(@RequestBody GameCharacterRequestDto dto) {
-        if (characterService.countAllByUserId(dto.getUserId()) >= 10) {
+        GameCharacter gameCharacter = mapper.toModel(dto);
+        Optional<User> forUser = userService
+                .findByUsername(SecurityContextHolder.getContext()
+                        .getAuthentication()
+                        .getName());
+        if (forUser.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .body("Unable to save, can't find a current user");
+        }
+        if (characterService.countAllByUserId(forUser.get().getId()) >= 10) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body("You cannot create more than 10 characters");
         }
-        GameCharacter gameCharacter = mapper.toModel(dto);
+        gameCharacter.setUserId(forUser.get().getId());
         return ResponseEntity
                 .ok(mapper.toDto(characterService.save(gameCharacter)));
     }

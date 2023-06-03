@@ -21,16 +21,16 @@ public class DataInitializer {
     @PostConstruct
     public void init() {
         UserRole customerRole = new UserRole();
-        customerRole.setRoleName(RoleName.CUSTOMER);
+        customerRole.setRoleName(RoleName.USER);
         roleService.add(customerRole);
-        UserRole managerRole = new UserRole();
-        managerRole.setRoleName(RoleName.MANAGER);
-        roleService.add(managerRole);
+        UserRole adminRole = new UserRole();
+        adminRole.setRoleName(RoleName.ADMIN);
+        roleService.add(adminRole);
 
-        User manager = new User();
-        manager.setUsername("admin");
-        manager.setPassword(passwordEncoder.encode("1290"));
-        manager.setRoles(Set.of(managerRole));
-        userService.add(manager);
+        User admin = new User();
+        admin.setUsername("admin");
+        admin.setPassword(passwordEncoder.encode("1290"));
+        admin.setRoles(Set.of(adminRole));
+        userService.add(admin);
     }
 }
