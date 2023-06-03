@@ -23,7 +23,10 @@ if (register_button != null) {
 function send_login_data(login_data) {
     fetch(address + "/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        },
         body: JSON.stringify(login_data)
     }).then(async (response) => {
         await response.json().then(async (response_data) => {
