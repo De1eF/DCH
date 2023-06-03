@@ -7,6 +7,8 @@ class Login_data {
     password = "";
 }
 
+//get token from cookie
+
 
 let login_data = new Login_data();
 let login_input = document.getElementById("login-input");
@@ -22,6 +24,12 @@ function send_login_data(login_data) {
     }).then(async (response) => {
         await response.json().then(async (response_data) => {
             console.log(response_data);
+            //save token to cookie
+            document.cookie = "token=" + response_data.token;
+            //save username to cookie
+            document.cookie = "username=" + response_data.username;
+            //redirect to main page
+            window.location.replace("index.html");
         });
     })
 }
@@ -37,8 +45,6 @@ function send_register_data(login_data) {
         });
     })
 }
-
-
 
 function login() {
     login_data.login = login_input.value;
@@ -72,3 +78,20 @@ let register_button = document.getElementById("register-button");
 if (register_button != null) {
     register_button.addEventListener("click", register);
 }
+
+function get_token() {
+    let token = document.cookie.split(";").filter((item) => {
+        return item.includes("token");
+    })[0];
+    if (token == undefined) {
+        return "";
+    }
+    token = token.split("=")[1];
+    //redirect to index.html if token is not empty
+    if (token != "") {
+        window.location.replace("index.html");
+    }
+    return token;
+}
+
+get_token();

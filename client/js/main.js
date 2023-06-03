@@ -53,6 +53,18 @@ function send_param(n_id) {
     })
 }
 
+function get_token() {
+    let token = document.cookie.split(";").filter((item) => {
+        return item.includes("token");
+    })[0];
+    if (token == undefined) {
+        //redirect to login page
+        window.location.replace("login.html");
+        return "";
+    }
+    token = token.split("=")[1];
+    return token;
+}
 
 //update
 function update() {
@@ -70,4 +82,8 @@ function update() {
     output.innerHTML = "Name: " + character.name;
     setTimeout(update, 1000 / 0.5);
 }
-update();
+token = get_token();
+
+console.log("Token: " + token);
+
+//update();
