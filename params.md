@@ -96,6 +96,30 @@ int initiative
 
 int speed
 
+Attacks & Spellcasting
+
+Weapons
+
+* string weapon_name1
+
+* string attack_bonus1
+
+* string damage_type1
+
+* string weapon_name2
+
+* string attack_bonus2
+
+* string damage_type2
+
+* string weapon_name3
+
+* string attack_bonus3
+
+* string damage_type3
+
+string attacks_and_spellcasting_notes
+
 Coins
 
 * int copper_coins
@@ -108,6 +132,10 @@ Coins
 
 * int platinum_coins
 
+string equipment
+
+string languages_and_other_proficiencies
+
 string personality_traits
 
 string ideas
@@ -115,3 +143,5 @@ string ideas
 string bonds
 
 string flaws
+
+string features_and_traits
