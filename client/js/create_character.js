@@ -11,13 +11,6 @@ create_button = document.getElementById("create-button");
 character_name_element = document.getElementById("character-name");
 character_name = character_name_element.value;
 
-class character {
-    userId = 0;
-    name = "";
-    paramsMap = {};
-}
-
-
 
 function create_character() {
     let character1 = new character();
