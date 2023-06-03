@@ -36,6 +36,44 @@ Proficiency
 
 * bool charisma_proficiency → charisma_saving_throw
 
+Skills
+
+* bool acrobatics_proficiency → acrobatics
+
+* bool animal_handling_proficiency → animal_handling
+
+* bool arcana_proficiency → arcana
+
+* bool athletics_proficiency → athletics
+
+* bool deception_proficiency → deception
+
+* bool history_proficiency → history
+
+* bool insight_proficiency → insight
+
+* bool intimidation_proficiency → intimidation
+
+* bool investigation_proficiency → investigation
+
+* bool medicine_proficiency → medicine
+
+* bool nature_proficiency → nature
+
+* bool perception_proficiency → perception
+
+* bool performance_proficiency → performance
+
+* bool persuasion_proficiency → persuasion
+
+* bool religion_proficiency → religion
+
+* bool sleight_of_hand_proficiency → sleight_of_hand
+
+* bool stealth_proficiency → stealth
+
+* bool survival_proficiency → survival
+
 string personality_traits
 
 string ideas
