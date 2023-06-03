@@ -27,84 +27,84 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/characters")
-@CrossOrigin(origins = {"http://93.175.234.30:5500/", "http://127.0.0.1:5500"})
+@CrossOrigin(origins = { "http://127.0.0.1:5500" })
 @AllArgsConstructor
 public class GameCharacterController {
-    private final CharacterService characterService;
-    private final GameCharacterMapper mapper;
-    private final UserService userService;
+        private final CharacterService characterService;
+        private final GameCharacterMapper mapper;
+        private final UserService userService;
 
-    @GetMapping("/check-update/{id}")
-    @Operation(summary = "checks if incoming object is up to date, returns new version if not")
-    public TimestampResponseDto getUpToDate(@PathVariable Long id,
-                                            @RequestParam Long timestamp) {
-        GameCharacter gameCharacter = characterService.find(id);
-        TimestampResponseDto timestampResponseDto = new TimestampResponseDto();
-        timestampResponseDto.setTimestamp(gameCharacter.getLastUpdate());
-        if (!gameCharacter.getLastUpdate().equals(timestamp)) {
-            timestampResponseDto.setObject(mapper.toDto(gameCharacter));
+        @GetMapping("/check-update/{id}")
+        @Operation(summary = "checks if incoming object is up to date, returns new version if not")
+        public TimestampResponseDto getUpToDate(@PathVariable Long id,
+                        @RequestParam Long timestamp) {
+                GameCharacter gameCharacter = characterService.find(id);
+                TimestampResponseDto timestampResponseDto = new TimestampResponseDto();
+                timestampResponseDto.setTimestamp(gameCharacter.getLastUpdate());
+                if (!gameCharacter.getLastUpdate().equals(timestamp)) {
+                        timestampResponseDto.setObject(mapper.toDto(gameCharacter));
+                }
+                return timestampResponseDto;
         }
-        return timestampResponseDto;
-    }
 
-    @GetMapping("{id}")
-    @Operation(summary = "get all characters of specific user")
-    public GameCharacterResponseDto get(@PathVariable Long id) {
-        return mapper.toDto(characterService.find(id));
-    }
-
-    @GetMapping("/for-user/{user-id}")
-    @Operation(summary = "get all characters of specific user")
-    public List<GameCharacterResponseDto> getForUser(@PathVariable("user-id") Long userId) {
-        return characterService.findAllByUserId(userId)
-                .stream()
-                .map(mapper::toDto)
-                .toList();
-    }
-
-    @PostMapping()
-    @Operation(summary = "save object to db \n "
-            + "can't create more than 10 ")
-    public ResponseEntity<?> add(@RequestBody GameCharacterRequestDto dto) {
-        GameCharacter gameCharacter = mapper.toModel(dto);
-        Optional<User> forUser = userService
-                .findByUsername(SecurityContextHolder.getContext()
-                        .getAuthentication()
-                        .getName());
-        if (forUser.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NO_CONTENT)
-                    .body("Unable to save, can't find a current user");
+        @GetMapping("{id}")
+        @Operation(summary = "get all characters of specific user")
+        public GameCharacterResponseDto get(@PathVariable Long id) {
+                return mapper.toDto(characterService.find(id));
         }
-        if (characterService.countAllByUserId(forUser.get().getId()) >= 10) {
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body("You cannot create more than 10 characters");
-        }
-        gameCharacter.setUserId(forUser.get().getId());
-        return ResponseEntity
-                .ok(mapper.toDto(characterService.save(gameCharacter)));
-    }
 
-    @PutMapping("{id}")
-    @Operation(summary = "update object in db \n"
-            + "if user isn't specified in the body, will take currently logged in one")
-    public ResponseEntity<?> update(@PathVariable Long id,
-                                    @RequestBody GameCharacterRequestDto dto) {
-        GameCharacter gameCharacter = mapper.toModel(dto);
-        Optional<User> forUser = userService
-                .findByUsername(SecurityContextHolder.getContext()
-                        .getAuthentication()
-                        .getName());
-        if (forUser.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NO_CONTENT)
-                    .body("Unable to update, can't find a current user");
+        @GetMapping("/for-user/{user-id}")
+        @Operation(summary = "get all characters of specific user")
+        public List<GameCharacterResponseDto> getForUser(@PathVariable("user-id") Long userId) {
+                return characterService.findAllByUserId(userId)
+                                .stream()
+                                .map(mapper::toDto)
+                                .toList();
         }
-        gameCharacter.setUserId(dto.getUserId() == null
-                ? forUser.get().getId() :
-                dto.getUserId());
-        return ResponseEntity
-                .ok(mapper.toDto(characterService.update(id, gameCharacter)));
-    }
+
+        @PostMapping()
+        @Operation(summary = "save object to db \n "
+                        + "can't create more than 10 ")
+        public ResponseEntity<?> add(@RequestBody GameCharacterRequestDto dto) {
+                GameCharacter gameCharacter = mapper.toModel(dto);
+                Optional<User> forUser = userService
+                                .findByUsername(SecurityContextHolder.getContext()
+                                                .getAuthentication()
+                                                .getName());
+                if (forUser.isEmpty()) {
+                        return ResponseEntity
+                                        .status(HttpStatus.NO_CONTENT)
+                                        .body("Unable to save, can't find a current user");
+                }
+                if (characterService.countAllByUserId(forUser.get().getId()) >= 10) {
+                        return ResponseEntity
+                                        .status(HttpStatus.FORBIDDEN)
+                                        .body("You cannot create more than 10 characters");
+                }
+                gameCharacter.setUserId(forUser.get().getId());
+                return ResponseEntity
+                                .ok(mapper.toDto(characterService.save(gameCharacter)));
+        }
+
+        @PutMapping("{id}")
+        @Operation(summary = "update object in db \n"
+                        + "if user isn't specified in the body, will take currently logged in one")
+        public ResponseEntity<?> update(@PathVariable Long id,
+                        @RequestBody GameCharacterRequestDto dto) {
+                GameCharacter gameCharacter = mapper.toModel(dto);
+                Optional<User> forUser = userService
+                                .findByUsername(SecurityContextHolder.getContext()
+                                                .getAuthentication()
+                                                .getName());
+                if (forUser.isEmpty()) {
+                        return ResponseEntity
+                                        .status(HttpStatus.NO_CONTENT)
+                                        .body("Unable to update, can't find a current user");
+                }
+                gameCharacter.setUserId(dto.getUserId() == null
+                                ? forUser.get().getId()
+                                : dto.getUserId());
+                return ResponseEntity
+                                .ok(mapper.toDto(characterService.update(id, gameCharacter)));
+        }
 }
