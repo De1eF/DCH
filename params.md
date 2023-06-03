@@ -8,6 +8,8 @@ string background
 
 string alignment
 
+int proficiency_bonus
+
 Stats
 
 * int strength → strength_modifier
@@ -18,7 +20,7 @@ Stats
 
 * int intelligence → intelligence_modifier
 
-* int wisdom → wisdom_modifier
+* int wisdom → wisdom_modifier → passive_wisdom
 
 * int charisma → charisma_modifier
 
@@ -73,6 +75,38 @@ Skills
 * bool stealth_proficiency → stealth
 
 * bool survival_proficiency → survival
+
+Health
+
+* int max_hit_points
+
+* int current_hit_points
+
+* int temporary_hit_points
+
+* int hit_dice
+
+int death_saves_successes
+
+int death_saves_failures
+
+int armor_class
+
+int initiative
+
+int speed
+
+Coins
+
+* int copper_coins
+
+* int silver_coins
+
+* int electrum_coins
+
+* int gold_coins
+
+* int platinum_coins
 
 string personality_traits
 
