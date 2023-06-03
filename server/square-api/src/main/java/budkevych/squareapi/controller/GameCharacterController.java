@@ -29,13 +29,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/characters")
-@CrossOrigin(origins = {"http://127.0.0.1:5500"})
 @AllArgsConstructor
 public class GameCharacterController {
     private final CharacterService characterService;
     private final GameCharacterMapper mapper;
     private final UserService userService;
-    private final ConfigProperties addressProvider;
 
     @GetMapping("/check-update/{id}")
     @Operation(summary = "checks if incoming object is up to date, returns new version if not")
@@ -113,11 +111,5 @@ public class GameCharacterController {
                 : dto.getUserId());
         return ResponseEntity
                 .ok(mapper.toDto(characterService.update(id, gameCharacter)));
-    }
-
-    @PostConstruct
-    public void print() {
-        System.out.println("------frontend address is: "
-                + addressProvider.getAddress());
     }
 }
