@@ -12,4 +12,7 @@ class character {
 
 let character1 = new character();
 
+//generate random name
+character1.name = "Character" + Math.floor(Math.random() * 1000);
+
 create_character_server(character1);

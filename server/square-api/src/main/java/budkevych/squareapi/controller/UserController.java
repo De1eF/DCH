@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(origins = {"http://93.175.234.30:5500/", "http://127.0.0.1:5500"})
+@CrossOrigin(origins = { "http://127.0.0.1:5500" })
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {

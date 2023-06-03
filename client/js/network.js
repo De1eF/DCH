@@ -33,7 +33,7 @@ function check_for_updates() {
 }
 
 function create_character_server(new_character) {
-    fetch(address + "/character", {
+    fetch(address + "/characters", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -43,8 +43,6 @@ function create_character_server(new_character) {
     }).then(async (response) => {
         await response.json().then(async (response_data) => {
             console.log(response_data);
-            character = response_data;
-            send_and_save();
         });
     }
     )
