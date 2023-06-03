@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsUtils;
 
 @Configuration
 @EnableWebSecurity
@@ -43,7 +44,10 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/**").permitAll()
+                        auth
+                                .requestMatchers(CorsUtils::isCorsRequest).permitAll()
+                                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                                .requestMatchers("/**").permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/users/me")
                                 .hasAnyRole("USER", "ADMIN")

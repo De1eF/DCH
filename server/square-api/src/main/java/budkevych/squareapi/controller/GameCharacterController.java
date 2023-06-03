@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/characters")
-@CrossOrigin(origins = {"http://93.175.234.30:5500/", "http://127.0.0.1:5500"})
 @AllArgsConstructor
 public class GameCharacterController {
     private final CharacterService characterService;
