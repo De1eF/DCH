@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class GameCharacterRequestDto {
+    private Long userId;
     @NotBlank
     private String name;
     private Map<String, Object> paramMap;

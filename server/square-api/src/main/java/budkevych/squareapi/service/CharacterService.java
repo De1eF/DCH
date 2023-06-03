@@ -14,5 +14,5 @@ public interface CharacterService {
 
     void saveAll(List<GameCharacter> gameCharacterList);
 
-    void update(Long id, GameCharacter gameCharacter);
+    GameCharacter update(Long id, GameCharacter gameCharacter);
 }

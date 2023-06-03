@@ -63,8 +63,9 @@ public class GameCharacterController {
     }
 
     @PostMapping()
-    @Operation(summary = "save object to db")
-    public ResponseEntity<?> save(@RequestBody GameCharacterRequestDto dto) {
+    @Operation(summary = "save object to db \n "
+            + "can't create more than 10 ")
+    public ResponseEntity<?> add(@RequestBody GameCharacterRequestDto dto) {
         GameCharacter gameCharacter = mapper.toModel(dto);
         Optional<User> forUser = userService
                 .findByUsername(SecurityContextHolder.getContext()
@@ -86,9 +87,24 @@ public class GameCharacterController {
     }
 
     @PutMapping("{id}")
-    @Operation(summary = "replace object in db")
-    public void update(@PathVariable Long id,
-                       @RequestBody GameCharacterRequestDto dto) {
-        characterService.update(id, mapper.toModel(dto));
+    @Operation(summary = "update object in db \n"
+            + "if user isn't specified in the body, will take currently logged in one")
+    public ResponseEntity<?> update(@PathVariable Long id,
+                                    @RequestBody GameCharacterRequestDto dto) {
+        GameCharacter gameCharacter = mapper.toModel(dto);
+        Optional<User> forUser = userService
+                .findByUsername(SecurityContextHolder.getContext()
+                        .getAuthentication()
+                        .getName());
+        if (forUser.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .body("Unable to update, can't find a current user");
+        }
+        gameCharacter.setUserId(dto.getUserId() == null
+                ? forUser.get().getId() :
+                dto.getUserId());
+        return ResponseEntity
+                .ok(mapper.toDto(characterService.update(id, gameCharacter)));
     }
 }

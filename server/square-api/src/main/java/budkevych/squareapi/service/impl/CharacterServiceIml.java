@@ -43,9 +43,9 @@ public class CharacterServiceIml implements CharacterService {
     }
 
     @Override
-    public void update(Long id, GameCharacter gameCharacter) {
+    public GameCharacter update(Long id, GameCharacter gameCharacter) {
         gameCharacter.setId(id);
         gameCharacter.setLastUpdate(System.currentTimeMillis());
-        gameCharacterRepository.save(gameCharacter);
+        return gameCharacterRepository.save(gameCharacter);
     }
 }
