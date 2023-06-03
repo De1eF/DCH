@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +37,9 @@ public class AuthenticationController {
             user = authenticationService.login(userLoginDto.getLogin(),
                     userLoginDto.getPassword());
         } catch (AuthenticationException e) {
-            return ResponseEntity.badRequest().body("Incorrect username or password");
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body("Incorrect username or password");
         }
         String token = jwtTokenProvider.createToken(user.getUsername(), user.getRoles().stream()
                 .map(role -> role.getRoleName().name())

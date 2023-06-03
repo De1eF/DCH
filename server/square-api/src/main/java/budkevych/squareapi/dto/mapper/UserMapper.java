@@ -17,7 +17,6 @@ public class UserMapper {
         UserResponseDto userResponseDto = new UserResponseDto();
         userResponseDto.setId(user.getId());
         userResponseDto.setUsername(user.getUsername());
-        userResponseDto.setPassword(user.getPassword());
         List<RoleResponseDto> roles = user.getRoles()
                 .stream()
                 .map(roleMapper::mapToDto)
