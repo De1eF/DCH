@@ -32,3 +32,17 @@ function get_username() {
     username = username.split("=")[1];
     return username;
 }
+
+function get_user_id() {
+    fetch(address + "/users/me", {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    }).then(async (response) => {
+        await response.json().then(async (response_data) => {
+            console.log(response_data);
+            user_id = response_data.id;
+        });
+    })
+}
