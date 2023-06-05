@@ -10,13 +10,13 @@ function get_token() {
 }
 
 token = get_token();
-let url = window.location.href;
+let url_1 = window.location.href;
 if (token == "") {
-    if (!url.includes("login.html") && !url.includes("register.html")) {
+    if (!url_1.includes("login.html") && !url_1.includes("register.html") && !url_1.includes("login-email.html")) {
         window.location.replace("login.html");
     }
 } else {
-    if (url.includes("login.html") || url.includes("register.html")) {
+    if (url_1.includes("login.html") || url_1.includes("register.html") || url_1.includes("login-email.html")) {
         window.location.replace("index.html");
     }
 }
@@ -39,7 +39,8 @@ function get_user_id() {
     fetch(address + "/users/me", {
         method: "GET",
         headers: {
-            "Authorization": "Bearer " + token
+            "Authorization": "Bearer " + token,
+            "Access-Control-Allow-Origin": address
         }
     }).then(async (response) => {
         await response.json().then(async (response_data) => {
@@ -48,4 +49,14 @@ function get_user_id() {
             username = response_data.username;
         });
     })
+}
+
+
+function check_token_front(token) {
+    if (token.length < 10) {
+        return false;
+    }
+    else {
+        return true;
+    }
 }

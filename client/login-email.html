@@ -6,9 +6,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login with email</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
+    <div class="container">
+        <div class="login-row">
+            <input class="login-input" id="email-input" type="text" placeholder="Enter username">
+        </div>
+        <div class="login-row">
+            <button class="login-button" id="email-button">Send Email</button>
+        </div>
+        <div class="login-row">
+            <div class="login-link" id="register-link">
+                Want to use username? <a class="redirect-link" href="login.html">Log in</a>
+            </div>
+        </div>
+    </div>
     <script src="js/auth.js"></script>
     <script src="js/login-email.js"></script>
 </body>
