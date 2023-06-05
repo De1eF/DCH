@@ -8,7 +8,9 @@ import budkevych.squareapi.exception.AuthenticationException;
 import budkevych.squareapi.model.User;
 import budkevych.squareapi.security.AuthenticationService;
 import budkevych.squareapi.security.jwt.JwtTokenProvider;
+import budkevych.squareapi.service.impl.MailService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;

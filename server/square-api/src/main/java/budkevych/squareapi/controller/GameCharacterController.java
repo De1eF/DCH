@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/characters")
+@CrossOrigin
 @AllArgsConstructor
 public class GameCharacterController {
     private final CharacterService characterService;
