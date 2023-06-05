@@ -10,7 +10,6 @@ local_character = new character();
 
 if (userId != undefined) {
     get_all_user_character_ids(userId);
-
     get_character_server(id);
 }
 

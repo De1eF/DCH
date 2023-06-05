@@ -1,4 +1,16 @@
-let address = "http://127.0.0.1:1290";
+let address = "";
+
+let url = window.location.href;
+
+function get_backend_address() {
+    let backend_address = "";
+    //remove everything after second :
+    backend_address = url.substring(0, url.indexOf(":", url.indexOf(":") + 1));
+    //add 5500 port
+    backend_address += ":1290";
+    return backend_address;
+}
+address = get_backend_address();
 
 class Login_data {
     login = "";
@@ -25,7 +37,7 @@ function send_login_data(login_data) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
+            "Access-Control-Allow-Origin": address
         },
         body: JSON.stringify(login_data)
     }).then(async (response) => {
@@ -44,7 +56,10 @@ function send_login_data(login_data) {
 function send_register_data(login_data) {
     fetch(address + "/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": address
+        },
         body: JSON.stringify(login_data)
     }).then(async (response) => {
         await response.json().then(async (response_data) => {
