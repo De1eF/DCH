@@ -88,16 +88,20 @@ function get_character_server(id) {
 }
 
 function get_all_user_character_ids(user_id) {
+    console.log("t0");
+    console.log("user_id: " + user_id);
     fetch(address + "/characters/for-user/" + user_id, {
         method: "GET",
         headers: {
             "Authorization": "Bearer " + token,
-            "Access-Control-Allow-Origin": address
+            "Access-Control-Allow-Origin": address,
+            "Content-Type": "application/json"
         }
     }).then(async (response) => {
         await response.json().then(async (response_data) => {
+            console.log("t1");
             console.log(response_data);
-            id = response_data[0];
+            id = response_data[0].id;
         });
     })
 }

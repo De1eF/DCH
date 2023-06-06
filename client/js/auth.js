@@ -1,3 +1,6 @@
+user_id = 0;
+username = "";
+id=0;
 function get_token() {
     let token = document.cookie.split(";").filter((item) => {
         return item.includes("token");
@@ -34,17 +37,17 @@ function get_username() {
 }
 
 function get_user_id() {
-    console.log("get_user_id");
-    console.log("token: " + token);
     fetch(address + "/users/me", {
         method: "GET",
         headers: {
             "Authorization": "Bearer " + token,
-            "Access-Control-Allow-Origin": address
+            "Access-Control-Allow-Origin": address,
+            "Content-Type": "application/json"
         }
     }).then(async (response) => {
         await response.json().then(async (response_data) => {
             console.log(response_data);
+            console.log(response_data.id);
             user_id = response_data.id;
             username = response_data.username;
         });

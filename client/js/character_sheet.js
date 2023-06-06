@@ -1,15 +1,17 @@
+
+
 token = get_token();
 username = get_username();
-userId = get_user_id();
+get_user_id();
 console.log("Token: " + token);
 console.log("Username: " + username);
-console.log("User ID: " + userId);
-id = 1;
+console.log("User ID: " + user_id);
 
 local_character = new character();
 
-if (userId != undefined) {
-    get_all_user_character_ids(userId);
+if (user_id != undefined) {
+    get_all_user_character_ids(user_id);
     get_character_server(id);
+} else {
+    console.log("User ID undefined");
 }
-
