@@ -19,6 +19,8 @@ target/
 *.iml
 *.ipr
 
+src/main/resources/application.properties
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -30,4 +32,4 @@ build/
 !**/src/test/**/build/
 
 ### VS Code ###
-.vscode/
+.vscode/o98
