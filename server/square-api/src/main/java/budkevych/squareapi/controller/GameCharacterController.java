@@ -59,7 +59,7 @@ public class GameCharacterController {
     public List<GameCharacterResponseDto> getForUser(@PathVariable("user-id") Long userId) {
         List<GameCharacter> gameCharacterList =
                 characterService.findAllByUserId(userId);
-        gameCharacterList.forEach(d -> d.setParamMap(null));
+        gameCharacterList.forEach(d -> d.setParamMap("{}"));
         return gameCharacterList
                 .stream()
                 .map(mapper::toDto)
