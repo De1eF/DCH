@@ -1,17 +1,25 @@
-
-
 token = get_token();
 username = get_username();
-get_user_id();
-console.log("Token: " + token);
-console.log("Username: " + username);
-console.log("User ID: " + user_id);
+user_id = -1;
+get_user_id(token);
 
-local_character = new character();
+function wait_for_data() {
+    if (token == "" || username == "" || user_id == -1) {
 
-if (user_id != undefined) {
-    get_all_user_character_ids(user_id);
-    get_character_server(id);
-} else {
-    console.log("User ID undefined");
+    } else {
+        console.log("Token: " + token);
+        console.log("Username: " + username);
+        console.log("User ID: " + user_id);
+        get_all_user_character_ids(user_id);
+        return
+    }
+    setTimeout(wait_for_data, 1000 / 10);
 }
+wait_for_data();
+
+function update() {
+
+    console.log("Updating");
+    setTimeout(update, 1000 / 1);
+}
+update();

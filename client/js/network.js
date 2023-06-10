@@ -89,7 +89,7 @@ function get_character_server(id) {
 
 function get_all_user_character_ids(user_id) {
     console.log("t0");
-    console.log("user_id: " + user_id);
+    console.log("user_id in func: " + user_id);
     fetch(address + "/characters/for-user/" + user_id, {
         method: "GET",
         headers: {
@@ -101,7 +101,7 @@ function get_all_user_character_ids(user_id) {
         await response.json().then(async (response_data) => {
             console.log("t1");
             console.log(response_data);
-            id = response_data[0].id;
+            // id = response_data[0].id;
         });
     })
 }
