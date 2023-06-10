@@ -8,7 +8,10 @@ import budkevych.squareapi.exception.AuthenticationException;
 import budkevych.squareapi.model.User;
 import budkevych.squareapi.security.AuthenticationService;
 import budkevych.squareapi.security.jwt.JwtTokenProvider;
+import budkevych.squareapi.service.impl.MailService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.annotation.PostConstruct;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +31,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserMapper userMapper;
+    private final MailService mailService;
 
     @PostMapping("/login")
     @CrossOrigin
@@ -58,5 +62,18 @@ public class AuthenticationController {
                 requestDto.getLogin(),
                 requestDto.getPassword());
         return userMapper.mapToDto(user);
+    }
+
+    @PostConstruct
+    public void testMail() {
+        try {
+            mailService.sendEmail(
+                    "electroman1290@gmail.com",
+                    "Test",
+                    "Test"
+            );
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to email ", e);
+        }
     }
 }
