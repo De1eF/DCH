@@ -73,7 +73,7 @@ public class GameCharacterController {
     public ResponseEntity<?> add(@RequestBody GameCharacterRequestDto dto) {
         GameCharacter gameCharacter = mapper.toModel(dto);
         Optional<User> forUser = userService
-                .findByUsername(SecurityContextHolder.getContext()
+                .findByEmail(SecurityContextHolder.getContext()
                         .getAuthentication()
                         .getName());
         if (forUser.isEmpty()) {
@@ -98,7 +98,7 @@ public class GameCharacterController {
                                     @RequestBody GameCharacterRequestDto dto) {
         GameCharacter gameCharacter = mapper.toModel(dto);
         Optional<User> forUser = userService
-                .findByUsername(SecurityContextHolder.getContext()
+                .findByEmail(SecurityContextHolder.getContext()
                         .getAuthentication()
                         .getName());
         if (forUser.isEmpty()) {

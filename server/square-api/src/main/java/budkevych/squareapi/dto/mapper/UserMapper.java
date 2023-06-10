@@ -16,6 +16,7 @@ public class UserMapper {
     public UserResponseDto mapToDto(User user) {
         UserResponseDto userResponseDto = new UserResponseDto();
         userResponseDto.setId(user.getId());
+        userResponseDto.setEmail(user.getEmail());
         userResponseDto.setUsername(user.getUsername());
         List<RoleResponseDto> roles = user.getRoles()
                 .stream()
@@ -27,7 +28,8 @@ public class UserMapper {
 
     public User mapToModel(UserRequestDto requestDto) {
         User user = new User();
-        user.setUsername(requestDto.getLogin());
+        user.setEmail(requestDto.getEmail());
+        user.setUsername(requestDto.getUsername());
         user.setPassword(requestDto.getPassword());
         return user;
     }
