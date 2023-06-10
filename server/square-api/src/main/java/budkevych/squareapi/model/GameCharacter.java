@@ -1,5 +1,6 @@
 package budkevych.squareapi.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,8 +19,11 @@ public class GameCharacter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "last_update")
     private Long lastUpdate;
+    @Column(name = "user_id")
     private Long userId;
     private String name;
+    @Column(name = "param_map")
     private String paramMap;
 }
