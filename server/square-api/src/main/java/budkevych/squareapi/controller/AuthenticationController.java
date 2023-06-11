@@ -42,7 +42,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     @CrossOrigin
     @Operation(summary = "login as an existing user")
-    public ResponseEntity<?> login(@RequestBody UserLoginRequestDto userLoginDto) {
+    public ResponseEntity<?> login(@RequestBody @Valid UserLoginRequestDto userLoginDto) {
         User user;
         try {
             user = authenticationService.login(userLoginDto.getLogin(),
@@ -52,7 +52,7 @@ public class AuthenticationController {
                     .status(HttpStatus.FORBIDDEN)
                     .body("Incorrect login or password");
         }
-        String token = jwtTokenProvider.createToken(user.getUsername(), user.getRoles().stream()
+        String token = jwtTokenProvider.createToken(user.getEmail(), user.getRoles().stream()
                 .map(role -> role.getRoleName().name())
                 .collect(Collectors.toList()));
         Map<Object, Object> response = new HashMap<>();
@@ -64,7 +64,7 @@ public class AuthenticationController {
     @PostMapping("/login-email")
     @CrossOrigin
     @Operation(summary = "login as an existing user")
-    public ResponseEntity<?> emailLogin(@RequestBody UserLoginRequestDto userLoginDto) {
+    public ResponseEntity<?> emailLogin(@RequestBody @Valid UserLoginRequestDto userLoginDto) {
         User user;
         try {
             user = userService
@@ -75,7 +75,7 @@ public class AuthenticationController {
                     .status(HttpStatus.FORBIDDEN)
                     .body("There is no such email in our database");
         }
-        String token = jwtTokenProvider.createToken(user.getUsername(), user.getRoles().stream()
+        String token = jwtTokenProvider.createToken(user.getEmail(), user.getRoles().stream()
                 .map(role -> role.getRoleName().name())
                 .collect(Collectors.toList()));
         try {
@@ -97,7 +97,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     @Operation(summary = "register a user")
-    public UserResponseDto register(@RequestBody @Valid UserRequestDto requestDto) {
+    public UserResponseDto register(@Valid @RequestBody UserRequestDto requestDto) {
         User user = authenticationService.register(
                 requestDto.getEmail(),
                 requestDto.getUsername(),

@@ -7,3 +7,4 @@ databaseChangeLog:
       file: /db/changelog/changes/create-users-roles-table.sql
   - include:
       file: /db/changelog/changes/create-game-characters-table.sql
+      
