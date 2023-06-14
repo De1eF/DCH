@@ -18,8 +18,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User register(String username, String password) {
+    public User register(String email, String username, String password) {
         User user = new User();
+        user.setEmail(email);
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
         user.setRoles(Set.of(roleService.findByRoleName("USER")));
@@ -27,11 +28,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public User login(String username, String password) throws AuthenticationException {
-        Optional<User> userFromDb = userService.findByUsername(username);
+    public User login(String email, String password) throws AuthenticationException {
+        Optional<User> userFromDb = userService.findByEmail(email);
         if (userFromDb.isEmpty()
                 || !passwordEncoder.matches(password, userFromDb.get().getPassword())) {
-            throw new AuthenticationException("Incorrect username or password!!!");
+            throw new AuthenticationException("Incorrect username or password!");
         }
         return userFromDb.get();
     }

@@ -2,9 +2,10 @@ package budkevych.squareapi.service;
 
 import budkevych.squareapi.model.GameCharacter;
 import java.util.List;
+import java.util.Optional;
 
 public interface CharacterService {
-    GameCharacter find(Long id);
+    Optional<GameCharacter> find(Long id, Short isDeleted);
 
     List<GameCharacter> findAllByUserId(Long userId);
 
@@ -15,4 +16,10 @@ public interface CharacterService {
     void saveAll(List<GameCharacter> gameCharacterList);
 
     GameCharacter update(Long id, GameCharacter gameCharacter);
+
+    void delete(Long id);
+
+    void permanentDelete(Long id);
+
+    GameCharacter recover(Long id);
 }

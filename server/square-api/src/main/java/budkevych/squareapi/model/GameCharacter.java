@@ -26,4 +26,6 @@ public class GameCharacter {
     private String name;
     @Column(name = "param_map")
     private String paramMap;
+    @Column(name = "is_deleted")
+    private Short isDeleted;
 }

@@ -3,6 +3,7 @@ package budkevych.squareapi.service.impl;
 import budkevych.squareapi.model.User;
 import budkevych.squareapi.repository.UserRepository;
 import budkevych.squareapi.service.UserService;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findUserByUsername(username);
+    public List<User> findByUsername(String username) {
+        return userRepository.findAllByUsername(username);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findUserByEmail(email);
     }
 
     @Override

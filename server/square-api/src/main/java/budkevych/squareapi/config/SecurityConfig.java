@@ -53,14 +53,46 @@ public class SecurityConfig {
                         auth
                                 .requestMatchers(CorsUtils::isCorsRequest).permitAll()
                                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                                .requestMatchers("/**").permitAll()
-                                .requestMatchers("/h2-console/**").permitAll()
+
+                                .requestMatchers("/register")
+                                .permitAll()
+
+                                .requestMatchers("/login")
+                                .permitAll()
+
+                                .requestMatchers("/login-email")
+                                .permitAll()
+
+                                .requestMatchers("/swagger-ui/**")
+                                .permitAll()
+
+                                .requestMatchers("/swagger-ui")
+                                .permitAll()
+
                                 .requestMatchers(HttpMethod.GET, "/users/me")
                                 .hasAnyRole("USER", "ADMIN")
-                                .requestMatchers(HttpMethod.PUT, "/users/me")
-                                .hasAnyRole("USER", "ADMIN")
+
                                 .requestMatchers(HttpMethod.PUT, "/users/{id}/role")
                                 .hasRole("ADMIN")
+
+                                .requestMatchers(HttpMethod.POST, "/characters")
+                                .hasAnyRole("ADMIN", "USER")
+
+                                .requestMatchers(HttpMethod.PUT, "/characters/{id}")
+                                .hasAnyRole("ADMIN", "USER")
+
+                                .requestMatchers(HttpMethod.DELETE, "/characters/{id}")
+                                .hasAnyRole("ADMIN", "USER")
+
+                                .requestMatchers(HttpMethod.GET, "/characters/{id}")
+                                .hasAnyRole("ADMIN", "USER")
+
+                                .requestMatchers(HttpMethod.GET, "/characters/recover/{id}")
+                                .hasRole("ADMIN")
+
+                                .requestMatchers(HttpMethod.GET, "/characters/for-user/{id}")
+                                .hasAnyRole("ADMIN", "USER")
+
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->

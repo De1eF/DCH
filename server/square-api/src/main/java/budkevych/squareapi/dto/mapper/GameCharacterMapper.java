@@ -29,6 +29,7 @@ public class GameCharacterMapper {
     public GameCharacter toModel(GameCharacterRequestDto dto) {
         GameCharacter gameCharacter = new GameCharacter();
         gameCharacter.setName(dto.getName());
+        gameCharacter.setIsDeleted((short) 0);
         try {
             gameCharacter.setParamMap(objectMapper.writeValueAsString(dto.getParamMap()));
         } catch (JsonProcessingException e) {

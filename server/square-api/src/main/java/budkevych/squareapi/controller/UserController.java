@@ -70,7 +70,7 @@ public class UserController {
     private User getAuthenticated(Authentication auth) {
         UserDetails details = (UserDetails) auth.getPrincipal();
         String email = details.getUsername();
-        return userService.findByUsername(email).orElseThrow(
+        return userService.findByEmail(email).orElseThrow(
                 () -> new RuntimeException("User with email " + email + " not found"));
     }
 }

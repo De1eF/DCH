@@ -7,4 +7,4 @@ CREATE TABLE IF NOT EXISTS users_roles (
     user_role_id BIGINT REFERENCES `user_roles` (`id`)
     ) ENGINE=InnoDB;
 
-INSERT INTO users_roles VALUES(1, 1, 1);
+INSERT INTO users_roles VALUES(1, 1, 2);

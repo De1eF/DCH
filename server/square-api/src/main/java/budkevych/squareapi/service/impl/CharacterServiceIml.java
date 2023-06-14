@@ -4,6 +4,8 @@ import budkevych.squareapi.model.GameCharacter;
 import budkevych.squareapi.repository.GameCharacterRepository;
 import budkevych.squareapi.service.CharacterService;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +15,13 @@ public class CharacterServiceIml implements CharacterService {
     private final GameCharacterRepository gameCharacterRepository;
 
     @Override
-    public GameCharacter find(Long id) {
-        return gameCharacterRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Unable to find game character by id " + id));
+    public Optional<GameCharacter> find(Long id, Short isDeleted) throws NoSuchElementException {
+        return gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted);
     }
 
     @Override
     public List<GameCharacter> findAllByUserId(Long userId) {
-        return gameCharacterRepository.findAllByUserId(userId);
+        return gameCharacterRepository.findAllByUserIdAndIsDeleted(userId, (short) 0);
     }
 
     @Override
@@ -47,5 +47,27 @@ public class CharacterServiceIml implements CharacterService {
         gameCharacter.setId(id);
         gameCharacter.setLastUpdate(System.currentTimeMillis());
         return gameCharacterRepository.save(gameCharacter);
+    }
+
+    @Override
+    public void delete(Long id) throws NoSuchElementException {
+        GameCharacter gameCharacter =
+                find(id, (short) 0).orElseThrow(NoSuchElementException::new);
+        gameCharacter.setIsDeleted((short) 1);
+        save(gameCharacter);
+    }
+
+    @Override
+    public void permanentDelete(Long id) {
+        gameCharacterRepository.deleteById(id);
+    }
+
+    @Override
+    public GameCharacter recover(Long id) throws NoSuchElementException {
+        GameCharacter gameCharacter =
+                find(id, (short) 1).orElseThrow(NoSuchElementException::new);
+        gameCharacter.setIsDeleted((short) 0);
+        save(gameCharacter);
+        return gameCharacter;
     }
 }

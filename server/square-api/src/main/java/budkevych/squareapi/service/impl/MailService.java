@@ -1,6 +1,5 @@
 package budkevych.squareapi.service.impl;
 
-import budkevych.squareapi.config.ConfigProperties;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Properties;
@@ -33,12 +32,12 @@ public class MailService {
         mailSender.setJavaMailProperties(mailProperties);
 
         MimeMessage message = mailSender.createMimeMessage();
+        message.setContent(body, "text/html; charset=utf-8");
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
         helper.setFrom(MAIL_USERNAME);
         helper.setTo(toEmail);
         helper.setSubject(subject);
-        helper.setText(body);
 
         mailSender.send(message);
         System.out.println("Email has been sent to " + toEmail);

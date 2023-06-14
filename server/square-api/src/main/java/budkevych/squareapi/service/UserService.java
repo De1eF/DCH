@@ -1,6 +1,7 @@
 package budkevych.squareapi.service;
 
 import budkevych.squareapi.model.User;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
@@ -8,7 +9,9 @@ public interface UserService {
 
     void update(User user);
 
-    Optional<User> findByUsername(String username);
+    List<User> findByUsername(String username);
+
+    Optional<User> findByEmail(String email);
 
     Optional<User> findById(Long id);
 }
