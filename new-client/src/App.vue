@@ -1,17 +1,33 @@
 <template>
-  <Login />
+  <Transition class="fade">
+    <nav v-if="showNavBar">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/character-sheet">Character Sheet</router-link> |
+      <router-link to="/about">About</router-link> |
+      <router-link to="/login">Login</router-link>
+    </nav>
+  </Transition>
+  <router-view />
+  <div @click="toggleNavBar" class="hide-button" style="">
+    <img v-if="showNavBar" class="hide-icon" src="./assets/hide.png" alt="">
+    <img v-else class="hide-icon" src="./assets/view.png" alt="">
+  </div>
 </template>
 
 <script>
-import Login from './components/Login.vue'
-import Skills from './components/Skills.vue'
 export default {
-  name: 'App',
-  components: {
-    Login,
-    Skills
+  name: "App",
+  data() {
+    return {
+      showNavBar: true
+    };
+  },
+  methods: {
+    toggleNavBar() {
+      this.showNavBar = !this.showNavBar;
+    }
   }
-}
+};
 </script>
 
 <style>
@@ -20,12 +36,97 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  color: white
 }
 
-body {
+body,
+html {
   margin: 0;
+  padding: 0;
   background-color: #222;
+}
+
+nav {
+  height: 50px;
+  margin: 0;
+  background-image: linear-gradient(to right, #42b983, #66bb6a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+nav a {
+  transition: all 0.2s ease-in-out;
+}
+
+nav a {
+  font-weight: bold;
+  color: #2c3e50;
+  padding: 7.5px;
+  margin: auto 10px;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+nav a.router-link-exact-active {
+  background-color: #222;
+  color: #fff;
+}
+
+.hide-button {
+  cursor: pointer;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 100;
+  width: 50px;
+  height: 50px;
+}
+
+.hide-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  padding: 10px;
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
+}
+
+.fade-enter-active {
+  transition: opacity .5s
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: transform 0.5s ease;
+  transition: margin 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  transform: scale(1, 0);
+  margin: 0 0 -50px 0;
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #1f1f1f #ffffff;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 16px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #444;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #333;
+  border-radius: 10px;
+  border: 3px solid #444;
 }
 </style>
