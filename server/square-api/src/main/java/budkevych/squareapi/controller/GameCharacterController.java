@@ -7,16 +7,14 @@ import budkevych.squareapi.dto.response.TimestampResponseDto;
 import budkevych.squareapi.model.GameCharacter;
 import budkevych.squareapi.model.User;
 import budkevych.squareapi.service.CharacterService;
-import budkevych.squareapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GameCharacterController {
     private final CharacterService characterService;
     private final GameCharacterMapper mapper;
-    private final UserService userService;
+    private final UserController userController;
 
     @GetMapping("/check-update/{id}")
     @CrossOrigin
@@ -86,9 +84,10 @@ public class GameCharacterController {
     @PostMapping()
     @Operation(summary = "save object to db \n "
             + "can't create more than 10 ")
-    public ResponseEntity<?> add(@RequestBody @Valid GameCharacterRequestDto dto) {
+    public ResponseEntity<?> add(Authentication auth,
+                                 @RequestBody @Valid GameCharacterRequestDto dto) {
         GameCharacter gameCharacter = mapper.toModel(dto);
-        User forUser = getUser();
+        User forUser = userController.getAuthenticated(auth);
         if (characterService.countAllByUserId(forUser.getId()) >= 10) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
@@ -102,7 +101,8 @@ public class GameCharacterController {
     @PutMapping("{id}")
     @Operation(summary = "update object in db \n"
             + "if user isn't specified in the body, will take currently logged in one")
-    public ResponseEntity<?> update(@PathVariable Long id,
+    public ResponseEntity<?> update(Authentication auth,
+                                    @PathVariable Long id,
                                     @RequestBody @Valid GameCharacterRequestDto dto) {
         Optional<GameCharacter> gameCharacterOptional = characterService.find(id, (short) 0);
         if (gameCharacterOptional.isEmpty()) {
@@ -111,13 +111,13 @@ public class GameCharacterController {
                     .body("No such object id: " + id);
         }
         GameCharacter gameCharacter = gameCharacterOptional.get();
-        if (!gameCharacter.getUserId().equals(getUser().getId())) {
+        User forUser = userController.getAuthenticated(auth);
+        if (!gameCharacter.getUserId().equals(forUser.getId())) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body("You can only access your own characters");
         }
         gameCharacter = mapper.toModel(dto);
-        User forUser = getUser();
         gameCharacter.setUserId(dto.getUserId() == null
                 ? forUser.getId()
                 : dto.getUserId());
@@ -127,7 +127,8 @@ public class GameCharacterController {
 
     @DeleteMapping("{id}")
     @Operation(summary = "soft delete character by id")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(Authentication auth,
+                                    @PathVariable Long id) {
         Optional<GameCharacter> gameCharacterOptional = characterService.find(id, (short) 0);
         if (gameCharacterOptional.isEmpty()) {
             return ResponseEntity
@@ -135,7 +136,7 @@ public class GameCharacterController {
                     .body("No such object id: " + id);
         }
         GameCharacter gameCharacter = gameCharacterOptional.get();
-        if (!gameCharacter.getUserId().equals(getUser().getId())) {
+        if (!gameCharacter.getUserId().equals(userController.getAuthenticated(auth).getId())) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body("You can only access your own characters");
@@ -153,13 +154,5 @@ public class GameCharacterController {
         return ResponseEntity
                 .ok()
                 .body("Object has been recover id: " + id);
-    }
-
-    private User getUser() throws NoSuchElementException {
-        return userService
-                .findByEmail(SecurityContextHolder.getContext()
-                        .getAuthentication()
-                        .getName()).orElseThrow(() ->
-                        new NoSuchElementException("Can't find a current user"));
     }
 }

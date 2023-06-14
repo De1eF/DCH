@@ -67,7 +67,7 @@ public class UserController {
         return userMapper.mapToDto(user);
     }
 
-    private User getAuthenticated(Authentication auth) {
+    public User getAuthenticated(Authentication auth) {
         UserDetails details = (UserDetails) auth.getPrincipal();
         String email = details.getUsername();
         return userService.findByEmail(email).orElseThrow(
