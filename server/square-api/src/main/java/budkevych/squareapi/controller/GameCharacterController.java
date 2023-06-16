@@ -6,6 +6,7 @@ import budkevych.squareapi.dto.response.GameCharacterResponseDto;
 import budkevych.squareapi.dto.response.TimestampResponseDto;
 import budkevych.squareapi.model.GameCharacter;
 import budkevych.squareapi.model.User;
+import budkevych.squareapi.model.UserRole;
 import budkevych.squareapi.service.CharacterService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -136,7 +137,10 @@ public class GameCharacterController {
                     .body("No such object id: " + id);
         }
         GameCharacter gameCharacter = gameCharacterOptional.get();
-        if (!gameCharacter.getUserId().equals(userController.getAuthenticated(auth).getId())) {
+        User user = userController.getAuthenticated(auth);
+        if (!gameCharacter.getUserId().equals(user.getId())
+            && user.getRoles().stream().noneMatch(
+                    userRole -> userRole.getRoleName().equals(UserRole.RoleName.ADMIN))) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body("You can only access your own characters");
