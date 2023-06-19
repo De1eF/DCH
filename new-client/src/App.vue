@@ -2,12 +2,12 @@
   <Transition class="fade">
     <nav v-if="showNavBar">
       <router-link to="/">Home</router-link> |
-      <router-link to="/character-sheet">Character Sheet</router-link> |
       <router-link to="/about">About</router-link> |
+      <router-link to="/select-character" v-if="token">Select Character</router-link><span v-if="token">|</span>
       <router-link to="/login">Login</router-link>
     </nav>
   </Transition>
-  <router-view />
+  <router-view @update="update" />
   <div @click="toggleNavBar" class="hide-button" style="">
     <img v-if="showNavBar" class="hide-icon" src="./assets/hide.png" alt="">
     <img v-else class="hide-icon" src="./assets/view.png" alt="">
@@ -19,12 +19,16 @@ export default {
   name: "App",
   data() {
     return {
-      showNavBar: true
+      showNavBar: true,
+      token: localStorage.getItem("token")
     };
   },
   methods: {
     toggleNavBar() {
       this.showNavBar = !this.showNavBar;
+    },
+    update() {
+      this.token = localStorage.getItem("token");
     }
   }
 };

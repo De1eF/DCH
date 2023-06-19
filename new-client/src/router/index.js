@@ -4,6 +4,7 @@ import About from '../views/About.vue'
 import Login from '../views/Login.vue'
 import CharacterSheet from '../views/CharacterSheet/CharacterSheet.vue'
 import NotFound from '../views/NotFound.vue'
+import SelectCharacter from '../views/SelectCharacter.vue'
 
 const routes = [
   {
@@ -29,6 +30,11 @@ const routes = [
     path: '/character-sheet/:id',
     name: 'character-sheet-id',
     component: CharacterSheet
+  },
+  {
+    path: '/select-character',
+    name: 'select-character',
+    component: SelectCharacter
   },
   // 404
   {

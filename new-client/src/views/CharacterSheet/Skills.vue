@@ -1,11 +1,15 @@
 <template>
     <div class="bg">
-        <h1>Skills</h1>
+        <h1>Навички</h1>
         <ol>
-            <li v-for="skill in sortedArray(skills)">
-                {{ skill.ua_name }}
-                <span class="ability">{{ ability[skill.ability].substring(0, 3) }}.</span>
-                <input class="prof-checkbox" type="checkbox" v-model="skill.prof">
+            <li v-for="skill in skills">
+                {{ skill_name[skill.name] }}
+                <span class="ability">{{ getAbylityName(skill.name).substring(0, 3) }}.</span>
+                <input class="prof-checkbox" type="checkbox" v-model="skill.prof"
+                    @click="sendSkills(skill.name, skill.prof)">
+                <span class="modifier">
+                    {{ Math.floor((10 - 10) / 2) + (skill.prof ? proficiency_bonus : 0) }}
+                </span>
             </li>
         </ol>
     </div>
@@ -15,43 +19,128 @@
 <script>
 export default {
     name: 'Skills',
+    props: {
+        skillsSet: Object,
+        abilitySet: Object,
+        proficiency_bonusSet: Number
+    },
     data() {
         return {
-            skills: [{ name: "Acrobatics", ability: "Dexterity", ua_name: "Акробатика", prof: true },
-            { name: "Animal Handling", ability: "Wisdom", ua_name: "Догляд за тваринами", prof: false },
-            { name: "Arcana", ability: "Intelligence", ua_name: "Магія", prof: false },
-            { name: "Athletics", ability: "Strength", ua_name: "Атлетика", prof: false },
-            { name: "Deception", ability: "Charisma", ua_name: "Обман", prof: false },
-            { name: "History", ability: "Intelligence", ua_name: "Історія", prof: false },
-            { name: "Insight", ability: "Wisdom", ua_name: "Розуміння", prof: false },
-            { name: "Intimidation", ability: "Charisma", ua_name: "Залякування", prof: false },
-            { name: "Investigation", ability: "Intelligence", ua_name: "Розслідування", prof: false },
-            { name: "Medicine", ability: "Wisdom", ua_name: "Медицина", prof: false },
-            { name: "Nature", ability: "Intelligence", ua_name: "Природа", prof: false },
-            { name: "Perception", ability: "Wisdom", ua_name: "Спостережливість", prof: true },
-            { name: "Performance", ability: "Charisma", ua_name: "Виконання", prof: false },
-            { name: "Persuasion", ability: "Charisma", ua_name: "Переконання", prof: false },
-            { name: "Religion", ability: "Intelligence", ua_name: "Релігія", prof: false },
-            { name: "Sleight of Hand", ability: "Dexterity", ua_name: "Спритність рук", prof: false },
-            { name: "Stealth", ability: "Dexterity", ua_name: "Хитрість", prof: false },
-            { name: "Survival", ability: "Wisdom", ua_name: "Виживання", prof: false }
+            skills: [{ name: "Acrobatics", prof: false },
+            { name: "Animal Handling", prof: false },
+            { name: "Arcana", prof: false },
+            { name: "Athletics", prof: false },
+            { name: "Deception", prof: false },
+            { name: "History", prof: false },
+            { name: "Insight", prof: false },
+            { name: "Intimidation", prof: false },
+            { name: "Investigation", prof: false },
+            { name: "Medicine", prof: false },
+            { name: "Nature", prof: false },
+            { name: "Perception", prof: false },
+            { name: "Performance", prof: false },
+            { name: "Persuasion", prof: false },
+            { name: "Religion", prof: false },
+            { name: "Sleight of Hand", prof: false },
+            { name: "Stealth", prof: false },
+            { name: "Survival", prof: false }
             ],
-            ability: {
+            ability_name: {
                 "Strength": "Cила",
                 "Dexterity": "Спритність",
                 "Constitution": "Стійкість",
                 "Intelligence": "Інтелект",
                 "Wisdom": "Мудрість",
                 "Charisma": "Харизма"
-            }
-
+            },
+            skill_name: {
+                "Acrobatics": "Акробатика",
+                "Animal Handling": "Обхід тварин",
+                "Arcana": "Аркана",
+                "Athletics": "Атлетика",
+                "Deception": "Обман",
+                "History": "Історія",
+                "Insight": "Проникнення",
+                "Intimidation": "Запугивание",
+                "Investigation": "Розслідування",
+                "Medicine": "Медицина",
+                "Nature": "Природа",
+                "Perception": "Спостереження",
+                "Performance": "Виступ",
+                "Persuasion": "Переконання",
+                "Religion": "Релігія",
+                "Sleight of Hand": "Ловкість рук",
+                "Stealth": "Хитрість",
+                "Survival": "Виживання"
+            }, skillsAbility: {
+                "Acrobatics": "Dexterity",
+                "Animal Handling": "Wisdom",
+                "Arcana": "Intelligence",
+                "Athletics": "Strength",
+                "Deception": "Charisma",
+                "History": "Intelligence",
+                "Insight": "Wisdom",
+                "Intimidation": "Charisma",
+                "Investigation": "Intelligence",
+                "Medicine": "Wisdom",
+                "Nature": "Intelligence",
+                "Perception": "Wisdom",
+                "Performance": "Charisma",
+                "Persuasion": "Charisma",
+                "Religion": "Intelligence",
+                "Sleight of Hand": "Dexterity",
+                "Stealth": "Dexterity",
+                "Survival": "Wisdom"
+            },
+            ability: {
+                "Strength": 10,
+                "Dexterity": 10,
+                "Constitution": 10,
+                "Intelligence": 10,
+                "Wisdom": 10,
+                "Charisma": 10
+            },
+            proficiency_bonus: 0,
+            timer: null,
+            returnSkills: {}
         }
     },
     methods: {
-        sortedArray(x) {
-            return x.sort((a, b) => (a.ua_name > b.ua_name) ? 1 : -1)
-        }
+        calculateModifier(ability) {
+            score = Math.floor((ability[skill.ability] - 10) / 2) + (skill.prof ? proficiency_bonus : 0);
+            return score > 0 ? "+" + score : score;
+        },
+        sendSkills(skillname, prof) {
+            for (let i = 0; i < this.skills.length; i++) {
+                if (this.skills[i].prof == undefined) {
+                    this.skills[i].prof = false;
+                }
+                this.returnSkills[this.skills[i].name] = this.skills[i].prof;
+            }
+            this.returnSkills[`${skillname}`] = !prof;
+            this.$emit('sendSkills', this.returnSkills);
+        },
+        update() {
+            for (let i = 0; i < this.skills.length; i++) {
+                this.skills[i].prof = this.skillsSet[this.skills[i].name]
+            }
+            this.ability = this.abilitySet;
+            this.proficiency_bonus = this.proficiency_bonusSet;
 
+        }, getAbylityName(skillname) {
+            return this.ability_name[this.skillsAbility[skillname]];
+
+        }, getAbylityValue(skillname) {
+            return this.ability[this.skillsAbility[skillname]];
+        }
+    },
+    mounted() {
+        this.timer = setInterval(() => {
+            this.update()
+        }, 100)
+    },
+    beforeDestroy() {
+        clearInterval(this.timer)
     }
 }
 </script>
@@ -59,8 +148,8 @@ export default {
 <style scoped>
 ol {
     color: white;
-    width: 400px;
-    margin: 0 auto;
+    width: 350px;
+    margin: auto 25px;
     list-style: none;
     padding: 0;
 }
@@ -77,10 +166,10 @@ input {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    -moz-outline-style: none;
     border: none;
     outline: none;
 }
+
 
 .prof-checkbox {
     float: right;
@@ -94,6 +183,11 @@ input {
 .prof-checkbox:checked {
     background-color: #4aa8e6;
     border: 1px solid white;
+}
+
+.modifier {
+    float: right;
+    margin-right: 20px;
 }
 
 .bg {
