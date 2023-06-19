@@ -1,6 +1,6 @@
 <template>
     <h1>{{ loginType }}</h1>
-    <form>
+    <div class="form">
         <label for="loginType">Login Type</label>
         <select v-model="loginType">
             <option v-for="lType in loginTypes">{{ lType }}</option>
@@ -14,8 +14,8 @@
                 </div>
             </Transition>
         </div>
-        <button type="submit">Submit</button>
-    </form>
+        <button @click="submit">Submit</button>
+    </div>
 </template>
 
 <script>
@@ -27,18 +27,18 @@ export default {
     data() {
         return {
             loginType: 'login',
-            loginTypes: ['login', 'register', 'email'],
+            loginTypes: ['login', 'register'],
             inputFs: [{
                 name: 'email',
                 type: 'email',
                 label: 'Email',
-                loginType: 'email',
+                loginType: 'login',
                 loginType2: 'register'
             }, {
                 name: 'username',
                 type: 'text',
                 label: 'Username',
-                loginType: 'login',
+                loginType: null,
                 loginType2: 'register'
             }, {
                 name: 'password',
@@ -52,17 +52,109 @@ export default {
                 label: 'Confirm Password',
                 loginType: 'register',
                 loginType2: null
-            }]
-
+            }],
+            email: 'test',
+            username: '',
+            password: '',
+            password2: '',
+            reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
+            url: ''
         }
     },
     methods: {
+        submit() {
+            console.log('submit')
+            if (this.loginType === 'login') {
+                this.login();
+            } else if (this.loginType === 'register') {
+                this.register();
+            } else if (this.loginType === 'email') {
+                this.FEmail();
+            }
+        },
+        register() {
+            console.log('register')
+            this.email = document.getElementById('email').value;
+            this.username = document.getElementById('username').value;
+            this.password = document.getElementById('password').value;
+            this.password2 = document.getElementById('password2').value;
+            if (this.reg.test(this.email)) {
+                console.log('valid email')
+            } else {
+                console.log('invalid email')
+                return false;
+            }
+            if (this.password === this.password2) {
+                console.log('passwords match')
+            } else {
+                console.log('passwords do not match')
+                return false;
+            } if (this.username.length > 3 && this.username.length < 16) {
+                console.log('username is valid')
+            } else {
+                console.log('username is invalid')
+                return false;
+            }
+            if (this.password.length > 3 && this.password.length < 16) {
+                console.log('password is valid')
+            } else {
+                console.log('password is invalid')
+                return false;
+            }
+            this.url = window.location.href.split(':8080')[0]
+
+            fetch(this.url + ':1290/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: this.email,
+                    username: this.username,
+                    password: this.password
+                })
+            }).then(res => res.json())
+                .then(data => {
+                    console.log(data)
+                })
+        },
+        login() {
+            this.email = document.getElementById('email').value;
+            this.password = document.getElementById('password').value;
+            if (this.reg.test(this.email)) {
+                console.log('valid email')
+            } else {
+                console.log('invalid email')
+                return false;
+            }
+            this.url = window.location.href.split(':8080')[0]
+            fetch(this.url + ':1290/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    login: this.email,
+                    password: this.password
+                })
+            }).then(res => res.json())
+                .then(data => {
+                    console.log(data)
+                    document.cookie = `token=${data.token}`
+                    document.cookie = `email=${data.username}`
+                    localStorage.setItem('token', data.token)
+                    localStorage.setItem('email', data.username)
+                    this.$emit('update')
+                    //move to select character page
+                    this.$router.push('/select-character')
+                })
+        }
     }
 }
 </script>
 
 <style scoped>
-form {
+.form {
     max-width: 420px;
     margin: 30px auto;
     background-color: #333;

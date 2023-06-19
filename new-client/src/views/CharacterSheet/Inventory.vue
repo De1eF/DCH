@@ -1,10 +1,10 @@
 <template>
     <div class="bg">
-        <h1>Inventory</h1>
-        <h2>Weight: {{ countWeight() }} lb.</h2>
+        <h1>Інвентар</h1>
+        <h2>Вага: {{ countWeight() }} lb.</h2>
         <div class="add">
-            <input class="input-item-name" v-model="newItemName" type="text" placeholder="Item Name">
-            <button class="add-button" @click="addItem">Add Item</button>
+            <input class="input-item-name" v-model="newItemName" type="text" placeholder="Назва предмету">
+            <button class="add-button" @click="addItem">Додати</button>
         </div>
         <ol class="inventory">
             <li class="item" v-for="item in inventory">
@@ -26,7 +26,7 @@ export default {
         return {
             newItemName: '',
             inventory: [
-                { itemName: 'Item 1', quantity: 1, weight: 1.00 },
+
             ]
         }
     },
@@ -52,7 +52,7 @@ export default {
 <style scoped>
 ol {
     color: white;
-    width: 400px;
+    width: 350px;
     margin: 0 0;
     list-style: none;
     height: 500px;
@@ -78,7 +78,7 @@ li {
 
 .inventory {
     padding: 0;
-    width: 400px;
+    width: 350px;
     margin: 0 25px;
     padding-right: 15px;
 }
@@ -92,18 +92,22 @@ li {
 }
 
 .item-name {
-    width: 200px;
-    flex-grow: 2;
+    width: 175px;
     display: inline-flex;
     align-items: center;
+    max-width: 200px;
+    overflow: hidden;
+    word-wrap: normal;
+    font-size: small;
+    margin-right: 10px;
 }
 
 .item-property {
     width: 50px;
     height: 30px;
     /*stick to right side*/
-    margin-right: 5px;
-    margin-left: auto;
+    margin-right: 0px;
+    margin-left: 0;
     background-color: #333;
     border: none;
     border-radius: 5px;
@@ -120,7 +124,7 @@ li {
 }
 
 .input-item-name {
-    width: 300px;
+    width: 250px;
     height: 30px;
     margin-right: 5px;
     margin-left: 0;
@@ -134,7 +138,7 @@ li {
 }
 
 .add {
-    width: 400px;
+    width: 350px;
     display: inline-flex;
     padding: 0;
     margin-bottom: 10px;
