@@ -1,4 +1,4 @@
-package budkevych.squareapi.security;
+package budkevych.squareapi.security.impl;
 
 import budkevych.squareapi.model.User;
 import budkevych.squareapi.service.UserService;

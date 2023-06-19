@@ -2,10 +2,9 @@ package budkevych.squareapi.service;
 
 import budkevych.squareapi.model.GameCharacter;
 import java.util.List;
-import java.util.Optional;
 
 public interface CharacterService {
-    Optional<GameCharacter> find(Long id, Short isDeleted);
+    GameCharacter find(Long id, Short isDeleted);
 
     List<GameCharacter> findAllByUserId(Long userId);
 

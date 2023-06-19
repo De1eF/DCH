@@ -4,14 +4,15 @@ import budkevych.squareapi.dto.mapper.GameCharacterMapper;
 import budkevych.squareapi.dto.request.GameCharacterRequestDto;
 import budkevych.squareapi.dto.response.GameCharacterResponseDto;
 import budkevych.squareapi.dto.response.TimestampResponseDto;
+import budkevych.squareapi.exception.NoAccessException;
 import budkevych.squareapi.model.GameCharacter;
 import budkevych.squareapi.model.User;
 import budkevych.squareapi.model.UserRole;
+import budkevych.squareapi.security.AuthenticationService;
 import budkevych.squareapi.service.CharacterService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,20 +35,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class GameCharacterController {
     private final CharacterService characterService;
     private final GameCharacterMapper mapper;
-    private final UserController userController;
+    private final AuthenticationService authenticationService;
 
     @GetMapping("/check-update/{id}")
     @CrossOrigin
     @Operation(summary = "checks if incoming object is up to date, returns new version if not")
     public ResponseEntity<?> getUpToDate(@PathVariable Long id,
                                          @RequestParam Long timestamp) {
-        Optional<GameCharacter> gameCharacterOptional = characterService.find(id, (short) 0);
-        if (gameCharacterOptional.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No such object id: " + id);
-        }
-        GameCharacter gameCharacter = gameCharacterOptional.get();
+        GameCharacter gameCharacter = characterService.find(id, (short) 0);
         TimestampResponseDto timestampResponseDto = new TimestampResponseDto();
         timestampResponseDto.setTimestamp(gameCharacter.getLastUpdate());
         if (!gameCharacter.getLastUpdate().equals(timestamp)) {
@@ -59,13 +54,7 @@ public class GameCharacterController {
     @GetMapping("{id}")
     @Operation(summary = "get character by id")
     public ResponseEntity<?> get(@PathVariable Long id) {
-        Optional<GameCharacter> gameCharacterOptional = characterService.find(id, (short) 0);
-        if (gameCharacterOptional.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No such object id: " + id);
-        }
-        GameCharacter gameCharacter = gameCharacterOptional.get();
+        GameCharacter gameCharacter = characterService.find(id, (short) 0);
         return ResponseEntity.ok(mapper.toDto(gameCharacter));
     }
 
@@ -88,7 +77,7 @@ public class GameCharacterController {
     public ResponseEntity<?> add(Authentication auth,
                                  @RequestBody @Valid GameCharacterRequestDto dto) {
         GameCharacter gameCharacter = mapper.toModel(dto);
-        User forUser = userController.getAuthenticated(auth);
+        User forUser = authenticationService.getAuthenticated(auth);
         if (characterService.countAllByUserId(forUser.getId()) >= 10) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
@@ -105,23 +94,8 @@ public class GameCharacterController {
     public ResponseEntity<?> update(Authentication auth,
                                     @PathVariable Long id,
                                     @RequestBody @Valid GameCharacterRequestDto dto) {
-        Optional<GameCharacter> gameCharacterOptional = characterService.find(id, (short) 0);
-        if (gameCharacterOptional.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No such object id: " + id);
-        }
-        GameCharacter gameCharacter = gameCharacterOptional.get();
-        User forUser = userController.getAuthenticated(auth);
-        if (!gameCharacter.getUserId().equals(forUser.getId())) {
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body("You can only access your own characters");
-        }
-        gameCharacter = mapper.toModel(dto);
-        gameCharacter.setUserId(dto.getUserId() == null
-                ? forUser.getId()
-                : dto.getUserId());
+        getAccessibleCharacter(auth, id);
+        GameCharacter gameCharacter = mapper.toModel(dto);
         return ResponseEntity
                 .ok(mapper.toDto(characterService.update(id, gameCharacter)));
     }
@@ -130,21 +104,7 @@ public class GameCharacterController {
     @Operation(summary = "soft delete character by id")
     public ResponseEntity<?> delete(Authentication auth,
                                     @PathVariable Long id) {
-        Optional<GameCharacter> gameCharacterOptional = characterService.find(id, (short) 0);
-        if (gameCharacterOptional.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("No such object id: " + id);
-        }
-        GameCharacter gameCharacter = gameCharacterOptional.get();
-        User user = userController.getAuthenticated(auth);
-        if (!gameCharacter.getUserId().equals(user.getId())
-            && user.getRoles().stream().noneMatch(
-                    userRole -> userRole.getRoleName().equals(UserRole.RoleName.ADMIN))) {
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body("You can only access your own characters");
-        }
+        GameCharacter gameCharacter = getAccessibleCharacter(auth, id);
         characterService.delete(id);
         return ResponseEntity
                 .ok()
@@ -158,5 +118,17 @@ public class GameCharacterController {
         return ResponseEntity
                 .ok()
                 .body("Object has been recover id: " + id);
+    }
+
+    private GameCharacter getAccessibleCharacter(Authentication auth,
+                                                 Long id) {
+        GameCharacter gameCharacter = characterService.find(id, (short) 0);
+        User user = authenticationService.getAuthenticated(auth);
+        if (!gameCharacter.getUserId().equals(user.getId())
+                && user.getRoles().stream().noneMatch(
+                    userRole -> userRole.getRoleName().equals(UserRole.RoleName.ADMIN))) {
+            throw new NoAccessException("You can only access your characters");
+        }
+        return gameCharacter;
     }
 }

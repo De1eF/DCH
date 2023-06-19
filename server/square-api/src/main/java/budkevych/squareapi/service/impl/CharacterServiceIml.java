@@ -1,11 +1,11 @@
 package budkevych.squareapi.service.impl;
 
+import budkevych.squareapi.exception.ResourceNotFoundException;
 import budkevych.squareapi.model.GameCharacter;
 import budkevych.squareapi.repository.GameCharacterRepository;
 import budkevych.squareapi.service.CharacterService;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +15,10 @@ public class CharacterServiceIml implements CharacterService {
     private final GameCharacterRepository gameCharacterRepository;
 
     @Override
-    public Optional<GameCharacter> find(Long id, Short isDeleted) throws NoSuchElementException {
-        return gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted);
+    public GameCharacter find(Long id, Short isDeleted) {
+        return gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Game character not found for id " + id));
     }
 
     @Override
@@ -43,16 +45,18 @@ public class CharacterServiceIml implements CharacterService {
     }
 
     @Override
-    public GameCharacter update(Long id, GameCharacter gameCharacter) {
-        gameCharacter.setId(id);
-        gameCharacter.setLastUpdate(System.currentTimeMillis());
-        return gameCharacterRepository.save(gameCharacter);
+    public GameCharacter update(Long id, GameCharacter gameCharacter)
+            throws NoSuchElementException {
+        GameCharacter oldGameCharacter = find(id, (short) 0);
+        oldGameCharacter.setName(gameCharacter.getName());
+        oldGameCharacter.setParamMap(gameCharacter.getParamMap());
+        oldGameCharacter.setLastUpdate(System.currentTimeMillis());
+        return gameCharacterRepository.save(oldGameCharacter);
     }
 
     @Override
-    public void delete(Long id) throws NoSuchElementException {
-        GameCharacter gameCharacter =
-                find(id, (short) 0).orElseThrow(NoSuchElementException::new);
+    public void delete(Long id) {
+        GameCharacter gameCharacter = find(id, (short) 0);
         gameCharacter.setIsDeleted((short) 1);
         save(gameCharacter);
     }
@@ -64,8 +68,7 @@ public class CharacterServiceIml implements CharacterService {
 
     @Override
     public GameCharacter recover(Long id) throws NoSuchElementException {
-        GameCharacter gameCharacter =
-                find(id, (short) 1).orElseThrow(NoSuchElementException::new);
+        GameCharacter gameCharacter = find(id, (short) 0);
         gameCharacter.setIsDeleted((short) 0);
         save(gameCharacter);
         return gameCharacter;

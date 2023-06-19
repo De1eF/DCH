@@ -4,6 +4,7 @@ import budkevych.squareapi.config.ConfigProperties;
 import budkevych.squareapi.dto.mapper.UserMapper;
 import budkevych.squareapi.dto.request.UserLoginRequestDto;
 import budkevych.squareapi.dto.request.UserRequestDto;
+import budkevych.squareapi.dto.response.LoginResponseDto;
 import budkevych.squareapi.dto.response.UserResponseDto;
 import budkevych.squareapi.exception.AuthenticationException;
 import budkevych.squareapi.model.User;
@@ -12,14 +13,9 @@ import budkevych.squareapi.security.jwt.JwtTokenProvider;
 import budkevych.squareapi.service.UserService;
 import budkevych.squareapi.service.impl.MailService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,58 +37,35 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     @CrossOrigin
-    @Operation(summary = "login as an existing user")
+    @Operation(summary = "login as an existing user with basic authentication")
     public ResponseEntity<?> login(@RequestBody @Valid UserLoginRequestDto userLoginDto) {
-        User user;
-        try {
-            user = authenticationService.login(userLoginDto.getLogin(),
-                    userLoginDto.getPassword());
-        } catch (AuthenticationException e) {
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body("Incorrect login or password");
-        }
+        User user = authenticationService.login(userLoginDto.getLogin(),
+                userLoginDto.getPassword());
         String token = jwtTokenProvider.createToken(user.getEmail(), user.getRoles().stream()
                 .map(role -> role.getRoleName().name())
                 .collect(Collectors.toList()));
-        Map<Object, Object> response = new HashMap<>();
-        response.put("login", userLoginDto.getLogin());
-        response.put("token", token);
+        LoginResponseDto response = new LoginResponseDto();
+        response.setEmail(userLoginDto.getLogin());
+        response.setToken(token);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login-email")
     @CrossOrigin
-    @Operation(summary = "login as an existing user")
-    public ResponseEntity<?> emailLogin(@RequestBody @Valid UserLoginRequestDto userLoginDto) {
-        User user;
-        try {
-            user = userService
-                    .findByEmail(userLoginDto.getLogin())
-                    .orElseThrow(NoSuchElementException::new);
-        } catch (NoSuchElementException e) {
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body("There is no such email in our database");
-        }
+    @Operation(summary = "login as an existing user with email confirmation only")
+    public ResponseEntity<?> emailOnlyLogin(@RequestBody @Valid UserLoginRequestDto userLoginDto) {
+        User user = userService
+                .findByEmail(userLoginDto.getLogin())
+                .orElseThrow(() -> new AuthenticationException("Unknown email"));
         String token = jwtTokenProvider.createToken(user.getEmail(), user.getRoles().stream()
                 .map(role -> role.getRoleName().name())
                 .collect(Collectors.toList()));
-        try {
-            mailService.sendEmail(
-                    userLoginDto.getLogin(),
-                    "Your one click authentication",
-                    "Click <a href='%s%s%s'>here</a> to authenticate"
-                            .formatted(configProperties.getAddress(), LOGIN_ENDPOINT, token)
-            );
-        } catch (MessagingException e) {
-            throw new RuntimeException("Unable to email to " + userLoginDto.getLogin(), e);
-        }
-
-        Map<Object, Object> response = new HashMap<>();
-        response.put("login", userLoginDto.getLogin());
-        response.put("token", token);
-        return ResponseEntity.ok(response);
+        mailService.sendEmail(
+                userLoginDto.getLogin(),
+                "Your one click authentication",
+                "Click <a href='%s%s%s'>here</a> to authenticate"
+                        .formatted(configProperties.getAddress(), LOGIN_ENDPOINT, token));
+        return ResponseEntity.ok("Check your email " + userLoginDto.getLogin());
     }
 
     @PostMapping("/register")

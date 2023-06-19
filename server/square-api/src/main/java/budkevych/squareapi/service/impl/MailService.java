@@ -1,8 +1,8 @@
 package budkevych.squareapi.service.impl;
 
+import budkevych.squareapi.config.JavaMailServiceImpl;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import java.util.Properties;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -11,35 +11,27 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class MailService {
-    private static final String MAIL_HOST = "smtp.gmail.com";
-    private static final String MAIL_USERNAME = "horyzont.auth@gmail.com";
-    private static final String MAIL_APP_PASSWORD = "ehpfpjpgwjkuvehh";
+
+    private final JavaMailServiceImpl javaMailServiceImpl;
 
     public void sendEmail(String toEmail,
                           String subject,
-                          String body) throws MessagingException {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+                          String body) {
+        JavaMailSenderImpl mailSender = javaMailServiceImpl.mailSender();
 
-        mailSender.setHost(MAIL_HOST);
-        mailSender.setPort(587);
-        mailSender.setUsername(MAIL_USERNAME);
-        mailSender.setPassword(MAIL_APP_PASSWORD);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            message.setContent(body, "text/html; charset=utf-8");
+            MimeMessageHelper helper = new MimeMessageHelper(message);
 
-        Properties mailProperties = new Properties();
-        mailProperties.setProperty("mail.smtp.auth", "true");
-        mailProperties.setProperty("mail.smtp.starttls.enable", "true");
+            helper.setFrom(mailSender.getUsername());
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
 
-        mailSender.setJavaMailProperties(mailProperties);
-
-        MimeMessage message = mailSender.createMimeMessage();
-        message.setContent(body, "text/html; charset=utf-8");
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-
-        helper.setFrom(MAIL_USERNAME);
-        helper.setTo(toEmail);
-        helper.setSubject(subject);
-
-        mailSender.send(message);
-        System.out.println("Email has been sent to " + toEmail);
+            mailSender.send(message);
+            System.out.println("Email has been sent to " + toEmail);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to message " + toEmail, e);
+        }
     }
 }

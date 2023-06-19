@@ -1,9 +1,9 @@
 package budkevych.squareapi.service.impl;
 
+import budkevych.squareapi.exception.ResourceNotFoundException;
 import budkevych.squareapi.model.User;
 import budkevych.squareapi.repository.UserRepository;
 import budkevych.squareapi.service.UserService;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,22 +19,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findByUsername(String username) {
-        return userRepository.findAllByUsername(username);
-    }
-
-    @Override
     public Optional<User> findByEmail(String email) {
         return userRepository.findUserByEmail(email);
     }
 
     @Override
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "User not found for id " + id));
     }
 
     @Override
-    public void update(User user) {
+    public void update(Long id, User user) {
+        user.setId(id);
+
         userRepository.save(user);
     }
 }
