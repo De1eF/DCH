@@ -20,7 +20,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

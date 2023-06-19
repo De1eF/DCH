@@ -43,12 +43,11 @@ public class UserController {
     @Operation(summary = "update logged in user's data")
     public UserResponseDto update(Authentication auth, @RequestBody UserRequestDto requestDto) {
         User authenticatedUser = authenticationService.getAuthenticated(auth);
-        User user = User.builder()
-                .email(requestDto.getEmail())
-                .username(requestDto.getUsername())
-                .password(passwordEncoder.encode(requestDto.getPassword()))
-                .roles(authenticatedUser.getRoles())
-                .build();
+        User user = new User();
+        user.setEmail(requestDto.getEmail());
+        user.setUsername(requestDto.getUsername());
+        user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        user.setRoles(authenticatedUser.getRoles());
         userService.update(authenticatedUser.getId(), user);
         return userMapper.mapToDto(user);
     }
