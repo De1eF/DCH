@@ -8,7 +8,8 @@
                 <input class="prof-checkbox" type="checkbox" v-model="skill.prof"
                     @click="sendSkills(skill.name, skill.prof)">
                 <span class="modifier">
-                    {{ Math.floor((10 - 10) / 2) + (skill.prof ? proficiency_bonus : 0) }}
+                    {{ Math.floor((abilitySet[skillsAbility[skill.name]] - 10) / 2) + (skill.prof ? proficiency_bonus : 0)
+                    }}
                 </span>
             </li>
         </ol>
@@ -102,7 +103,7 @@ export default {
             },
             proficiency_bonus: 0,
             timer: null,
-            returnSkills: {}
+            returnSkills: {},
         }
     },
     methods: {

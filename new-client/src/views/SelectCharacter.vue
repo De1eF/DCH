@@ -86,7 +86,25 @@ export default {
                 },
                 body: JSON.stringify({
                     name: name,
-                    paramMap: {}
+                    paramMap: {
+                        inventory1: [],
+                        skills: {},
+                        abillityScores: {
+                            "Strength": 10,
+                            "Dexterity": 10,
+                            "Constitution": 10,
+                            "Intelligence": 10,
+                            "Wisdom": 10,
+                            "Charisma": 10
+                        }, "abilitiesProficiency": {
+                            "Strength": false,
+                            "Dexterity": false,
+                            "Constitution": false,
+                            "Intelligence": false,
+                            "Wisdom": true,
+                            "Charisma": true
+                        }
+                    }
                 })
             }).then(res => res.json())
                 .then(data => {

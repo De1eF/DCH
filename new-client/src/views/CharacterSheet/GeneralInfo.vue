@@ -3,39 +3,39 @@
         <h1>Загальна інформація</h1>
         <div class="line">
             <span class="line-title">Ім'я:</span>
-            <input type="text" class="line-input" placeholder="Ім'я персонажа" v-model="character.name">
+            <input @input="sendInfo" type="text" class="line-input" placeholder="Ім'я персонажа" v-model="character.name">
         </div>
         <div class="line">
             <span class="line-title">Раса:</span>
-            <select v-model="character.race" class="line-input">
-                <option v-for="race in races">{{ racesName[race] }}</option>
+            <select @change="sendInfo" v-model="character.race" class="line-input">
+                <option v-for="race in races" :value="race">{{ racesName[race] }}</option>
             </select>
         </div>
         <div class="line">
             <span class="line-title">Клас:</span>
-            <select v-model="character.class" class="line-input">
-                <option v-for="Class in classes">{{ classesName[Class] }}</option>
+            <select @change="sendInfo" v-model="character.class" class="line-input">
+                <option v-for="Class in classes" :value="Class">{{ classesName[Class] }}</option>
             </select>
         </div>
         <div class="line">
             <span class="line-title long">Рівень: {{ level }}</span>
             <span class="line-title long">Досвід:</span>
-            <input @change="levelCalulate" @click="levelCalulate" type="number" class="line-input num medium"
-                placeholder="0" v-model="character.xp">
+            <input @input="levelCalulate" @click="levelCalulate" type="number" class="line-input num medium" placeholder="0"
+                v-model="character.xp">
         </div>
         <div class="line">
             <span class="line-title v-long ">Бонус майстерності: {{ proficiencyBonus }}</span>
         </div>
         <div class="line">
             <span class="line-title">Походження:</span>
-            <select v-model="character.background" class="line-input">
-                <option v-for="background in backgrounds">{{ backgroundsName[background] }}</option>
+            <select @change="sendInfo" v-model="character.background" class="line-input">
+                <option v-for="background in backgrounds" :value="background">{{ backgroundsName[background] }}</option>
             </select>
         </div>
         <div class="line">
             <span class="line-title">Світогляд:</span>
-            <select v-model="character.alignment" class="line-input">
-                <option v-for="alignment in alignments">{{ alignmentsName[alignment] }}</option>
+            <select @change="sendInfo" v-model="character.alignment" class="line-input">
+                <option v-for="alignment in alignments" :value="alignment">{{ alignmentsName[alignment] }}</option>
             </select>
         </div>
         <h2>Характеристики</h2>
@@ -44,8 +44,10 @@
                 <span class="line-title long">{{ abilitiesName[ability] }} : {{ Math.floor((character.abilities[ability] -
                     10) / 2)
                 }}</span>
-                <input type="number" class="line-input num short" placeholder="0" v-model="character.abilities[ability]">
-                <input class="prof-checkbox" type="checkbox" v-model="character.abilitiesProficiency[ability]">
+                <input @input="sendInfo" type="number" class="line-input num short" placeholder="0"
+                    v-model="character.abilities[ability]" maxlength="2">
+                <input @input="toggle(character.abilitiesProficiency[ability])" class="prof-checkbox" type="checkbox"
+                    v-model="character.abilitiesProficiency[ability]">
                 <span class="line-title long">РК : {{ Math.floor((character.abilities[ability] -
                     10) / 2) + (character.abilitiesProficiency[ability] ? proficiencyBonus : 0)
                 }}</span>
@@ -209,7 +211,8 @@ export default {
             level: 0,
             levels: [
                 0, 300, 900, 2700, 6500, 14000, 23000, 34000, 48000, 64000, 85000, 100000, 120000, 140000, 165000, 195000, 225000, 265000, 305000, 355000
-            ], proficiencyBonus: 0
+            ], proficiencyBonus: 0,
+            timer: null,
         }
     },
     methods: {
@@ -227,7 +230,25 @@ export default {
                 this.character.level = 20;
                 this.proficiencyBonus = 6;
             }
+            this.sendInfo();
 
+        },
+        sendInfo() {
+            this.$emit('sendInfo', this.character);
+        },
+        toggle(item) {
+            item = !item;
+            this.update();
+        },
+        update() {
+            this.character.name = this.characterIn.name;
+            this.character.xp = this.characterIn.paramMap.experience;
+            this.character.race = this.characterIn.paramMap.race;
+            this.character.class = this.characterIn.paramMap.class;
+            this.character.background = this.characterIn.paramMap.background;
+            this.character.alignment = this.characterIn.paramMap.alignment;
+            this.character.abilities = this.characterIn.paramMap.abillityScores;
+            this.character.abilitiesProficiency = this.characterIn.paramMap.abilitiesProficiency;
         }
 
     },
@@ -235,7 +256,13 @@ export default {
         this.character.name = this.characterIn.name;
         this.levelCalulate();
         console.log(this.characterIn);
+        this.timer = setInterval(() => {
+            this.update()
+        }, 100)
     },
+    beforeDestroy() {
+        clearInterval(this.timer)
+    }
 }
 </script>
 

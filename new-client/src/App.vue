@@ -53,7 +53,7 @@ html {
 nav {
   height: 50px;
   margin: 0;
-  background-image: linear-gradient(to right, #42b983, #66bb6a);
+  background-image: linear-gradient(to right, rgb(237, 34, 36), rgb(243, 91, 34), rgb(249, 150, 33), rgb(245, 193, 30), rgb(241, 235, 27) 27%, rgb(241, 235, 27), rgb(241, 235, 27) 33%, rgb(99, 199, 32), rgb(12, 155, 73), rgb(33, 135, 141), rgb(57, 84, 165), rgb(97, 55, 155), rgb(147, 40, 142));
   display: flex;
   align-items: center;
   justify-content: center;
