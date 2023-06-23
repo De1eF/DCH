@@ -21,19 +21,24 @@
 
 <script>
 export default {
+    props: {
+        inventorySet: Array,
+    },
+
     name: 'Inventory',
     data() {
         return {
             newItemName: '',
             inventory: [
-
-            ]
+            ],
+            timer: null
         }
     },
     methods: {
         addItem() {
             this.inventory.push({ itemName: this.newItemName, quantity: 1, weight: 0 });
             this.newItemName = '';
+            this.saveInventory();
         }, countWeight() {
             let totalWeight = 0;
             for (let i = 0; i < this.inventory.length; i++) {
@@ -44,7 +49,23 @@ export default {
             if (item.quantity == 0) {
                 this.inventory.splice(this.inventory.indexOf(item), 1);
             }
+            this.saveInventory();
+        }, saveInventory() {
+
+            this.$emit('sendInventory', this.inventory);
+        }, update() {
+            if (this.inventorySet) {
+                this.inventory = this.inventorySet;
+            }
         }
+    },
+    mounted() {
+        this.timer = setInterval(() => {
+            this.update()
+        }, 100)
+    },
+    beforeDestroy() {
+        clearInterval(this.timer)
     }
 }
 </script>

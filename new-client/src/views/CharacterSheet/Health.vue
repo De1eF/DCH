@@ -2,19 +2,19 @@
     <div class="bg">
         <div class="line">
             <span class="line-title v-long">ХП:</span>
-            <input type="number" class="line-input num short" v-model="character.hp">
+            <input @change="sendHealth" type="number" class="line-input num short" v-model="character.hp">
             <span class="line-title short">/</span>
-            <input type="number" class="line-input num short" v-model="character.maxhp">
+            <input @change="sendHealth" type="number" class="line-input num short" v-model="character.maxhp">
         </div>
         <div class="line">
             <span class="line-title v-long">Додаткове ХП:</span>
-            <input type="number" class="line-input short num" v-model="character.bonusHp">
+            <input @change="sendHealth" type="number" class="line-input short num" v-model="character.bonusHp">
         </div>
         <div class="line">
             <span class="line-title v-long">Кубик хп:</span>
             <span class="line-title long"></span>
             <span class="line-title short"> d</span>
-            <input type="number" class="line-input short num" v-model="character.hitDice">
+            <input @change="sendHealth" type="number" class="line-input short num" v-model="character.hitDice">
         </div>
         <div class="line">
             <span class="line-title v-long">Рятівні кидки від смерті:</span>
@@ -22,52 +22,53 @@
         </div>
         <div class="line">
             <span class="line-title medium">Успіхи:</span>
-            <input type="checkbox" class="prof-checkbox" v-model="character.deathSavesSuccess[0]">
-            <input type="checkbox" class="prof-checkbox" v-model="character.deathSavesSuccess[1]">
-            <input type="checkbox" class="prof-checkbox" v-model="character.deathSavesSuccess[2]">
+            <input @change="sendHealth" type="checkbox" class="prof-checkbox" v-model="character.deathSavesSuccess[0]">
+            <input @change="sendHealth" type="checkbox" class="prof-checkbox" v-model="character.deathSavesSuccess[1]">
+            <input @change="sendHealth" type="checkbox" class="prof-checkbox" v-model="character.deathSavesSuccess[2]">
             <span class="line-title medium"></span>
         </div>
         <div class="line">
             <span class="line-title medium">Невдачі:</span>
-            <input type="checkbox" class="prof-checkbox" v-model="character.deathSavesFail[0]">
-            <input type="checkbox" class="prof-checkbox" v-model="character.deathSavesFail[1]">
-            <input type="checkbox" class="prof-checkbox" v-model="character.deathSavesFail[2]">
+            <input @change="sendHealth" type="checkbox" class="prof-checkbox" v-model="character.deathSavesFail[0]">
+            <input @change="sendHealth" type="checkbox" class="prof-checkbox" v-model="character.deathSavesFail[1]">
+            <input @change="sendHealth" type="checkbox" class="prof-checkbox" v-model="character.deathSavesFail[2]">
             <span class="line-title medium"></span>
         </div>
         <div class="line">
             <span class="line-title v-long">Клас броні:</span>
-            <input type="number" class="line-input short num" v-model="character.armorClass">
+            <input @change="sendHealth" type="number" class="line-input short num" v-model="character.armorClass">
             <span class="line-title long">Ініціатива:</span>
-            <input type="number" class="line-input short num" v-model="character.initiative">
+            <input @change="sendHealth" type="number" class="line-input short num" v-model="character.initiative">
         </div>
         <div class="line">
             <span class="line-title medium">Швидкість:</span>
-            <input type="number" class="line-input short num" v-model="character.speed">
+            <input @change="sendHealth" type="number" class="line-input short num" v-model="character.speed">
             <span class="line-title medium">Натхнення:</span>
-            <input type="checkbox" class="prof-checkbox" v-model="character.inspiration">
+            <input @change="sendHealth" type="checkbox" class="prof-checkbox" v-model="character.inspiration">
             <span class="line-title v-short"></span>
         </div>
         <div class="line">
             <span class="line-title v-long">Пасивна мудрість:</span>
-            <span class="line-title medium">{{ calculatePassiveWisdom() }}</span>
+            <span class="line-title medium">{{ passiveWisdom }}</span>
         </div>
         <div class="line">
             <span class="line-title v-long">Гроші:</span>
             <span class="line-title short">ММ:</span>
-            <input type="number" class="line-input short num" v-model="character.coins.cp">
+            <input @change="sendHealth" type="number" class="line-input short num" v-model="character.coins.cp">
             <span class="line-title short">СМ:</span>
-            <input type="number" class="line-input short num" v-model="character.coins.sp">
+            <input @change="sendHealth" type="number" class="line-input short num" v-model="character.coins.sp">
         </div>
         <div class="line">
             <span class="line-title short">ЕМ:</span>
-            <input type="number" class="line-input short num" v-model="character.coins.ep">
+            <input @change="sendHealth" type="number" class="line-input short num" v-model="character.coins.ep">
             <span class="line-title short">ЗМ:</span>
-            <input type="number" class="line-input short num" v-model="character.coins.gp">
+            <input @change="sendHealth" type="number" class="line-input short num" v-model="character.coins.gp">
             <span class="line-title short">ПМ:</span>
-            <input type="number" class="line-input short num" v-model="character.coins.pp">
+            <input @change="sendHealth" type="number" class="line-input short num" v-model="character.coins.pp">
         </div>
         <div class="add">
-            <input class="input-item-name" v-model="addNewSkill" type="text" placeholder="Назва навички">
+            <input @change="sendHealth" class="input-item-name" v-model="addNewSkill" type="text"
+                placeholder="Назва навички">
             <button class="add-button" @click="addSkill">Додати</button>
         </div>
         <ol class="inventory">
@@ -90,7 +91,6 @@ export default {
     data() {
         return {
             character: {
-                name: '',
                 race: '',
                 class: '',
                 xp: 0,
@@ -132,6 +132,7 @@ export default {
                 additionalSkills: [
                     { skillname: "Дварфська витривалість", quantity: false },
                 ],
+
             },
             abilities: [
                 "Strength",
@@ -256,6 +257,8 @@ export default {
                 0, 300, 900, 2700, 6500, 14000, 23000, 34000, 48000, 64000, 85000, 100000, 120000, 140000, 165000, 195000, 225000, 265000, 305000, 355000
             ], proficiencyBonus: 0,
             addNewSkill: "",
+            timer: null,
+            passiveWisdom: 0,
         }
     },
     methods: {
@@ -276,24 +279,53 @@ export default {
 
         },
         calculatePassiveWisdom() {
-            return this.character.passiveWisdom = 10 + Math.floor((this.character.Wisdom - 10) / 2) + this.character.abilitiesProficiency.Wisdom ? this.character.proficiencyBonus : 0;
+            this.passiveWisdom = 10 + Math.floor((this.character.abillityScores.Wisdom - 10) / 2) + (this.character.abilitiesProficiency.Wisdom ? this.character.proficiencyBonus : 0);
         },
         deleteItem(item) {
-
             this.character.additionalSkills.splice(this.character.additionalSkills.indexOf(item), 1);
-
         },
         addSkill() {
             this.character.additionalSkills.push({
                 skillname: this.addNewSkill,
             });
         },
+        update() {
+            this.character = this.characterIn;
+            if (this.character.deathSavesSuccess == null) {
+                this.character.deathSavesSuccess = [false, false, false];
+
+            }
+            if (this.character.deathSavesFail == null) {
+                this.character.deathSavesFail = [false, false, false];
+            }
+            this.character.coins = this.characterIn.coins || {
+                copper: 0,
+                silver: 0,
+                electrum: 0,
+                gold: 0,
+                platinum: 0
+            };
+            if (this.character.additionalSkills == null) {
+                this.character.additionalSkills = [];
+            }
+            this.character.proficiencyBonus = this.characterIn.proficiencyBonus || 2;
+            console.log(this.character);
+            console.log(this.character.abillityScores.Wisdom);
+            this.calculatePassiveWisdom();
+        }, sendHealth() {
+            this.$emit('sendHealth', this.character)
+        }
 
     },
     mounted() {
-        this.character.name = this.characterIn.name;
         this.levelCalulate();
+        this.timer = setInterval(() => {
+            this.update()
+        }, 100)
     },
+    beforeDestroy() {
+        clearInterval(this.timer)
+    }
 }
 </script>
 
