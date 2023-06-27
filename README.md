@@ -1,6 +1,6 @@
 # DCH
 D&D Character Helper
-<br> A web application that helps organize, create, and manage characters for tabletop role-playing games. Comes with fully fletched front-end built with VUE and a robust REST API
+<br> A web application that helps organize, create, and manage characters for tabletop role-playing games. Comes with a fully fletched front-end built with VUE and a robust REST API.
 <br> <h2>Features</h2>
 
 <ul dir="auto">
