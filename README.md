@@ -1,5 +1,5 @@
-# DCS
-D&D Character sheet
+# DCH
+D&D Character Helper
 <br> A web application that helps organize, create, and manage characters for tabletop role-playing games.
 <br> <h2>Features</h2>
 
