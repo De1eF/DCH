@@ -25,3 +25,10 @@ D&D Character sheet
 <li>VUE / JavaScript (v3)
    </li>
  </ul>
+ <li>Authors (v3.1.0)
+   </li>
+<li><a href="https://github.com/De1eF">DeleF</a> (v5.2.1)
+   </li>
+   <li><a href="https://github.com/maxduh">Maxduh</a> (v5.2.1)
+   </li>
+ </ul>
