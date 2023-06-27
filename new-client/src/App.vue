@@ -4,7 +4,8 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
       <router-link to="/select-character" v-if="token">Select Character</router-link><span v-if="token">|</span>
-      <router-link to="/login">Login</router-link>
+      <router-link to="/login" v-if="token">{{ username }}</router-link>
+      <router-link to="/login" v-else>Login</router-link>
     </nav>
   </Transition>
   <router-view @update="update" />
@@ -20,7 +21,8 @@ export default {
   data() {
     return {
       showNavBar: true,
-      token: localStorage.getItem("token")
+      token: localStorage.getItem("token"),
+      username: localStorage.getItem("username")
     };
   },
   methods: {
@@ -29,8 +31,18 @@ export default {
     },
     update() {
       this.token = localStorage.getItem("token");
-    }
+      this.username = localStorage.getItem("username")
+
+    },
+  }, mounted() {
+    this.timer = setInterval(() => {
+      this.update()
+    }, 100)
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
   }
+
 };
 </script>
 

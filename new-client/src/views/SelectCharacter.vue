@@ -3,7 +3,6 @@
     </CreateCharacter>
     <div class="bg">
         <h1>Select Character</h1>
-        <h2>Username: {{ username }}</h2>
         <ol>
             <li v-for="character in characters">
                 <h2>{{ character.name }}</h2>
@@ -49,15 +48,13 @@ export default {
                 }
             }).then(res => res.json())
                 .then(data => {
-                    console.log(data)
                     this.username = data.username
+                    localStorage.setItem("username", this.username)
                     this.id = data.id
                     this.getCharacterList()
                 })
         },
         getCharacterList() {
-            console.log(this.id)
-            console.log(this.token)
             this.url = window.location.href.split(':8080')[0]
             fetch(this.url + ':1290/characters/for-user/' + this.id, {
                 method: 'GET',
@@ -68,14 +65,12 @@ export default {
                 }
             }).then(res => res.json())
                 .then(data => {
-                    console.log(data)
                     this.characters = data
                 })
 
         },
         createCharacter(name) {
             this.showCreation = false
-            console.log('create character' + name)
             this.url = window.location.href.split(':8080')[0]
             fetch(this.url + ':1290/characters', {
                 method: 'POST',
@@ -108,7 +103,6 @@ export default {
                 })
             }).then(res => res.json())
                 .then(data => {
-                    console.log(data)
                     this.getCharacterList();
                     this.$forceUpdate();
                 }

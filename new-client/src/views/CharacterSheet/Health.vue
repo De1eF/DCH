@@ -309,8 +309,6 @@ export default {
                 this.character.additionalSkills = [];
             }
             this.character.proficiencyBonus = this.characterIn.proficiencyBonus || 2;
-            console.log(this.character);
-            console.log(this.character.abillityScores.Wisdom);
             this.calculatePassiveWisdom();
         }, sendHealth() {
             this.$emit('sendHealth', this.character)
@@ -336,6 +334,13 @@ ol {
     padding: 0;
 }
 
+.bg {
+    width: 400px;
+    height: 100%;
+    margin: auto 0 auto 0;
+    padding: auto;
+}
+
 input {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -344,12 +349,7 @@ input {
     outline: none;
 }
 
-.bg {
-    width: 400px;
-    height: 100%;
-    margin: auto 0 auto 0;
-    padding: auto;
-}
+
 
 .line {
     width: 400px;
