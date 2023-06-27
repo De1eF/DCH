@@ -25,7 +25,7 @@ D&D Character sheet
 <li>VUE / JavaScript (v3)
    </li>
  </ul>
- <li>Authors (v3.1.0)
+<br> <h2>Authors</h2>
    </li>
 <li><a href="https://github.com/De1eF">DeleF</a> (v5.2.1)
    </li>
