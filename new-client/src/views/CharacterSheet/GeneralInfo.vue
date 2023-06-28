@@ -255,7 +255,6 @@ export default {
     mounted() {
         this.character.name = this.characterIn.name;
         this.levelCalulate();
-        console.log(this.characterIn);
         this.timer = setInterval(() => {
             this.update()
         }, 100)

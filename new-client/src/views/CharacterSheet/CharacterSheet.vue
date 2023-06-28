@@ -14,6 +14,10 @@
                 :proficiency_bonusSet="calculateProficiencyBonus(character.paramMap.experience)"
                 :abilitySet="character.paramMap.abillityScores"></Skills>
         </div>
+        <div class="panel">
+            <AdditionalInfo @sendInventory="sendAdditionalInfo" :paramMap="character.paramMap"></AdditionalInfo>
+        </div>
+
     </div>
 </template>
 
@@ -23,6 +27,8 @@ import Inventory from './Inventory.vue'
 import Skills from './Skills.vue'
 import GeneralInfo from './GeneralInfo.vue'
 import Health from './Health.vue'
+import AdditionalInfo from './AdditionalInfo.vue'
+
 export default {
     name: 'CharacterSheet',
     data() {
@@ -61,7 +67,8 @@ export default {
         Inventory,
         Skills,
         GeneralInfo,
-        Health
+        Health,
+        AdditionalInfo
     }, methods: {
         getCharacter() {
             this.token = localStorage.getItem('token')
@@ -122,9 +129,6 @@ export default {
                 })
                     .then(response => response.json())
                     .then(data => {
-                        console.log('update')
-                        console.log(this.timestamp)
-                        console.log(data.timestamp)
                         if (this.timestamp != data.timestamp) {
                             localStorage.setItem('timestamp', data.timestamp)
                             this.getCharacter()
@@ -176,6 +180,9 @@ export default {
             this.character.paramMap.coins = health.coins
             this.character.paramMap.armorClass = health.armorClass
             this.character.paramMap.additionalSkills = health.additionalSkills
+            this.sendChanges()
+        }, sendAdditionalInfo(out) {
+            this.character.paramMap.Traits = out
             this.sendChanges()
         },
         calculateProficiencyBonus(ex) {

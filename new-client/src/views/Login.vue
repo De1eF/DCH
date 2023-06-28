@@ -63,7 +63,6 @@ export default {
     },
     methods: {
         submit() {
-            console.log('submit')
             if (this.loginType === 'login') {
                 this.login();
             } else if (this.loginType === 'register') {
@@ -73,7 +72,6 @@ export default {
             }
         },
         register() {
-            console.log('register')
             this.email = document.getElementById('email').value;
             this.username = document.getElementById('username').value;
             this.password = document.getElementById('password').value;
@@ -144,8 +142,8 @@ export default {
                     document.cookie = `email=${data.username}`
                     localStorage.setItem('token', data.token)
                     localStorage.setItem('email', data.username)
+                    localStorage.setItem('username', "nousername")
                     this.$emit('update')
-                    //move to select character page
                     this.$router.push('/select-character')
                 })
         }

@@ -1,6 +1,6 @@
-# DCS
-D&D Character sheet
-<br> A web application that helps organize, create, and manage characters for tabletop role-playing games.
+# DCH
+D&D Character Helper
+<br> A web application that helps organize, create, and manage characters for tabletop role-playing games. Comes with a fully fletched front-end built with VUE and a robust REST API.
 <br> <h2>Features</h2>
 
 <ul dir="auto">
@@ -23,5 +23,12 @@ D&D Character sheet
 <li>MySQL (v8.0.24)
    </li>
 <li>VUE / JavaScript (v3)
+   </li>
+ </ul>
+<br> <h2>Authors</h2>
+   </li>
+<li><a href="https://github.com/De1eF">DeleF</a> (v5.2.1)
+   </li>
+   <li><a href="https://github.com/maxduh">Maxduh</a> (v5.2.1)
    </li>
  </ul>
