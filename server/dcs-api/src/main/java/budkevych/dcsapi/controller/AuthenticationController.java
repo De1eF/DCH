@@ -27,8 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RequiredArgsConstructor
 public class AuthenticationController {
-    private static final String LOGIN_ENDPOINT =
-            "/login-email.html?token=";
     private static final String MAIL_HTML =
             "server/dcs-api/src/main/resources/mail/mailAuthentication.html";
 
@@ -69,7 +67,7 @@ public class AuthenticationController {
                 userLoginDto.getLogin(),
                 "Your one click authentication",
                 fileService.readAll(MAIL_HTML)
-                        .formatted(configProperties.getAddress(), LOGIN_ENDPOINT, token));
+                        .formatted(configProperties.getAddress(), token));
         return ResponseEntity.ok("Check your email " + userLoginDto.getLogin());
     }
 
