@@ -2,18 +2,35 @@
     <h1>{{ loginType }}</h1>
     <div class="form">
         <label for="loginType">Login Type</label>
-        <select v-model="loginType">
+        <select @change="changeType" v-model="loginType">
             <option v-for="lType in loginTypes">{{ lType }}</option>
         </select>
         <br>
-        <div v-for="inputF in inputFs" class="input-group">
-            <Transition class="fade">
-                <div v-if="loginType === inputF.loginType || loginType === inputF.loginType2" class="input-group-prepend">
-                    <label :for="inputF.name">{{ inputF.label }}</label>
-                    <input :type="inputF.type" :name="inputF.name" :id="inputF.name" required>
-                </div>
-            </Transition>
-        </div>
+        <Transition class="fade">
+            <div v-if="showEmail" class="input-group-prepend">
+                <label :for="email">email</label>
+                <input type="email" :name="email" v-model="email" required>
+            </div>
+        </Transition>
+        <Transition class="fade">
+            <div v-if="showUsername" class="input-group-prepend">
+                <label :for="username">username</label>
+                <input type="text" :name="username" v-model="username" required>
+            </div>
+        </Transition>
+        <Transition class="fade">
+            <div v-if="showPassword" class="input-group-prepend">
+                <label :for="password">password</label>
+                <input type="password" :name="password" v-model="password" required>
+            </div>
+        </Transition>
+        <Transition class="fade">
+            <div v-if="showPassword2" class="input-group-prepend">
+                <label :for="password2">repeat password</label>
+                <input type="password" :name="password2" v-model="password2" required>
+            </div>
+        </Transition>
+
         <button @click="submit">Submit</button>
     </div>
 </template>
@@ -26,34 +43,14 @@ export default {
     },
     data() {
         return {
+            showEmail: false,
+            showUsername: false,
+            showPassword: false,
+            showPassword2: false,
             loginType: 'login',
-            loginTypes: ['login', 'register'],
-            inputFs: [{
-                name: 'email',
-                type: 'email',
-                label: 'Email',
-                loginType: 'login',
-                loginType2: 'register'
-            }, {
-                name: 'username',
-                type: 'text',
-                label: 'Username',
-                loginType: null,
-                loginType2: 'register'
-            }, {
-                name: 'password',
-                type: 'password',
-                label: 'Password',
-                loginType: 'login',
-                loginType2: 'register'
-            }, {
-                name: 'password2',
-                type: 'password',
-                label: 'Confirm Password',
-                loginType: 'register',
-                loginType2: null
-            }],
-            email: 'test',
+            loginTypes: ['login', 'register', "email"],
+
+            email: '',
             username: '',
             password: '',
             password2: '',
@@ -70,12 +67,25 @@ export default {
             } else if (this.loginType === 'email') {
                 this.FEmail();
             }
+        }, changeType() {
+            if (this.loginType === 'login') {
+                this.showEmail = true;
+                this.showPassword = true;
+                this.showUsername = false;
+                this.showPassword2 = false;
+            } else if (this.loginType === 'register') {
+                this.showEmail = true;
+                this.showPassword = true;
+                this.showUsername = true;
+                this.showPassword2 = true;
+            } else if (this.loginType === 'email') {
+                this.showEmail = true;
+                this.showPassword = false;
+                this.showUsername = false;
+                this.showPassword2 = false;
+            }
         },
         register() {
-            this.email = document.getElementById('email').value;
-            this.username = document.getElementById('username').value;
-            this.password = document.getElementById('password').value;
-            this.password2 = document.getElementById('password2').value;
             if (this.reg.test(this.email)) {
                 console.log('valid email')
             } else {
@@ -87,7 +97,7 @@ export default {
             } else {
                 console.log('passwords do not match')
                 return false;
-            } if (this.username.length > 3 && this.username.length < 16) {
+            } if (this.username.length > 4 && this.username.length < 16) {
                 console.log('username is valid')
             } else {
                 console.log('username is invalid')
@@ -114,11 +124,11 @@ export default {
             }).then(res => res.json())
                 .then(data => {
                     console.log(data)
+                    this.loginType = 'login'
+                    this.changeType()
                 })
         },
         login() {
-            this.email = document.getElementById('email').value;
-            this.password = document.getElementById('password').value;
             if (this.reg.test(this.email)) {
                 console.log('valid email')
             } else {
@@ -126,6 +136,7 @@ export default {
                 return false;
             }
             this.url = window.location.href.split(':8080')[0]
+            console.log(this.email, this.password)
             fetch(this.url + ':1290/login', {
                 method: 'POST',
                 headers: {
@@ -146,7 +157,33 @@ export default {
                     this.$emit('update')
                     this.$router.push('/select-character')
                 })
+        },
+        FEmail() {
+            if (this.reg.test(this.email)) {
+                console.log('valid email')
+            } else {
+                console.log('invalid email')
+                return false;
+            }
+            this.url = window.location.href.split(':8080')[0]
+            fetch(this.url + ':1290/login-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: this.email
+                })
+            }).then(res => res.json())
+                .then(data => {
+                    console.log(data)
+                    this.loginType = 'login'
+                    this.changeType()
+                }
+                )
         }
+    }, mounted() {
+        this.changeType()
     }
 }
 </script>
