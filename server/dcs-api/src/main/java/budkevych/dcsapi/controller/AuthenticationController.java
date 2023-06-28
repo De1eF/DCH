@@ -10,6 +10,7 @@ import budkevych.dcsapi.exception.AuthenticationException;
 import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.security.AuthenticationService;
 import budkevych.dcsapi.security.jwt.JwtTokenProvider;
+import budkevych.dcsapi.service.FileService;
 import budkevych.dcsapi.service.UserService;
 import budkevych.dcsapi.service.impl.MailService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RequiredArgsConstructor
 public class AuthenticationController {
-    private static final String LOGIN_ENDPOINT = "/login-email.html?token=";
+    private static final String LOGIN_ENDPOINT =
+            "/login-email.html?token=";
+    private static final String MAIL_HTML =
+            "server/dcs-api/src/main/resources/mail/mailAuthentication.html";
 
     private final ConfigProperties configProperties;
     private final AuthenticationService authenticationService;
@@ -34,6 +38,7 @@ public class AuthenticationController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserMapper userMapper;
     private final MailService mailService;
+    private final FileService fileService;
 
     @PostMapping("/login")
     @CrossOrigin
@@ -63,7 +68,7 @@ public class AuthenticationController {
         mailService.sendEmail(
                 userLoginDto.getLogin(),
                 "Your one click authentication",
-                "Click <a href='%s%s%s'>here</a> to authenticate"
+                fileService.readAll(MAIL_HTML)
                         .formatted(configProperties.getAddress(), LOGIN_ENDPOINT, token));
         return ResponseEntity.ok("Check your email " + userLoginDto.getLogin());
     }
