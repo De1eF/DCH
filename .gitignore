@@ -11,4 +11,4 @@ wrong-new-client/public/index.html
 wrong-new-client/src/App.vue
 wrong-new-client/src/main.js
 wrong-new-client/src/assets/logo.png
-server/square-api/src/main/resources/application.properties
+server/dcs-api/src/main/resources/application.properties
