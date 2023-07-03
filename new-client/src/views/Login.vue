@@ -166,21 +166,21 @@ export default {
                 return false;
             }
             this.url = window.location.href.split(':8080')[0]
+            console.log(this.email)
             fetch(this.url + ':1290/login-email', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    email: this.email
+                    login: this.email
                 })
-            }).then(res => res.json())
+            }).then(res => res)
                 .then(data => {
                     console.log(data)
                     this.loginType = 'login'
                     this.changeType()
-                }
-                )
+                })
         }
     }, mounted() {
         this.changeType()
