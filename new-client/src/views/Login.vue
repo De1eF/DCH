@@ -1,6 +1,6 @@
 <template>
     <h1>{{ loginType }}</h1>
-    <div class="form">
+    <div v-if="logedIn" class="form">
         <label for="loginType">Login Type</label>
         <select @change="changeType" v-model="loginType">
             <option v-for="lType in loginTypes">{{ lType }}</option>
@@ -32,6 +32,10 @@
         </Transition>
 
         <button @click="submit">Submit</button>
+
+    </div>
+    <div v-else class="form">
+        <button @click="logout">Logout</button>
     </div>
 </template>
 
@@ -43,6 +47,7 @@ export default {
     },
     data() {
         return {
+            logedIn: false,
             showEmail: false,
             showUsername: false,
             showPassword: false,
@@ -59,6 +64,10 @@ export default {
         }
     },
     methods: {
+        checkIflogedIn() {
+            console.log(localStorage.getItem('token'))
+            this.logedIn = localStorage.getItem('token') == null;
+        },
         submit() {
             if (this.loginType === 'login') {
                 this.login();
@@ -68,6 +77,7 @@ export default {
                 this.FEmail();
             }
         }, changeType() {
+            this.checkIflogedIn();
             if (this.loginType === 'login') {
                 this.showEmail = true;
                 this.showPassword = true;
@@ -146,17 +156,25 @@ export default {
                     login: this.email,
                     password: this.password
                 })
-            }).then(res => res.json())
-                .then(data => {
-                    console.log(data)
-                    document.cookie = `token=${data.token}`
-                    document.cookie = `email=${data.username}`
-                    localStorage.setItem('token', data.token)
-                    localStorage.setItem('email', data.username)
-                    localStorage.setItem('username', "nousername")
-                    this.$emit('update')
-                    this.$router.push('/select-character')
-                })
+            }).then(res => {
+                if (res.status === 400) {
+                    alert('Invalid credentials')
+                    return;
+                }
+                return res.json();
+            }).then(data => {
+                if (!data) {
+                    return;
+                }
+                console.log(data)
+                document.cookie = `token=${data.token}`
+                document.cookie = `email=${data.username}`
+                localStorage.setItem('token', data.token)
+                localStorage.setItem('email', data.username)
+                localStorage.setItem('username', "nousername")
+                this.$emit('update')
+                this.$router.push('/select-character')
+            })
         },
         FEmail() {
             if (this.reg.test(this.email)) {
@@ -175,12 +193,14 @@ export default {
                 body: JSON.stringify({
                     login: this.email
                 })
-            }).then(res => res)
-                .then(data => {
-                    console.log(data)
-                    this.loginType = 'login'
-                    this.changeType()
-                })
+            })
+        },
+        logout() {
+            localStorage.removeItem('token')
+            localStorage.removeItem('email')
+            localStorage.removeItem('username')
+            this.$emit('update')
+            this.changeType()
         }
     }, mounted() {
         this.changeType()

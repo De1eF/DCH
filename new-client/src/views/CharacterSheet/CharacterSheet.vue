@@ -210,7 +210,7 @@ export default {
         this.getCharacter()
         this.timer = setInterval(() => {
             this.update()
-        }, 100)
+        }, 500)
     },
     beforeDestroy() {
         clearInterval(this.timer)

@@ -69,7 +69,7 @@
         <div class="add">
             <input @change="sendHealth" class="input-item-name" v-model="addNewSkill" type="text"
                 placeholder="Назва навички">
-            <button class="add-button" @click="addSkill">Додати</button>
+            <button :disabled="addNewSkill.length < 1" class="add-button" @click="addSkill">Додати</button>
         </div>
         <ol class="inventory">
             <li class="item" v-for="item in character.additionalSkills">

@@ -105,6 +105,8 @@ export default {
                 .then(data => {
                     this.getCharacterList();
                     this.$forceUpdate();
+                    this.$emit('update')
+                    this.$router.push('/character-sheet/' + data.id)
                 }
                 )
 
