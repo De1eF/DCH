@@ -5,6 +5,7 @@ import Login from '../views/Login.vue'
 import CharacterSheet from '../views/CharacterSheet/CharacterSheet.vue'
 import NotFound from '../views/NotFound.vue'
 import SelectCharacter from '../views/SelectCharacter.vue'
+import LoginEmail from '../views/LoginEmail.vue'
 
 const routes = [
   {
@@ -35,6 +36,11 @@ const routes = [
     path: '/select-character',
     name: 'select-character',
     component: SelectCharacter
+  },
+  {
+    path: '/login-email',
+    name: 'login-email',
+    component: LoginEmail
   },
   // 404
   {
