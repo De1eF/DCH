@@ -68,7 +68,7 @@ public class AuthenticationController {
                 "Your one click authentication",
                 fileService.readAll(MAIL_HTML)
                         .formatted(configProperties.getAddress(), token));
-        return ResponseEntity.ok(new Object());
+        return ResponseEntity.ok("{}");
     }
 
     @PostMapping("/register")

@@ -3,6 +3,7 @@ package budkevych.dcsapi.dto.mapper;
 import budkevych.dcsapi.dto.request.GameCharacterRequestDto;
 import budkevych.dcsapi.dto.response.GameCharacterResponseDto;
 import budkevych.dcsapi.model.GameCharacter;
+import budkevych.dcsapi.model.ParamMap;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
@@ -19,7 +20,9 @@ public class GameCharacterMapper {
         dto.setUserId(character.getUserId());
         dto.setName(character.getName());
         try {
-            dto.setParamMap(objectMapper.readValue(character.getParamMap(), HashMap.class));
+            dto.setParamMap(objectMapper.readValue(
+                    character.getParamMap().getData(),
+                    HashMap.class));
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Unable to parse paramMap to json ", e);
         }
@@ -31,7 +34,9 @@ public class GameCharacterMapper {
         gameCharacter.setName(dto.getName());
         gameCharacter.setIsDeleted((short) 0);
         try {
-            gameCharacter.setParamMap(objectMapper.writeValueAsString(dto.getParamMap()));
+            ParamMap paramMap = new ParamMap();
+            paramMap.setData(objectMapper.writeValueAsString(dto.getParamMap()));
+            gameCharacter.setParamMap(paramMap);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Unable to parse paramMap from json ", e);
         }

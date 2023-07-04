@@ -6,6 +6,7 @@ import budkevych.dcsapi.dto.response.GameCharacterResponseDto;
 import budkevych.dcsapi.dto.response.TimestampResponseDto;
 import budkevych.dcsapi.exception.NoAccessException;
 import budkevych.dcsapi.model.GameCharacter;
+import budkevych.dcsapi.model.ParamMap;
 import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.model.UserRole;
 import budkevych.dcsapi.security.AuthenticationService;
@@ -63,7 +64,11 @@ public class GameCharacterController {
     public List<GameCharacterResponseDto> getForUser(@PathVariable("user-id") Long userId) {
         List<GameCharacter> gameCharacterList =
                 characterService.findAllByUserId(userId);
-        gameCharacterList.forEach(d -> d.setParamMap("{}"));
+        gameCharacterList.forEach(d -> {
+            ParamMap paramMap = new ParamMap();
+            paramMap.setData("{}");
+            d.setParamMap(paramMap);
+        });
         return gameCharacterList
                 .stream()
                 .map(mapper::toDto)
@@ -73,7 +78,7 @@ public class GameCharacterController {
 
     @PostMapping()
     @Operation(summary = "save object to db \n "
-            + "can't create more than 10 ")
+            + "can't create more than 10")
     public ResponseEntity<?> add(Authentication auth,
                                  @RequestBody @Valid GameCharacterRequestDto dto) {
         GameCharacter gameCharacter = mapper.toModel(dto);
@@ -107,8 +112,7 @@ public class GameCharacterController {
         GameCharacter gameCharacter = getAccessibleCharacter(auth, id);
         characterService.delete(id);
         return ResponseEntity
-                .ok()
-                .body(gameCharacter.getName() + " has been deleted");
+                .ok("{}");
     }
 
     @GetMapping("/recover/{id}")
@@ -116,8 +120,7 @@ public class GameCharacterController {
     public ResponseEntity<?> recover(@PathVariable Long id) {
         characterService.recover(id);
         return ResponseEntity
-                .ok()
-                .body("Object has been recover id: " + id);
+                .ok("{}");
     }
 
     private GameCharacter getAccessibleCharacter(Authentication auth,

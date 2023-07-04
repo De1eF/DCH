@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset andrew:create-user-roles-table splitStatements:true endDelimiter:;
+--changeset budkevych:create-users-roles-table splitStatements:true endDelimiter:;
 
 CREATE TABLE IF NOT EXISTS users_roles (
     id BIGINT AUTO_INCREMENT primary key NOT NULL,

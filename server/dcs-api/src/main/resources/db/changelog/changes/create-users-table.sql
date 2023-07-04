@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset andrew:create-users-table splitStatements:true endDelimiter:;
+--changeset budkevych:create-users-table splitStatements:true endDelimiter:;
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
