@@ -73,7 +73,7 @@
         </div>
         <ol class="inventory">
             <li class="item" v-for="item in character.additionalSkills">
-                <span class="item-name">{{ item.skillname }}</span>
+                <input @input="sendHealth" class="item-name" v-model="item.skillname">
                 <button @click="deleteItem(item)" class="delete">X</button>
             </li>
         </ol>
@@ -494,6 +494,9 @@ li {
     word-wrap: normal;
     font-size: small;
     margin-right: 10px;
+    background-color: #444;
+    border: none;
+    color: white;
 }
 
 

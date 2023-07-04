@@ -6,8 +6,9 @@
         <ol>
             <li v-for="character in characters">
                 <h2>{{ character.name }}</h2>
-                <h3>Level: {{ character.level }}</h3>
+                <h3>Level: {{ character.level }}; Id: {{ character.id }}</h3>
                 <router-link class="play-button" :to="'/character-sheet/' + character.id">Play</router-link>
+                <button class="play-button" @click="deleteCharacter(character.id)">Delete</button>
             </li>
             <li class="new">
                 <button class="play-button new-button" @click="showCreation = true">Create Character</button>
@@ -67,6 +68,24 @@ export default {
                 .then(data => {
                     this.characters = data
                 })
+
+        },
+        deleteCharacter(id) {
+            fetch(this.url + ':1290/characters/' + id, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.token,
+                    'Access-Control-Allow-Origin': '*'
+                },
+            }).then(res => res.json())
+                .then(data => {
+                    this.getCharacterList()
+                    this.$emit('update')
+                    this.$forceUpdate()
+
+                })
+
 
         },
         createCharacter(name) {

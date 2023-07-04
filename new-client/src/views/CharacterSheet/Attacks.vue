@@ -1,6 +1,6 @@
 <template>
     <div class="bg">
-        <h1>Додаткова інформація</h1>
+        <h1>Атаки та закляття</h1>
         <div class="add">
             <input class="input-item-name" v-model="newItemName" type="text" placeholder="Назва предмету">
             <button :disabled="newItemName.length < 1" class="add-button" @click="addItem">Додати</button>
@@ -21,7 +21,7 @@ export default {
         paramMap: Object,
     },
 
-    name: 'AdditionalInfo',
+    name: 'Attacks',
     data() {
         return {
             newItemName: '',
@@ -40,8 +40,8 @@ export default {
             this.OutMap.splice(this.OutMap.indexOf(item), 1);
         },
         update() {
-            if (this.paramMap.Traits) {
-                this.OutMap = this.paramMap.Traits;
+            if (this.paramMap.Attacks) {
+                this.OutMap = this.paramMap.Attacks;
             }
         }
     },
