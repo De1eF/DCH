@@ -8,7 +8,7 @@
         </div>
         <ol class="inventory">
             <li class="item" v-for="item in inventory">
-                <span class="item-name">{{ item.itemName }}</span>
+                <input @input="saveInventory" contentEditable="true" v-model="item.itemName" class="item-name">
                 <input @change="deleteIfZero(item)" class="item-property" v-model="item.quantity" type="number">
                 <span class="lb"></span>
                 <input @change="countWeight" class="item-property" v-model="item.weight" type="number">
@@ -121,6 +121,9 @@ li {
     word-wrap: normal;
     font-size: small;
     margin-right: 10px;
+    background-color: #444;
+    border: none;
+    color: white;
 }
 
 .item-property {

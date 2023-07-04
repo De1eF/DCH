@@ -4,15 +4,18 @@
             <GeneralInfo @sendInfo="saveInfo" :characterIn="character"></GeneralInfo>
         </div>
         <div class="panel">
-            <Health @sendHealth="saveHealth" :characterIn="character.paramMap"></Health>
-        </div>
-        <div class="panel">
-            <Inventory @sendInventory="saveInventory" :inventorySet="character.paramMap.inventory1"></Inventory>
-        </div>
-        <div class="panel">
             <Skills @sendSkills="saveSkills" :skillsSet="character.paramMap.skills"
                 :proficiency_bonusSet="calculateProficiencyBonus(character.paramMap.experience)"
                 :abilitySet="character.paramMap.abillityScores"></Skills>
+        </div>
+        <div class="panel">
+            <Health @sendHealth="saveHealth" :characterIn="character.paramMap"></Health>
+        </div>
+        <div class="panel">
+            <Attacks @sendInventory="saveAttacks" :paramMap="character.paramMap"></Attacks>
+        </div>
+        <div class="panel">
+            <Inventory @sendInventory="saveInventory" :inventorySet="character.paramMap.inventory1"></Inventory>
         </div>
         <div class="panel">
             <AdditionalInfo @sendInventory="sendAdditionalInfo" :paramMap="character.paramMap"></AdditionalInfo>
@@ -28,6 +31,7 @@ import Skills from './Skills.vue'
 import GeneralInfo from './GeneralInfo.vue'
 import Health from './Health.vue'
 import AdditionalInfo from './AdditionalInfo.vue'
+import Attacks from './Attacks.vue'
 
 export default {
     name: 'CharacterSheet',
@@ -68,7 +72,8 @@ export default {
         Skills,
         GeneralInfo,
         Health,
-        AdditionalInfo
+        AdditionalInfo,
+        Attacks
     }, methods: {
         getCharacter() {
             this.token = localStorage.getItem('token')
@@ -183,6 +188,10 @@ export default {
             this.sendChanges()
         }, sendAdditionalInfo(out) {
             this.character.paramMap.Traits = out
+            this.sendChanges()
+        },
+        saveAttacks(out) {
+            this.character.paramMap.Attacks = out
             this.sendChanges()
         },
         calculateProficiencyBonus(ex) {
