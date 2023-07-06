@@ -1,5 +1,6 @@
 package budkevych.dcsapi.security.impl;
 
+import budkevych.dcsapi.exception.AlreadyExistsException;
 import budkevych.dcsapi.exception.AuthenticationException;
 import budkevych.dcsapi.exception.ResourceNotFoundException;
 import budkevych.dcsapi.model.User;
@@ -23,6 +24,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public User register(String email, String username, String password) {
+        if (userService.findByEmail(email).isPresent()) {
+            throw new AlreadyExistsException("User already exists");
+        }
         User user = new User();
         user.setEmail(email);
         user.setUsername(username);
@@ -32,7 +36,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public User login(String email, String password) throws AuthenticationException {
+    public User login(String email, String password) {
         Optional<User> userFromDb = userService.findByEmail(email);
         if (userFromDb.isEmpty()
                 || !passwordEncoder.matches(password, userFromDb.get().getPassword())) {
