@@ -7,7 +7,6 @@ import budkevych.dcsapi.dto.response.GameCharacterResponseDto;
 import budkevych.dcsapi.dto.response.TimestampResponseDto;
 import budkevych.dcsapi.exception.NoAccessException;
 import budkevych.dcsapi.model.GameCharacter;
-import budkevych.dcsapi.model.ParamMap;
 import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.model.UserRole;
 import budkevych.dcsapi.security.AuthenticationService;
