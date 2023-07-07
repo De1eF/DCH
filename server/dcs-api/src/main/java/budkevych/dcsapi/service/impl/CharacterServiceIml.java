@@ -2,10 +2,12 @@ package budkevych.dcsapi.service.impl;
 
 import budkevych.dcsapi.exception.ResourceNotFoundException;
 import budkevych.dcsapi.model.GameCharacter;
+import budkevych.dcsapi.model.ParamMap;
 import budkevych.dcsapi.repository.GameCharacterRepository;
 import budkevych.dcsapi.service.CharacterService;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +24,26 @@ public class CharacterServiceIml implements CharacterService {
     }
 
     @Override
-    public List<GameCharacter> findAllByUserId(Long userId) {
-        return gameCharacterRepository.findAllByUserIdAndIsDeleted(userId, (short) 0);
+    public List<GameCharacter> findAllByUserId(Long userId, boolean loadParamMap) {
+        if (loadParamMap) {
+            return gameCharacterRepository.findAllByUserIdAndIsDeleted(userId, (short) 0);
+        }
+        return gameCharacterRepository
+                .findAllByUserIdAndIsDeletedNotLoadingParamMap(userId, (short) 0)
+                .stream()
+                .map(o -> {
+                    GameCharacter gameCharacter = new GameCharacter();
+                    gameCharacter.setId((Long) o[0]);
+                    gameCharacter.setLastUpdate((Long) o[1]);
+                    gameCharacter.setUserId((Long) o[2]);
+                    gameCharacter.setName((String) o[3]);
+                    gameCharacter.setIsDeleted((Short) o[4]);
+                    ParamMap paramMap = new ParamMap();
+                    paramMap.setData("{}");
+                    gameCharacter.setParamMap(paramMap);
+                    return gameCharacter;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
