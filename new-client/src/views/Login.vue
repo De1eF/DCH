@@ -30,7 +30,11 @@
                 <input type="password" :name="password2" v-model="password2" required>
             </div>
         </Transition>
-
+        <Transition class="fade">
+            <div v-if="showError" class="input-group-prepend">
+                <label class="red">*{{ error }}</label>
+            </div>
+        </Transition>
         <button @click="submit">Submit</button>
 
     </div>
@@ -60,7 +64,10 @@ export default {
             password: '',
             password2: '',
             reg: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
-            url: ''
+            url: '',
+
+            showError: false,
+            error: ''
         }
     },
     methods: {
@@ -99,26 +106,31 @@ export default {
             if (this.reg.test(this.email)) {
                 console.log('valid email')
             } else {
-                console.log('invalid email')
+                this.error = 'invalid email'
+                this.showError = true;
                 return false;
             }
             if (this.password === this.password2) {
                 console.log('passwords match')
             } else {
-                console.log('passwords do not match')
+                this.error = 'passwords do not match'
+                this.showError = true;
                 return false;
             } if (this.username.length > 4 && this.username.length < 16) {
                 console.log('username is valid')
             } else {
-                console.log('username is invalid')
+                this.error = 'username is invalid'
+                this.showError = true;
                 return false;
             }
             if (this.password.length > 3 && this.password.length < 16) {
                 console.log('password is valid')
             } else {
-                console.log('password is invalid')
+                this.error = 'password is invalid'
+                this.showError = true;
                 return false;
             }
+            this.showError = false;
             this.url = window.location.href.split(':8080')[0]
 
             fetch(this.url + ':1290/register', {
@@ -142,9 +154,11 @@ export default {
             if (this.reg.test(this.email)) {
                 console.log('valid email')
             } else {
-                console.log('invalid email')
+                this.error = 'invalid email'
+                this.showError = true;
                 return false;
             }
+            this.showError = false;
             this.url = window.location.href.split(':8080')[0]
             console.log(this.email, this.password)
             fetch(this.url + ':1290/login', {
@@ -158,7 +172,8 @@ export default {
                 })
             }).then(res => {
                 if (res.status === 400) {
-                    alert('Invalid credentials')
+                    this.error = 'invalid email or password'
+                    this.showError = true;
                     return;
                 }
                 return res.json();
@@ -166,6 +181,7 @@ export default {
                 if (!data) {
                     return;
                 }
+                this.showError = false;
                 console.log(data)
                 document.cookie = `token=${data.token}`
                 document.cookie = `email=${data.username}`
@@ -174,15 +190,18 @@ export default {
                 localStorage.setItem('username', "nousername")
                 this.$emit('update')
                 this.$router.push('/select-character')
+
             })
         },
         FEmail() {
             if (this.reg.test(this.email)) {
                 console.log('valid email')
             } else {
-                console.log('invalid email')
+                this.error = 'invalid email'
+                this.showError = true;
                 return false;
             }
+            this.showError = false;
             this.url = window.location.href.split(':8080')[0]
             console.log(this.email)
             fetch(this.url + ':1290/login-email', {
@@ -276,6 +295,10 @@ h1 {
 .v-leave-to {
     transform: scale(1, 0);
     margin: 0 0 -100px 0;
+}
+
+.red {
+    color: red;
 }
 </style>
 
