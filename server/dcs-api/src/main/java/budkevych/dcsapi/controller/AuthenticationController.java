@@ -20,8 +20,10 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -40,7 +42,6 @@ public class AuthenticationController {
     private final FileService fileService;
 
     @PostMapping("/login")
-    @CrossOrigin
     @Operation(summary = "login as an existing user with basic authentication")
     public ResponseEntity<?> login(@RequestBody @Valid UserLoginRequestDto userLoginDto) {
         User user = authenticationService.login(userLoginDto.getLogin(),
@@ -55,7 +56,6 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login-email")
-    @CrossOrigin
     @Operation(summary = "login as an existing user with email confirmation only")
     public ResponseEntity<?> emailOnlyLogin(@RequestBody @Valid UserLoginRequestDto userLoginDto) {
         User user = userService
@@ -71,6 +71,15 @@ public class AuthenticationController {
                         .formatted(configProperties.getAddress(), token));
         return ResponseEntity
                 .ok(ActionResponseDto.builder().message("Email sent"));
+    }
+
+    @GetMapping("/check-token")
+    @Operation(summary = "Check if JWT is expired")
+    public ResponseEntity<?> checkToken(@RequestParam String token) {
+        return ResponseEntity.ok().body(ActionResponseDto
+                .builder()
+                .message(jwtTokenProvider.validateToken(token) ? "Valid" : "Invalid")
+                .build());
     }
 
     @PostMapping("/register")

@@ -63,6 +63,9 @@ public class SecurityConfig {
                                 .requestMatchers("/login-email")
                                 .permitAll()
 
+                                .requestMatchers("/check-token")
+                                .permitAll()
+
                                 .requestMatchers("/swagger-ui/**")
                                 .permitAll()
 
