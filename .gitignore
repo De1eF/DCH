@@ -13,3 +13,5 @@ wrong-new-client/src/main.js
 wrong-new-client/src/assets/logo.png
 server/dcs-api/src/main/resources/application.properties
 server/dcs-api/src/main/resources/db/liquibase.properties
+server/dcs-api/src/main/resources/application.properties
+server/dcs-api/src/main/resources/db/liquibase.properties
