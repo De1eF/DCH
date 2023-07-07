@@ -1,6 +1,6 @@
 package budkevych.dcsapi.exception;
 
-import budkevych.dcsapi.dto.response.ExceptionResponseDto;
+import budkevych.dcsapi.dto.response.ActionResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,17 +12,27 @@ public class ControllerExceptionHandler {
             ResourceNotFoundException.class,
             AlreadyExistsException.class})
     ResponseEntity<?> handleBadRequest(Throwable exception) {
-        ExceptionResponseDto exceptionResponseDto = new ExceptionResponseDto();
-        exceptionResponseDto.setMessage(exception.getMessage());
-        exceptionResponseDto.setException(exception.getClass().getName());
-        return ResponseEntity.badRequest().body(exceptionResponseDto);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ActionResponseDto
+                        .builder()
+                        .message("Bad request, An exception has occurred, "
+                                + exception.getClass().getName()
+                                + "has been thrown with message "
+                                + exception.getMessage())
+                        .build());
     }
 
     @ExceptionHandler(NoAccessException.class)
     ResponseEntity<?> handleNotAuthorized(Throwable exception) {
-        ExceptionResponseDto exceptionResponseDto = new ExceptionResponseDto();
-        exceptionResponseDto.setMessage(exception.getMessage());
-        exceptionResponseDto.setException(exception.getClass().getName());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponseDto);
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ActionResponseDto
+                        .builder()
+                        .message("Not authorized, An exception has occurred, "
+                                + exception.getClass().getName()
+                                + "has been thrown with message "
+                                + exception.getMessage())
+                        .build());
     }
 }

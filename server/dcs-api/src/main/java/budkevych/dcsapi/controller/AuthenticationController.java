@@ -4,6 +4,7 @@ import budkevych.dcsapi.config.ConfigProperties;
 import budkevych.dcsapi.dto.mapper.UserMapper;
 import budkevych.dcsapi.dto.request.UserLoginRequestDto;
 import budkevych.dcsapi.dto.request.UserRequestDto;
+import budkevych.dcsapi.dto.response.ActionResponseDto;
 import budkevych.dcsapi.dto.response.LoginResponseDto;
 import budkevych.dcsapi.dto.response.UserResponseDto;
 import budkevych.dcsapi.exception.AuthenticationException;
@@ -68,7 +69,8 @@ public class AuthenticationController {
                 "Your one click authentication",
                 fileService.readAll(MAIL_HTML)
                         .formatted(configProperties.getAddress(), token));
-        return ResponseEntity.ok("{}");
+        return ResponseEntity
+                .ok(ActionResponseDto.builder().message("Email sent"));
     }
 
     @PostMapping("/register")

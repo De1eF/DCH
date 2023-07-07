@@ -2,6 +2,7 @@ package budkevych.dcsapi.controller;
 
 import budkevych.dcsapi.dto.mapper.GameSessionMapper;
 import budkevych.dcsapi.dto.request.GameSessionRequestDto;
+import budkevych.dcsapi.dto.response.ActionResponseDto;
 import budkevych.dcsapi.dto.response.GameSessionResponseDto;
 import budkevych.dcsapi.dto.response.TimestampResponseDto;
 import budkevych.dcsapi.exception.NoAccessException;
@@ -101,12 +102,12 @@ public class GameSessionController {
 
     @DeleteMapping("{id}")
     @Operation(summary = "end session by id")
-    public ResponseEntity<?> delete(Authentication auth,
-                                    @PathVariable Long id) {
+    public ResponseEntity<?> close(Authentication auth,
+                                   @PathVariable Long id) {
         GameSession gameSession = getAccessibleSessions(auth, id);
         gameSessionService.permanentDelete(id);
         return ResponseEntity
-                .ok("{}");
+                .ok(ActionResponseDto.builder().message("Session closed"));
     }
 
     private GameSession getAccessibleSessions(Authentication auth,

@@ -2,6 +2,7 @@ package budkevych.dcsapi.controller;
 
 import budkevych.dcsapi.dto.mapper.GameCharacterMapper;
 import budkevych.dcsapi.dto.request.GameCharacterRequestDto;
+import budkevych.dcsapi.dto.response.ActionResponseDto;
 import budkevych.dcsapi.dto.response.GameCharacterResponseDto;
 import budkevych.dcsapi.dto.response.TimestampResponseDto;
 import budkevych.dcsapi.exception.NoAccessException;
@@ -63,12 +64,12 @@ public class GameCharacterController {
     @Operation(summary = "get all characters of specific user")
     public List<GameCharacterResponseDto> getForUser(@PathVariable("user-id") Long userId) {
         List<GameCharacter> gameCharacterList =
-                characterService.findAllByUserId(userId);
-        gameCharacterList.forEach(d -> {
+                characterService.findAllByUserId(userId, false);
+        /*gameCharacterList.forEach(d -> {
             ParamMap paramMap = new ParamMap();
             paramMap.setData("{}");
             d.setParamMap(paramMap);
-        });
+        });*/
         return gameCharacterList
                 .stream()
                 .map(mapper::toDto)
@@ -109,10 +110,10 @@ public class GameCharacterController {
     @Operation(summary = "soft delete character by id")
     public ResponseEntity<?> delete(Authentication auth,
                                     @PathVariable Long id) {
-        GameCharacter gameCharacter = getAccessibleCharacter(auth, id);
+        getAccessibleCharacter(auth, id);
         characterService.delete(id);
         return ResponseEntity
-                .ok("{}");
+                .ok(ActionResponseDto.builder().message("Character deleted"));
     }
 
     @GetMapping("/recover/{id}")
@@ -120,7 +121,7 @@ public class GameCharacterController {
     public ResponseEntity<?> recover(@PathVariable Long id) {
         characterService.recover(id);
         return ResponseEntity
-                .ok("{}");
+                .ok(ActionResponseDto.builder().message("Character recovered"));
     }
 
     private GameCharacter getAccessibleCharacter(Authentication auth,
