@@ -1,5 +1,6 @@
 package budkevych.dcsapi.config;
 
+import budkevych.dcsapi.exception.ControllerExceptionHandler;
 import budkevych.dcsapi.security.jwt.JwtTokenFilter;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +31,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtTokenFilter jwtTokenFilter;
     private final ConfigProperties addressProvider;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public AuthenticationManager authenticationManager(
@@ -44,7 +46,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
+        http
                 .headers(headers ->
                         headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .cors(AbstractHttpConfigurer::disable)
@@ -63,14 +65,14 @@ public class SecurityConfig {
                                 .requestMatchers("/login-email")
                                 .permitAll()
 
-                                .requestMatchers("/check-token")
-                                .permitAll()
-
                                 .requestMatchers("/swagger-ui/**")
                                 .permitAll()
 
                                 .requestMatchers("/swagger-ui")
                                 .permitAll()
+
+                                .requestMatchers("/check-token")
+                                .hasAnyRole("USER", "ADMIN")
 
                                 .requestMatchers(HttpMethod.GET, "/users/me")
                                 .hasAnyRole("USER", "ADMIN")
@@ -103,9 +105,10 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
-                .userDetailsService(userDetailsService)
-                .build();
+                .exceptionHandling(eh -> eh.authenticationEntryPoint(authenticationEntryPoint))
+                .addFilterAt(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .userDetailsService(userDetailsService);
+        return http.build();
     }
 
     @Bean

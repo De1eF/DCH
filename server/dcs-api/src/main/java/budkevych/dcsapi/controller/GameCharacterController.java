@@ -43,7 +43,7 @@ public class GameCharacterController {
     @Operation(summary = "checks if incoming object is up to date, returns new version if not")
     public ResponseEntity<?> getUpToDate(@PathVariable Long id,
                                          @RequestParam Long timestamp) {
-        GameCharacter gameCharacter = characterService.find(id, (short) 0);
+        GameCharacter gameCharacter = characterService.find(id, (short) 0, false);
         TimestampResponseDto timestampResponseDto = new TimestampResponseDto();
         timestampResponseDto.setTimestamp(gameCharacter.getLastUpdate());
         if (!gameCharacter.getLastUpdate().equals(timestamp)) {
@@ -55,7 +55,7 @@ public class GameCharacterController {
     @GetMapping("{id}")
     @Operation(summary = "get character by id")
     public ResponseEntity<?> get(@PathVariable Long id) {
-        GameCharacter gameCharacter = characterService.find(id, (short) 0);
+        GameCharacter gameCharacter = characterService.find(id, (short) 0, true);
         return ResponseEntity.ok(mapper.toDto(gameCharacter));
     }
 
@@ -107,7 +107,7 @@ public class GameCharacterController {
         getAccessibleCharacter(auth, id);
         characterService.delete(id);
         return ResponseEntity
-                .ok(ActionResponseDto.builder().message("Character deleted"));
+                .ok(ActionResponseDto.builder().message("Character deleted").build());
     }
 
     @GetMapping("/recover/{id}")
@@ -115,12 +115,12 @@ public class GameCharacterController {
     public ResponseEntity<?> recover(@PathVariable Long id) {
         characterService.recover(id);
         return ResponseEntity
-                .ok(ActionResponseDto.builder().message("Character recovered"));
+                .ok(ActionResponseDto.builder().message("Character recovered").build());
     }
 
     private GameCharacter getAccessibleCharacter(Authentication auth,
                                                  Long id) {
-        GameCharacter gameCharacter = characterService.find(id, (short) 0);
+        GameCharacter gameCharacter = characterService.find(id, (short) 0, false);
         User user = authenticationService.getAuthenticated(auth);
         if (!gameCharacter.getUserId().equals(user.getId())
                 && user.getRoles().stream().noneMatch(

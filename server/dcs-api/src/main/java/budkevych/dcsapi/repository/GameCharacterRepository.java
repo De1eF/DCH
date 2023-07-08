@@ -23,6 +23,19 @@ public interface GameCharacterRepository extends JpaRepository<GameCharacter, Lo
             Long userId,
             Short isDeleted);
 
+    @Query("SELECT c.id,"
+            + " c.lastUpdate,"
+            + " c.userId,"
+            + " c.name,"
+            + " c.isDeleted"
+            + " FROM GameCharacter c "
+            + " WHERE c.isDeleted = :isDeleted"
+            + " AND c.id = :id")
+    Optional<?> findByIdAndIsDeletedNotLoadingParamMap(
+            Long id,
+            Short isDeleted
+    );
+
     Long countAllByUserId(Long userId);
 
     List<GameCharacter> findAllByIsDeleted(Short isDeleted);

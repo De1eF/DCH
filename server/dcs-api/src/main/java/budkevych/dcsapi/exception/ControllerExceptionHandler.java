@@ -1,39 +1,37 @@
 package budkevych.dcsapi.exception;
 
-import budkevych.dcsapi.dto.response.ActionResponseDto;
+import budkevych.dcsapi.dto.response.ExceptionResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class ControllerExceptionHandler {
-    @ExceptionHandler({AuthenticationException.class,
-            ResourceNotFoundException.class,
+    @ExceptionHandler({ResourceNotFoundException.class,
             AlreadyExistsException.class,
-            InvalidJwtAuthenticationException.class})
+            InvalidJwtAuthenticationException.class,
+            MethodArgumentNotValidException.class})
     ResponseEntity<?> handleBadRequest(Throwable exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ActionResponseDto
+                .body(ExceptionResponseDto
                         .builder()
-                        .message("Bad request, An exception has occurred, "
-                                + exception.getClass().getName()
-                                + " has been thrown with message "
-                                + exception.getMessage())
+                        .exception(exception.getClass().getName())
+                        .message(exception.getMessage() + " cause: " + exception.getCause())
                         .build());
     }
 
-    @ExceptionHandler(NoAccessException.class)
-    ResponseEntity<?> handleNotAuthorized(Throwable exception) {
+    @ExceptionHandler({NoAccessException.class,
+            AuthenticationException.class})
+    ResponseEntity<?> handleForbidden(Throwable exception) {
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(ActionResponseDto
+                .status(HttpStatus.FORBIDDEN)
+                .body(ExceptionResponseDto
                         .builder()
-                        .message("Not authorized, An exception has occurred, "
-                                + exception.getClass().getName()
-                                + "has been thrown with message "
-                                + exception.getMessage())
+                        .exception(exception.getClass().getName())
+                        .message(exception.getMessage())
                         .build());
     }
 }

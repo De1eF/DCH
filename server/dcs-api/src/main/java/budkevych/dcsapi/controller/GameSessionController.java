@@ -107,7 +107,7 @@ public class GameSessionController {
         GameSession gameSession = getAccessibleSessions(auth, id);
         gameSessionService.permanentDelete(id);
         return ResponseEntity
-                .ok(ActionResponseDto.builder().message("Session closed"));
+                .ok(ActionResponseDto.builder().message("Session closed").build());
     }
 
     private GameSession getAccessibleSessions(Authentication auth,

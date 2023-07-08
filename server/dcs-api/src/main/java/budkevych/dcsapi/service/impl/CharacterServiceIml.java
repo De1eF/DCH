@@ -7,6 +7,7 @@ import budkevych.dcsapi.repository.GameCharacterRepository;
 import budkevych.dcsapi.service.CharacterService;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,17 @@ public class CharacterServiceIml implements CharacterService {
     private final GameCharacterRepository gameCharacterRepository;
 
     @Override
-    public GameCharacter find(Long id, Short isDeleted) {
-        return gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted)
+    public GameCharacter find(Long id, Short isDeleted, boolean loadParamMap) {
+        if (loadParamMap) {
+            return gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Game character not found for id " + id));
+        }
+        Object[] o = (Object[]) gameCharacterRepository
+                .findByIdAndIsDeletedNotLoadingParamMap(id, isDeleted)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Game character not found for id " + id));
+        return mapFieldListToObject(o);
     }
 
     @Override
@@ -31,18 +39,7 @@ public class CharacterServiceIml implements CharacterService {
         return gameCharacterRepository
                 .findAllByUserIdAndIsDeletedNotLoadingParamMap(userId, (short) 0)
                 .stream()
-                .map(o -> {
-                    GameCharacter gameCharacter = new GameCharacter();
-                    gameCharacter.setId((Long) o[0]);
-                    gameCharacter.setLastUpdate((Long) o[1]);
-                    gameCharacter.setUserId((Long) o[2]);
-                    gameCharacter.setName((String) o[3]);
-                    gameCharacter.setIsDeleted((Short) o[4]);
-                    ParamMap paramMap = new ParamMap();
-                    paramMap.setData("{}");
-                    gameCharacter.setParamMap(paramMap);
-                    return gameCharacter;
-                })
+                .map(this::mapFieldListToObject)
                 .collect(Collectors.toList());
     }
 
@@ -67,7 +64,7 @@ public class CharacterServiceIml implements CharacterService {
     @Override
     public GameCharacter update(Long id, GameCharacter gameCharacter)
             throws NoSuchElementException {
-        GameCharacter oldGameCharacter = find(id, (short) 0);
+        GameCharacter oldGameCharacter = find(id, (short) 0, true);
         oldGameCharacter.setName(gameCharacter.getName());
         oldGameCharacter.setParamMap(gameCharacter.getParamMap());
         oldGameCharacter.setLastUpdate(System.currentTimeMillis());
@@ -76,7 +73,7 @@ public class CharacterServiceIml implements CharacterService {
 
     @Override
     public void delete(Long id) {
-        GameCharacter gameCharacter = find(id, (short) 0);
+        GameCharacter gameCharacter = find(id, (short) 0, false);
         gameCharacter.setIsDeleted((short) 1);
         save(gameCharacter);
     }
@@ -88,9 +85,22 @@ public class CharacterServiceIml implements CharacterService {
 
     @Override
     public GameCharacter recover(Long id) throws NoSuchElementException {
-        GameCharacter gameCharacter = find(id, (short) 0);
+        GameCharacter gameCharacter = find(id, (short) 1, false);
         gameCharacter.setIsDeleted((short) 0);
         save(gameCharacter);
+        return gameCharacter;
+    }
+
+    private GameCharacter mapFieldListToObject(Object[] o) {
+        GameCharacter gameCharacter = new GameCharacter();
+        gameCharacter.setId((Long) o[0]);
+        gameCharacter.setLastUpdate((Long) o[1]);
+        gameCharacter.setUserId((Long) o[2]);
+        gameCharacter.setName((String) o[3]);
+        gameCharacter.setIsDeleted((Short) o[4]);
+        ParamMap paramMap = new ParamMap();
+        paramMap.setData("{}");
+        gameCharacter.setParamMap(paramMap);
         return gameCharacter;
     }
 }

@@ -8,6 +8,7 @@ import budkevych.dcsapi.dto.response.ActionResponseDto;
 import budkevych.dcsapi.dto.response.LoginResponseDto;
 import budkevych.dcsapi.dto.response.UserResponseDto;
 import budkevych.dcsapi.exception.AuthenticationException;
+import budkevych.dcsapi.exception.InvalidJwtAuthenticationException;
 import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.security.AuthenticationService;
 import budkevych.dcsapi.security.jwt.JwtTokenProvider;
@@ -70,16 +71,13 @@ public class AuthenticationController {
                 fileService.readAll(MAIL_HTML)
                         .formatted(configProperties.getAddress(), token));
         return ResponseEntity
-                .ok(ActionResponseDto.builder().message("Email sent"));
+                .ok(ActionResponseDto.builder().message("Email sent").build());
     }
 
     @GetMapping("/check-token")
     @Operation(summary = "Check if JWT is expired")
-    public ResponseEntity<?> checkToken(@RequestParam String token) {
-        return ResponseEntity.ok().body(ActionResponseDto
-                .builder()
-                .message(jwtTokenProvider.validateToken(token) ? "Valid" : "Invalid")
-                .build());
+    public ActionResponseDto checkToken() {
+        return ActionResponseDto.builder().message("Valid").build();
     }
 
     @PostMapping("/register")
