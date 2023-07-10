@@ -1,6 +1,6 @@
 package budkevych.dcsapi.config;
 
-import budkevych.dcsapi.exception.ControllerExceptionHandler;
+import budkevych.dcsapi.exception.ExceptionHandlerFilter;
 import budkevych.dcsapi.security.jwt.JwtTokenFilter;
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +31,7 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtTokenFilter jwtTokenFilter;
     private final ConfigProperties addressProvider;
-    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
 
     @Bean
     public AuthenticationManager authenticationManager(
@@ -75,7 +75,7 @@ public class SecurityConfig {
                                 .permitAll()
 
                                 .requestMatchers("/check-token")
-                                .hasAnyRole("USER", "ADMIN")
+                                .authenticated()
 
                                 .requestMatchers(HttpMethod.GET, "/users/me")
                                 .hasAnyRole("USER", "ADMIN")
@@ -108,8 +108,8 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(eh -> eh.authenticationEntryPoint(authenticationEntryPoint))
-                .addFilterAt(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtTokenFilter, ExceptionHandlerFilter.class)
                 .userDetailsService(userDetailsService);
         return http.build();
     }

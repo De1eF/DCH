@@ -6,7 +6,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import javax.security.sasl.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,18 +26,23 @@ public class JwtTokenFilter extends GenericFilterBean {
             ServletResponse servletResponse,
             FilterChain filterChain
     ) throws IOException, ServletException {
+        boolean success = false;
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest);
-        System.out.println("---------Token filter---------"
-                + System.lineSeparator()
-                + "---------Token:%s---------".formatted(token));
         try {
             if (token != null && jwtTokenProvider.validateToken(token)) {
+                success = true;
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
+            filterChain.doFilter(servletRequest, servletResponse);
         } catch (InvalidJwtAuthenticationException e) {
-
+            throw new AuthenticationException("ERR");
+        } finally {
+            System.out.println("Token filter---------"
+                    + System.lineSeparator()
+                    + "---------Token:%s---------".formatted(token)
+                    + System.lineSeparator()
+                    + "---------Success:%s---------".formatted(success));
         }
-        filterChain.doFilter(servletRequest, servletResponse);
     }
 }
