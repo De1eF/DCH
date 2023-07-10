@@ -36,7 +36,7 @@ public class JwtTokenFilter extends GenericFilterBean {
             }
             filterChain.doFilter(servletRequest, servletResponse);
         } catch (InvalidJwtAuthenticationException e) {
-            throw new AuthenticationException("ERR");
+            throw new AuthenticationException("Invalid JWT");
         } finally {
             System.out.println("Token filter---------"
                     + System.lineSeparator()
