@@ -26,23 +26,15 @@ public class JwtTokenFilter extends GenericFilterBean {
             ServletResponse servletResponse,
             FilterChain filterChain
     ) throws IOException, ServletException {
-        boolean success = false;
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest);
         try {
             if (token != null && jwtTokenProvider.validateToken(token)) {
-                success = true;
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
             filterChain.doFilter(servletRequest, servletResponse);
         } catch (InvalidJwtAuthenticationException e) {
             throw new AuthenticationException("Invalid JWT");
-        } finally {
-            System.out.println("Token filter---------"
-                    + System.lineSeparator()
-                    + "---------Token:%s---------".formatted(token)
-                    + System.lineSeparator()
-                    + "---------Success:%s---------".formatted(success));
         }
     }
 }
