@@ -34,7 +34,28 @@ export default {
       this.username = localStorage.getItem("username")
 
     },
+    checkToken() {
+      console.log('check token')
+      this.token = localStorage.getItem('token')
+      this.url = window.location.href.split(':8080')[0]
+      console.log(this.token)
+      fetch(this.url + ':1290/check-token', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + 1
+        }
+      }).then(res => {
+        console.log(res)
+        console.log(res.status)
+        return res.json()
+      }).then(data => {
+        console.log(data)
+      })
+
+    }
   }, mounted() {
+    this.checkToken()
     this.timer = setInterval(() => {
       this.update()
     }, 100)

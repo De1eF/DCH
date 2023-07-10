@@ -1,2 +1,3 @@
 server/dcs-api/src/main/resources/application.properties
 server/dcs-api/src/main/resources/db/liquibase.properties
+server/dcs-api/target
