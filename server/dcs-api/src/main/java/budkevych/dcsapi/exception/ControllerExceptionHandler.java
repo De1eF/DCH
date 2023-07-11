@@ -1,6 +1,7 @@
 package budkevych.dcsapi.exception;
 
 import budkevych.dcsapi.dto.response.ExceptionResponseDto;
+import java.util.Arrays;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,7 +20,8 @@ public class ControllerExceptionHandler {
                 .body(ExceptionResponseDto
                         .builder()
                         .exception(exception.getClass().getName())
-                        .message(exception.getMessage() + " cause: " + exception.getCause())
+                        .message(exception.getMessage())
+                        .stackTrace(Arrays.toString(exception.getStackTrace()))
                         .build());
     }
 
@@ -32,6 +34,7 @@ public class ControllerExceptionHandler {
                         .builder()
                         .exception(exception.getClass().getName())
                         .message(exception.getMessage())
+                        .stackTrace(Arrays.toString(exception.getStackTrace()))
                         .build());
     }
 }

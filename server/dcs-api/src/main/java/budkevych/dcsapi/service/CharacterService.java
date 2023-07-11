@@ -12,8 +12,6 @@ public interface CharacterService {
 
     GameCharacter save(GameCharacter gameCharacter);
 
-    void saveAll(List<GameCharacter> gameCharacterList);
-
     GameCharacter update(Long id, GameCharacter gameCharacter);
 
     void delete(Long id);

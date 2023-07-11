@@ -2,7 +2,7 @@
 --changeset budkevych:create-user-roles-table splitStatements:true endDelimiter:;
 
 CREATE TABLE IF NOT EXISTS user_roles (
-    id BIGINT AUTO_INCREMENT primary key NOT NULL,
+    id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     user_role_name VARCHAR(255)
     ) ENGINE=InnoDB;
 
