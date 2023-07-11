@@ -6,6 +6,8 @@ import CharacterSheet from '../views/CharacterSheet/CharacterSheet.vue'
 import NotFound from '../views/NotFound.vue'
 import SelectCharacter from '../views/SelectCharacter.vue'
 import LoginEmail from '../views/LoginEmail.vue'
+import Session from '../views/Sessions/Sessions.vue'
+import Test from '../views/Test.vue'
 
 const routes = [
   {
@@ -41,6 +43,16 @@ const routes = [
     path: '/login-email',
     name: 'login-email',
     component: LoginEmail
+  },
+  {
+    path: '/sessions',
+    name: 'sessions',
+    component: Session
+  },
+  {
+    path: '/test',
+    name: 'test',
+    component: Test
   },
   // 404
   {

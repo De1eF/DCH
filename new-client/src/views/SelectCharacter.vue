@@ -38,22 +38,28 @@ export default {
     },
     methods: {
         getUserName() {
-            this.token = localStorage.getItem('token')
-            this.url = window.location.href.split(':8080')[0]
-            fetch(this.url + ':1290/users/me', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + this.token
+            if (localStorage.getItem('token') === null) {
+                console.log("no token")
 
-                }
-            }).then(res => res.json())
-                .then(data => {
-                    this.username = data.username
-                    localStorage.setItem("username", this.username)
-                    this.id = data.id
-                    this.getCharacterList()
-                })
+            } else {
+                this.token = localStorage.getItem('token')
+
+                this.url = window.location.href.split(':8080')[0]
+                fetch(this.url + ':1290/users/me', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + this.token
+
+                    }
+                }).then(res => res.json())
+                    .then(data => {
+                        this.username = data.username
+                        localStorage.setItem("username", this.username)
+                        this.id = data.id
+                        this.getCharacterList()
+                    })
+            }
         },
         getCharacterList() {
             this.url = window.location.href.split(':8080')[0]

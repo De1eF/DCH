@@ -3,6 +3,8 @@
     <nav v-if="showNavBar">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link> |
+      <router-link to="/test">Test</router-link> |
+      <router-link to="/sessions" v-if="token">Sessions</router-link><span v-if="token">|</span>
       <router-link to="/select-character" v-if="token">Select Character</router-link><span v-if="token">|</span>
       <router-link to="/login" v-if="token">{{ username }}</router-link>
       <router-link to="/login" v-else>Login</router-link>
@@ -38,12 +40,12 @@ export default {
       console.log('check token')
       this.token = localStorage.getItem('token')
       this.url = window.location.href.split(':8080')[0]
-      console.log(this.token)
+
       fetch(this.url + ':1290/check-token', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + 1
+          'Authorization': 'Bearer ' + this.token
         }
       }).then(res => {
         console.log(res)
@@ -51,11 +53,20 @@ export default {
         return res.json()
       }).then(data => {
         console.log(data)
+      }).catch((error) => {
+        console.log(error)
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        this.token = ''
+        this.username = ''
       })
 
     }
-  }, mounted() {
+  }, beforeMount() {
     this.checkToken()
+  }
+  , mounted() {
+
     this.timer = setInterval(() => {
       this.update()
     }, 100)
