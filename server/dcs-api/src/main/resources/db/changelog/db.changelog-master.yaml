@@ -8,6 +8,8 @@ databaseChangeLog:
   - include:
       file: /db/changelog/changes/create-game-characters-table.sql
   - include:
+      file: /db/changelog/changes/create-portrait-table.sql
+  - include:
       file: /db/changelog/changes/create-game-sessions-table.sql
   - include:
       file: /db/changelog/changes/create-game-sessions-characters-table.sql

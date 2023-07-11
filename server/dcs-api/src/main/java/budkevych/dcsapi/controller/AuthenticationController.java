@@ -8,7 +8,6 @@ import budkevych.dcsapi.dto.response.ActionResponseDto;
 import budkevych.dcsapi.dto.response.LoginResponseDto;
 import budkevych.dcsapi.dto.response.UserResponseDto;
 import budkevych.dcsapi.exception.AuthenticationException;
-import budkevych.dcsapi.exception.InvalidJwtAuthenticationException;
 import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.security.AuthenticationService;
 import budkevych.dcsapi.security.jwt.JwtTokenProvider;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController

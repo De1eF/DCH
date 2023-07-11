@@ -101,6 +101,9 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/characters/for-user/{id}")
                                 .hasAnyRole("ADMIN", "USER")
 
+                                .requestMatchers("/characters")
+                                .hasAnyRole("ADMIN", "USER")
+
                                 .requestMatchers(HttpMethod.GET, "/sessions/**")
                                 .hasAnyRole("ADMIN", "USER")
 

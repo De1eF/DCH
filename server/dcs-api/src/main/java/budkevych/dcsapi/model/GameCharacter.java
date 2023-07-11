@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
@@ -30,8 +31,11 @@ public class GameCharacter {
     private Long userId;
     private String name;
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "param_map")
+    @JoinTable(name = "param_map")
+    @JoinColumn(name = "data")
     private ParamMap paramMap;
+    @Column(name = "portrait_id")
+    private Long portraitId;
     @Column(name = "is_deleted")
     private Short isDeleted;
 }

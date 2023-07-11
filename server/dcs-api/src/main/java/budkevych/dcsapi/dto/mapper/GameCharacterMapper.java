@@ -33,6 +33,7 @@ public class GameCharacterMapper {
         GameCharacter gameCharacter = new GameCharacter();
         gameCharacter.setName(dto.getName());
         gameCharacter.setIsDeleted((short) 0);
+        gameCharacter.setPortraitId(dto.getPortraitId());
         try {
             ParamMap paramMap = new ParamMap();
             paramMap.setData(objectMapper.writeValueAsString(dto.getParamMap()));

@@ -7,7 +7,6 @@ import budkevych.dcsapi.repository.GameCharacterRepository;
 import budkevych.dcsapi.service.CharacterService;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +14,9 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class CharacterServiceIml implements CharacterService {
+    private static final String DEFAULT_PORTRAIT =
+            "server/dcs-api/src/main/resources/pictures/portrait-default.png";
+
     private final GameCharacterRepository gameCharacterRepository;
 
     @Override
@@ -51,14 +53,10 @@ public class CharacterServiceIml implements CharacterService {
     @Override
     public GameCharacter save(GameCharacter gameCharacter) {
         gameCharacter.setLastUpdate(System.currentTimeMillis());
-        return gameCharacterRepository.save(gameCharacter);
-    }
-
-    @Override
-    public void saveAll(List<GameCharacter> gameCharacterList) {
-        gameCharacterList.forEach(gameCharacter ->
-                gameCharacter.setLastUpdate(System.currentTimeMillis()));
-        gameCharacterRepository.saveAll(gameCharacterList);
+        if (gameCharacter.getPortraitId() == null) {
+            gameCharacter.setPortraitId(0L);
+        }
+        return gameCharacter;
     }
 
     @Override

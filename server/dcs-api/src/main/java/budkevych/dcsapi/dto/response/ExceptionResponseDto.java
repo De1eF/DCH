@@ -8,4 +8,5 @@ import lombok.Data;
 public class ExceptionResponseDto {
     private String exception;
     private String message;
+    private String stackTrace;
 }
