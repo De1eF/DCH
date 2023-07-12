@@ -56,7 +56,7 @@ public class CharacterServiceIml implements CharacterService {
         if (gameCharacter.getPortraitId() == null) {
             gameCharacter.setPortraitId(0L);
         }
-        return gameCharacter;
+        return gameCharacterRepository.save(gameCharacter);
     }
 
     @Override

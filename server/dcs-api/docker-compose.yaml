@@ -1,0 +1,26 @@
+services:
+  mysqldb:
+    image: mysql:8.0.33
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=square_db
+    ports:
+      - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
+  app:
+    depends_on:
+      - mysqldb
+    image: delef/dcs-api
+    build: .
+    env_file: ./.env
+    ports:
+      - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.url" : "jdbc:mysql://localhost:$MYSQLDB_DOCKER_PORT/$MYSQLDB_DATABASE?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC"
+        ,"spring.datasource.username" : "$MYSQLDB_USER"
+        ,"spring.datasource.password" : "$MYSQLDB_ROOT_PASSWORD"
+        ,"spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL8Dialect"
+        ,"spring.jpa.hibernate.ddl-auto" : "none"
+      }'
