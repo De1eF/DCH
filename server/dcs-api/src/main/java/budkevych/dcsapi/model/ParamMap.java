@@ -12,7 +12,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "param_map")
+@Table(name = "param_maps")
 @Getter
 @Setter
 @EqualsAndHashCode

@@ -7,6 +7,6 @@ CREATE TABLE IF NOT EXISTS characters (
     user_id BIGINT REFERENCES `users` (`id`),
     name VARCHAR(255),
     portrait_id BIGINT,
-    param_map BIGINT REFERENCES `param_map` (`id`),
+    param_map BIGINT REFERENCES `param_maps` (`id`),
     is_deleted INT
     ) ENGINE=InnoDB;

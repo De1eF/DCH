@@ -2,9 +2,11 @@ package budkevych.dcsapi.controller;
 
 import budkevych.dcsapi.dto.mapper.PortraitMapper;
 import budkevych.dcsapi.dto.request.PortraitRequestDto;
+import budkevych.dcsapi.dto.response.ActionResponseDto;
 import budkevych.dcsapi.dto.response.PortraitResponseDto;
 import budkevych.dcsapi.service.PortraitService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,18 +31,24 @@ public class PortraitController {
     }
 
     @PostMapping
-    public void addPortrait(@RequestBody PortraitRequestDto portraitRequestDto) {
+    public ResponseEntity<?> addPortrait(@RequestBody PortraitRequestDto portraitRequestDto) {
         portraitService.addPortrait(portraitMapper.toModel(portraitRequestDto));
+        return ResponseEntity
+                .ok(ActionResponseDto.builder().message("Portrait added").build());
     }
 
     @PutMapping("/{id}")
-    public void updatePortrait(@PathVariable Long id,
+    public ResponseEntity<?> updatePortrait(@PathVariable Long id,
             @RequestBody PortraitRequestDto portraitRequestDto) {
         portraitService.updatePortrait(id, portraitMapper.toModel(portraitRequestDto));
+        return ResponseEntity
+                .ok(ActionResponseDto.builder().message("Portrait updated").build());
     }
 
     @DeleteMapping("/{id}")
-    public void deletePortrait(@PathVariable Long id) {
+    public ResponseEntity<?> deletePortrait(@PathVariable Long id) {
         portraitService.deletePortrait(id);
+        return ResponseEntity
+                .ok(ActionResponseDto.builder().message("Portrait deleted").build());
     }
 }

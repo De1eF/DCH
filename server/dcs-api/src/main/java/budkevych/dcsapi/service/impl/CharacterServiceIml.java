@@ -7,7 +7,6 @@ import budkevych.dcsapi.repository.GameCharacterRepository;
 import budkevych.dcsapi.service.CharacterService;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,27 +21,23 @@ public class CharacterServiceIml implements CharacterService {
     @Override
     public GameCharacter find(Long id, Short isDeleted, boolean loadParamMap) {
         if (loadParamMap) {
-            return gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted)
+            return gameCharacterRepository.findByIdAndIsDeletedWithParamMap(id, isDeleted)
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "Game character not found for id " + id));
         }
-        Object[] o = (Object[]) gameCharacterRepository
-                .findByIdAndIsDeletedNotLoadingParamMap(id, isDeleted)
+        GameCharacter character = gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Game character not found for id " + id));
-        return mapFieldListToObject(o);
+        ParamMap paramMap = new ParamMap();
+        paramMap.setId(id);
+        paramMap.setData("{}");
+        character.setParamMap(paramMap);
+        return character;
     }
 
     @Override
-    public List<GameCharacter> findAllByUserId(Long userId, boolean loadParamMap) {
-        if (loadParamMap) {
-            return gameCharacterRepository.findAllByUserIdAndIsDeleted(userId, (short) 0);
-        }
-        return gameCharacterRepository
-                .findAllByUserIdAndIsDeletedNotLoadingParamMap(userId, (short) 0)
-                .stream()
-                .map(this::mapFieldListToObject)
-                .collect(Collectors.toList());
+    public List<GameCharacter> findAllByUserId(Long userId) {
+        return gameCharacterRepository.findAllByUserIdAndIsDeleted(userId, (short) 0);
     }
 
     @Override
@@ -56,6 +51,9 @@ public class CharacterServiceIml implements CharacterService {
         if (gameCharacter.getPortraitId() == null) {
             gameCharacter.setPortraitId(0L);
         }
+        if (gameCharacter.getParamMap() == null) {
+            gameCharacter.setParamMap(new ParamMap());
+        }
         return gameCharacterRepository.save(gameCharacter);
     }
 
@@ -64,7 +62,9 @@ public class CharacterServiceIml implements CharacterService {
             throws NoSuchElementException {
         GameCharacter oldGameCharacter = find(id, (short) 0, true);
         oldGameCharacter.setName(gameCharacter.getName());
-        oldGameCharacter.setParamMap(gameCharacter.getParamMap());
+        ParamMap paramMap = gameCharacter.getParamMap();
+        paramMap.setId(id);
+        oldGameCharacter.setParamMap(paramMap);
         oldGameCharacter.setLastUpdate(System.currentTimeMillis());
         return gameCharacterRepository.save(oldGameCharacter);
     }
@@ -86,19 +86,6 @@ public class CharacterServiceIml implements CharacterService {
         GameCharacter gameCharacter = find(id, (short) 1, false);
         gameCharacter.setIsDeleted((short) 0);
         save(gameCharacter);
-        return gameCharacter;
-    }
-
-    private GameCharacter mapFieldListToObject(Object[] o) {
-        GameCharacter gameCharacter = new GameCharacter();
-        gameCharacter.setId((Long) o[0]);
-        gameCharacter.setLastUpdate((Long) o[1]);
-        gameCharacter.setUserId((Long) o[2]);
-        gameCharacter.setName((String) o[3]);
-        gameCharacter.setIsDeleted((Short) o[4]);
-        ParamMap paramMap = new ParamMap();
-        paramMap.setData("{}");
-        gameCharacter.setParamMap(paramMap);
         return gameCharacter;
     }
 }

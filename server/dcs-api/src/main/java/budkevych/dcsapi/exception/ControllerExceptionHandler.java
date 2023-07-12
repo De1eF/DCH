@@ -15,6 +15,9 @@ public class ControllerExceptionHandler {
             InvalidJwtAuthenticationException.class,
             MethodArgumentNotValidException.class})
     ResponseEntity<?> handleBadRequest(Throwable exception) {
+        System.out.println(exception.getMessage()
+                + System.lineSeparator()
+                + Arrays.toString(exception.getStackTrace()));
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ExceptionResponseDto

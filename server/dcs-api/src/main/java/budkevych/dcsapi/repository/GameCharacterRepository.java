@@ -11,34 +11,17 @@ import org.springframework.stereotype.Repository;
 public interface GameCharacterRepository extends JpaRepository<GameCharacter, Long> {
     List<GameCharacter> findAllByUserIdAndIsDeleted(Long userId, Short isDeleted);
 
-    @Query("SELECT c.id,"
-            + " c.lastUpdate,"
-            + " c.userId,"
-            + " c.name,"
-            + " c.isDeleted"
-            + " FROM GameCharacter c "
-            + " WHERE c.isDeleted = :isDeleted"
-            + " AND c.userId = :userId")
-    List<Object[]> findAllByUserIdAndIsDeletedNotLoadingParamMap(
-            Long userId,
+    List<GameCharacter> findAllByIsDeleted(
             Short isDeleted);
 
-    @Query("SELECT c.id,"
-            + " c.lastUpdate,"
-            + " c.userId,"
-            + " c.name,"
-            + " c.isDeleted"
-            + " FROM GameCharacter c "
-            + " WHERE c.isDeleted = :isDeleted"
-            + " AND c.id = :id")
-    Optional<?> findByIdAndIsDeletedNotLoadingParamMap(
+    Optional<GameCharacter> findByIdAndIsDeleted(
             Long id,
             Short isDeleted
     );
 
     Long countAllByUserId(Long userId);
 
-    List<GameCharacter> findAllByIsDeleted(Short isDeleted);
-
-    Optional<GameCharacter> findByIdAndIsDeleted(Long id, Short isDeleted);
+    @Query("SELECT c FROM GameCharacter c LEFT JOIN FETCH c.paramMap "
+            + "WHERE c.id = :id AND c.isDeleted = :isDeleted")
+    Optional<GameCharacter> findByIdAndIsDeletedWithParamMap(Long id, Short isDeleted);
 }

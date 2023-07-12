@@ -47,7 +47,8 @@ public class GameCharacterController {
         TimestampResponseDto timestampResponseDto = new TimestampResponseDto();
         timestampResponseDto.setTimestamp(gameCharacter.getLastUpdate());
         if (!gameCharacter.getLastUpdate().equals(timestamp)) {
-            timestampResponseDto.setObject(mapper.toDto(gameCharacter));
+            timestampResponseDto.setObject(mapper.toDto(
+                    characterService.find(id, (short) 0, true)));
         }
         return ResponseEntity.ok(timestampResponseDto);
     }
@@ -55,7 +56,7 @@ public class GameCharacterController {
     @GetMapping("{id}")
     @Operation(summary = "get character by id")
     public ResponseEntity<?> get(@PathVariable Long id) {
-        GameCharacter gameCharacter = characterService.find(id, (short) 0, true);
+        GameCharacter gameCharacter = characterService.find(id, (short) 0, false);
         return ResponseEntity.ok(mapper.toDto(gameCharacter));
     }
 
@@ -63,7 +64,7 @@ public class GameCharacterController {
     @Operation(summary = "get all characters of specific user")
     public List<GameCharacterResponseDto> getForUser(@PathVariable("user-id") Long userId) {
         List<GameCharacter> gameCharacterList =
-                characterService.findAllByUserId(userId, false);
+                characterService.findAllByUserId(userId);
         return gameCharacterList
                 .stream()
                 .map(mapper::toDto)

@@ -6,7 +6,7 @@ import java.util.List;
 public interface CharacterService {
     GameCharacter find(Long id, Short isDeleted, boolean loadParamMap);
 
-    List<GameCharacter> findAllByUserId(Long userId, boolean loadParamMap);
+    List<GameCharacter> findAllByUserId(Long userId);
 
     Long countAllByUserId(Long userId);
 

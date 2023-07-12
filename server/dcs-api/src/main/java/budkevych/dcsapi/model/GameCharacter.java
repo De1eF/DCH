@@ -7,7 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
@@ -31,8 +31,8 @@ public class GameCharacter {
     private Long userId;
     private String name;
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinTable(name = "param_map")
-    @JoinColumn(name = "data")
+    @JoinColumn(name = "id")
+    @MapsId
     private ParamMap paramMap;
     @Column(name = "portrait_id")
     private Long portraitId;
