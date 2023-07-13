@@ -9,8 +9,10 @@ import budkevych.dcsapi.security.AuthenticationService;
 import budkevych.dcsapi.service.RoleService;
 import budkevych.dcsapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -37,6 +40,20 @@ public class UserController {
     public UserResponseDto get(Authentication auth) {
         User user = authenticationService.getAuthenticated(auth);
         return userMapper.mapToDto(user);
+    }
+
+    @GetMapping("/find")
+    @Operation(summary = "find by username with pagination")
+    public List<UserResponseDto> findByUsername(@RequestParam String username,
+                                                @RequestParam(defaultValue = "0")
+                                                Integer page,
+                                                @RequestParam(defaultValue = "20")
+                                                Integer count) {
+        PageRequest pageRequest = PageRequest.of(page, count);
+        return userService.findByUsername(username, pageRequest)
+                .stream()
+                .map(userMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @PutMapping("/me")

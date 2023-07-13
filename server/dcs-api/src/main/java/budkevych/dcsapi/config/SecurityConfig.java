@@ -77,34 +77,19 @@ public class SecurityConfig {
                                 .requestMatchers("/check-token")
                                 .authenticated()
 
-                                .requestMatchers(HttpMethod.GET, "/users/me")
+                                .requestMatchers(HttpMethod.GET, "/users/**")
                                 .hasAnyRole("USER", "ADMIN")
 
                                 .requestMatchers(HttpMethod.PUT, "/users/{id}/role")
                                 .hasRole("ADMIN")
 
-                                .requestMatchers(HttpMethod.POST, "/characters")
-                                .hasAnyRole("ADMIN", "USER")
-
-                                .requestMatchers(HttpMethod.PUT, "/characters/{id}")
-                                .hasAnyRole("ADMIN", "USER")
-
-                                .requestMatchers(HttpMethod.DELETE, "/characters/{id}")
-                                .hasAnyRole("ADMIN", "USER")
-
-                                .requestMatchers(HttpMethod.GET, "/characters/{id}")
+                                .requestMatchers("/characters/**")
                                 .hasAnyRole("ADMIN", "USER")
 
                                 .requestMatchers(HttpMethod.GET, "/characters/recover/{id}")
                                 .hasRole("ADMIN")
 
-                                .requestMatchers(HttpMethod.GET, "/characters/for-user/{id}")
-                                .hasAnyRole("ADMIN", "USER")
-
-                                .requestMatchers("/characters")
-                                .hasAnyRole("ADMIN", "USER")
-
-                                .requestMatchers(HttpMethod.GET, "/sessions/**")
+                                .requestMatchers("/sessions/**")
                                 .hasAnyRole("ADMIN", "USER")
 
                                 .anyRequest().authenticated()

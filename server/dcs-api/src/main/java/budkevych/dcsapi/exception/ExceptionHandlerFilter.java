@@ -31,7 +31,9 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
                     .message(e.getMessage())
                     .stackTrace(Arrays.toString(e.getStackTrace()))
                     .build();
-            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.setStatus(e.getClass().equals(AuthenticationException.class)
+                    ? HttpStatus.FORBIDDEN.value()
+                    : HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.getWriter().write(
                     new ObjectMapper().writeValueAsString(exceptionResponseDto)
             );

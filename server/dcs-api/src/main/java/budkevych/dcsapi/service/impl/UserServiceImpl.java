@@ -4,8 +4,12 @@ import budkevych.dcsapi.exception.ResourceNotFoundException;
 import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.repository.UserRepository;
 import budkevych.dcsapi.service.UserService;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,6 +32,15 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "User not found for id " + id));
+    }
+
+    @Override
+    public List<User> findByUsername(String username,
+                                     PageRequest pageRequest) {
+        return userRepository.findAllByUsernameContains(username, pageRequest)
+                .stream()
+                .peek(u -> u.setRoles(new HashSet<>()))
+                .collect(Collectors.toList());
     }
 
     @Override

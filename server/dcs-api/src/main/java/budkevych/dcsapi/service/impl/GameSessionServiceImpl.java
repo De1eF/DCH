@@ -7,6 +7,8 @@ import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.repository.GameSessionRepository;
 import budkevych.dcsapi.service.CharacterService;
 import budkevych.dcsapi.service.GameSessionService;
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -21,11 +23,10 @@ public class GameSessionServiceImpl implements GameSessionService {
 
     @Override
     public GameSession find(Long id) {
-        GameSession gameSession =
-                gameSessionRepository
-                        .findByIdFetched(id)
-                        .orElseThrow(() -> new ResourceNotFoundException(""));
-        return gameSession;
+        return gameSessionRepository
+                .findByIdFetched(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No game session found for id " + id));
     }
 
     @Override
@@ -39,6 +40,8 @@ public class GameSessionServiceImpl implements GameSessionService {
     public GameSession add(GameSession gameSession, User originalUser) {
         gameSession.setLastUpdate(System.currentTimeMillis());
         gameSession.setUsers(Set.of(originalUser));
+        gameSession.setSessionStartedAt(LocalDateTime.now());
+        gameSession.setCharactersInSession(new HashSet<>());
         return gameSessionRepository.save(gameSession);
     }
 
