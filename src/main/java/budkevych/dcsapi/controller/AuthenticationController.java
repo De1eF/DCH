@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthenticationController {
     private static final String MAIL_HTML =
-            "server/dcs-api/src/main/resources/mail/mailAuthentication.html";
+            "src/main/resources/mail/mailAuthentication.html";
 
     private final ConfigProperties configProperties;
     private final AuthenticationService authenticationService;

@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(Long id) {
-        return userRepository.findById(id)
+        return userRepository.findUserById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "User not found for id " + id));
     }
@@ -44,8 +44,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(Long id, User user) {
-        user.setId(id);
-        userRepository.save(user);
+    public User update(Long id, User user) {
+        User old = findById(id);
+        old.setUsername(user.getUsername() == null
+                ? old.getUsername()
+                : user.getUsername());
+        old.setPassword(user.getPassword() == null
+                ? old.getPassword()
+                : user.getPassword());
+        old.setPortraitId(user.getPortraitId() == null
+                ? old.getPortraitId()
+                : user.getPortraitId());
+        old.setRoles(user.getRoles() == null
+                ? old.getRoles()
+                : user.getRoles());
+        userRepository.save(old);
+        return old;
     }
 }

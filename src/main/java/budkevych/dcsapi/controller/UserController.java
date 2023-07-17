@@ -1,13 +1,17 @@
 package budkevych.dcsapi.controller;
 
+import budkevych.dcsapi.config.ConfigProperties;
 import budkevych.dcsapi.dto.mapper.UserMapper;
 import budkevych.dcsapi.dto.request.UserRequestDto;
 import budkevych.dcsapi.dto.request.UserRolesRequestDto;
+import budkevych.dcsapi.dto.response.ActionResponseDto;
 import budkevych.dcsapi.dto.response.UserResponseDto;
 import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.security.AuthenticationService;
+import budkevych.dcsapi.service.FileService;
 import budkevych.dcsapi.service.RoleService;
 import budkevych.dcsapi.service.UserService;
+import budkevych.dcsapi.service.impl.MailService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,11 +33,17 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RequiredArgsConstructor
 public class UserController {
-    private final PasswordEncoder passwordEncoder;
+    private static final String MAIL_HTML =
+            "src/main/resources/mail/mailPasswordChange.html";
+
     private final UserService userService;
     private final RoleService roleService;
     private final UserMapper userMapper;
     private final AuthenticationService authenticationService;
+    private final MailService mailService;
+    private final FileService fileService;
+    private final ConfigProperties configProperties;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/me")
     @Operation(summary = "get currently logged in user")
@@ -56,17 +66,39 @@ public class UserController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/me/email-password-change")
+    @Operation(summary = "send email with link to change password")
+    public ActionResponseDto emailPasswordChange(Authentication auth) {
+        User authenticatedUser = authenticationService.getAuthenticated(auth);
+        mailService.sendEmail(
+                authenticatedUser.getEmail(),
+                "Password change",
+                fileService.readAll(MAIL_HTML)
+                        .formatted(configProperties.getAddress(), authenticatedUser.getEmail()));
+        return ActionResponseDto.builder().message("Email sent").build();
+    }
+
     @PutMapping("/me")
     @Operation(summary = "update logged in user's data")
     public UserResponseDto update(Authentication auth, @RequestBody UserRequestDto requestDto) {
         User authenticatedUser = authenticationService.getAuthenticated(auth);
-        User user = new User();
-        user.setEmail(requestDto.getEmail());
-        user.setUsername(requestDto.getUsername());
+        User user = userMapper.mapToModel(requestDto);
+        user.setEmail(null);
+        user.setPassword(null);
+        return userMapper.mapToDto(userService.update(authenticatedUser.getId(), user));
+    }
+
+    @PutMapping("/me/change-password")
+    @Operation(summary = "update password for user")
+    public UserResponseDto updatePassword(Authentication auth,
+                                          @RequestBody UserRequestDto requestDto) {
+        User user = userMapper.mapToModel(requestDto);
+        user.setUsername(null);
+        user.setPortraitId(null);
+        user.setEmail(null);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
-        user.setRoles(authenticatedUser.getRoles());
-        userService.update(authenticatedUser.getId(), user);
-        return userMapper.mapToDto(user);
+        User authenticatedUser = authenticationService.getAuthenticated(auth);
+        return userMapper.mapToDto(userService.update(authenticatedUser.getId(), user));
     }
 
     @PutMapping("/{id}/role")
@@ -74,11 +106,10 @@ public class UserController {
     public UserResponseDto updateRoles(
             @PathVariable Long id,
             @RequestBody UserRolesRequestDto rolesRequest) {
-        User user = userService.findById(id);
+        User user = new User();
         user.setRoles(rolesRequest.getRoles().stream()
                 .map(roleService::findByRoleName)
                 .collect(Collectors.toSet()));
-        userService.update(id, user);
-        return userMapper.mapToDto(user);
+        return userMapper.mapToDto(userService.update(id, user));
     }
 }

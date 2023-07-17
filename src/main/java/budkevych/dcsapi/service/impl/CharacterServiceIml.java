@@ -48,9 +48,6 @@ public class CharacterServiceIml implements CharacterService {
     @Override
     public GameCharacter save(GameCharacter gameCharacter) {
         gameCharacter.setLastUpdate(System.currentTimeMillis());
-        if (gameCharacter.getPortraitId() == null) {
-            gameCharacter.setPortraitId(0L);
-        }
         if (gameCharacter.getParamMap() == null) {
             gameCharacter.setParamMap(new ParamMap());
         }
@@ -66,6 +63,7 @@ public class CharacterServiceIml implements CharacterService {
         paramMap.setId(id);
         oldGameCharacter.setParamMap(paramMap);
         oldGameCharacter.setLastUpdate(System.currentTimeMillis());
+        oldGameCharacter.setPortraitId(gameCharacter.getPortraitId());
         return gameCharacterRepository.save(oldGameCharacter);
     }
 

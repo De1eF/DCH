@@ -8,7 +8,7 @@ import org.springframework.data.domain.PageRequest;
 public interface UserService {
     User add(User user);
 
-    void update(Long id, User user);
+    User update(Long id, User user);
 
     Optional<User> findByEmail(String email);
 

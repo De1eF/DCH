@@ -35,7 +35,7 @@ public class GameCharacter {
     @MapsId
     private ParamMap paramMap;
     @Column(name = "portrait_id")
-    private Long portraitId;
+    private Long portraitId = 0L;
     @Column(name = "is_deleted")
     private Short isDeleted;
 }

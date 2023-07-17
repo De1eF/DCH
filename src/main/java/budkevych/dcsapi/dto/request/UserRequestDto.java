@@ -15,4 +15,5 @@ public class UserRequestDto {
     @NotBlank
     @Size(min = 5, message = "Password must be at least 5 symbols")
     private String password;
+    private Long portraitId;
 }
