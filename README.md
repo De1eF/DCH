@@ -27,8 +27,8 @@ D&D Character Helper
  </ul>
 <br> <h2>Authors</h2>
    </li>
-<li><a href="https://github.com/De1eF">DeleF</a> (v5.2.1)
+<li><a href="https://github.com/De1eF">DeleF</a>
    </li>
-   <li><a href="https://github.com/maxduh">Maxduh</a> (v5.2.1)
+   <li><a href="https://github.com/maxduh">Maxduh</a>
    </li>
  </ul>
