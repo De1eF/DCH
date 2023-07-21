@@ -5,8 +5,11 @@ D&D Character Service
 <h2>Features</h2>
 <ul dir="auto">
  <li> Authentication, authorization, and account system
- <li> Character creation (the user may only edit their character)
+ <li> Custom icons for users and their characters
  <li> Real-time character synchronization with other users
+ <li> User's characters manipulation
+ <li> Real-time character synchronization with other users
+ <li> User browser
  </ul>
 <br> 
 <h2>Technologies</h2>
