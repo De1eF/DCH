@@ -1,5 +1,5 @@
-# DCS API
-D&D Character Service
+# DCH API
+D&D Character Helper
 <br> An API for a web application that helps organize, create, and manage characters for tabletop role-playing games.
 <br> 
 <h2>Features</h2>
