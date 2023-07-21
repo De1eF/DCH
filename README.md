@@ -33,9 +33,5 @@ D&D Character Helper
  <li>Endpoints may be viewed here <a href="http://127.0.0.1:1290/swagger-ui/index.html">Open Swagger</a> <br>
   <em>(Note, that Swagger is launched with an API, therefore it must be running for you to access Swagger)</em></li>
 <h2>Authors</h2>
-   </li>
    <li><a href="https://github.com/De1eF">DeleF</a>
-   </li>
-   <li><a href="https://github.com/maxduh">Maxduh</a>
-   </li>
  </ul>
