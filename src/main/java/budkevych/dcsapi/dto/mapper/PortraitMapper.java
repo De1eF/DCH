@@ -15,6 +15,7 @@ public class PortraitMapper {
 
     public PortraitResponseDto toDto(Portrait portrait) {
         PortraitResponseDto dto = new PortraitResponseDto();
+        dto.setId(portrait.getId());
         dto.setData(portrait.getData());
         return dto;
     }

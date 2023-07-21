@@ -20,11 +20,14 @@ public class GameCharacterMapper {
         dto.setUserId(character.getUserId());
         dto.setName(character.getName());
         try {
+            dto.setData(objectMapper.readValue(
+                    character.getData(),
+                    HashMap.class));
             dto.setParamMap(objectMapper.readValue(
                     character.getParamMap().getData(),
                     HashMap.class));
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Unable to parse paramMap to json ", e);
+            throw new RuntimeException("Unable to parse paramMap or data to json ", e);
         }
         return dto;
     }
@@ -35,6 +38,7 @@ public class GameCharacterMapper {
         gameCharacter.setIsDeleted((short) 0);
         gameCharacter.setPortraitId(dto.getPortraitId());
         try {
+            gameCharacter.setData(objectMapper.writeValueAsString(dto.getData()));
             ParamMap paramMap = new ParamMap();
             paramMap.setData(objectMapper.writeValueAsString(dto.getParamMap()));
             gameCharacter.setParamMap(paramMap);

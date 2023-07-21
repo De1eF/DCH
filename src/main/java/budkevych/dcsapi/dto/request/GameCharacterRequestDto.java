@@ -10,5 +10,6 @@ public class GameCharacterRequestDto {
     @NotBlank
     private String name;
     private Long portraitId;
+    private Map<String, Object> data;
     private Map<String, Object> paramMap;
 }

@@ -32,6 +32,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
         user.setRoles(Set.of(roleService.findByRoleName("USER")));
+        user.setPortraitId(1L);
         return userService.add(user);
     }
 

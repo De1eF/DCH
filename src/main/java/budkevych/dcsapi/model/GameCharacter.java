@@ -30,6 +30,8 @@ public class GameCharacter {
     @Column(name = "user_id")
     private Long userId;
     private String name;
+    @Column(name = "data")
+    private String data;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id")
     @MapsId
@@ -38,4 +40,24 @@ public class GameCharacter {
     private Long portraitId = 0L;
     @Column(name = "is_deleted")
     private Short isDeleted;
+
+    public GameCharacter() {
+
+    }
+
+    public GameCharacter(Long id,
+                         Long lastUpdate,
+                         Long userId,
+                         String name,
+                         Long portraitId,
+                         Short isDeleted,
+                         String data) {
+        this.id = id;
+        this.lastUpdate = lastUpdate;
+        this.userId = userId;
+        this.name = name;
+        this.portraitId = portraitId;
+        this.isDeleted = isDeleted;
+        this.data = data;
+    }
 }

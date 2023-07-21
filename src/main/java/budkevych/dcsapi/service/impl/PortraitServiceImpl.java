@@ -20,8 +20,8 @@ public class PortraitServiceImpl implements PortraitService {
     }
 
     @Override
-    public void addPortrait(Portrait portrait) {
-        portraitRepository.save(portrait);
+    public Portrait addPortrait(Portrait portrait) {
+        return portraitRepository.save(portrait);
     }
 
     @Override

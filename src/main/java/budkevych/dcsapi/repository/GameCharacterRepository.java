@@ -9,11 +9,29 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GameCharacterRepository extends JpaRepository<GameCharacter, Long> {
+    @Query("SELECT NEW GameCharacter(c.id,"
+            + " c.lastUpdate,"
+            + " c.userId,"
+            + " c.name,"
+            + " c.portraitId,"
+            + " c.isDeleted,"
+            + " c.data) "
+            + "FROM GameCharacter c "
+            + "WHERE c.userId = :userId AND c.isDeleted = :isDeleted")
     List<GameCharacter> findAllByUserIdAndIsDeleted(Long userId, Short isDeleted);
 
     List<GameCharacter> findAllByIsDeleted(
             Short isDeleted);
 
+    @Query("SELECT NEW GameCharacter(c.id,"
+            + " c.lastUpdate,"
+            + " c.userId, "
+            + "c.name,"
+            + " c.portraitId,"
+            + " c.isDeleted,"
+            + " c.data) "
+            + "FROM GameCharacter c "
+            + "WHERE c.id = :id AND c.isDeleted = :isDeleted")
     Optional<GameCharacter> findByIdAndIsDeleted(
             Long id,
             Short isDeleted

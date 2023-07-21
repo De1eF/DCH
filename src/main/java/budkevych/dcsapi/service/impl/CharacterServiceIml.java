@@ -28,16 +28,18 @@ public class CharacterServiceIml implements CharacterService {
         GameCharacter character = gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Game character not found for id " + id));
-        ParamMap paramMap = new ParamMap();
-        paramMap.setId(id);
-        paramMap.setData("{}");
-        character.setParamMap(paramMap);
+        //param map isn't loaded from the db, still has to be set to an empty one
+        character.setParamMap(ParamMap.builder().id(id).data("{}").build());
         return character;
     }
 
     @Override
     public List<GameCharacter> findAllByUserId(Long userId) {
-        return gameCharacterRepository.findAllByUserIdAndIsDeleted(userId, (short) 0);
+        //param map isn't loaded from the db, still has to be set to an empty one
+        return gameCharacterRepository.findAllByUserIdAndIsDeleted(userId, (short) 0)
+                .stream()
+                .peek(c -> c.setParamMap(ParamMap.builder().id(c.getId()).data("{}").build())
+                ).toList();
     }
 
     @Override
@@ -48,6 +50,12 @@ public class CharacterServiceIml implements CharacterService {
     @Override
     public GameCharacter save(GameCharacter gameCharacter) {
         gameCharacter.setLastUpdate(System.currentTimeMillis());
+        if (gameCharacter.getData() == null) {
+            gameCharacter.setData("{}");
+        }
+        if (gameCharacter.getPortraitId() == null) {
+            gameCharacter.setPortraitId(1L);
+        }
         if (gameCharacter.getParamMap() == null) {
             gameCharacter.setParamMap(new ParamMap());
         }
