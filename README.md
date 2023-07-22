@@ -27,7 +27,7 @@ D&D Character Helper
  <li>Install Docker</li>
  <li>Create a folder anywhere on your machine</li>
  <li>Download the <a href="https://github.com/De1eF/DCH/blob/main/docker-compose.yaml">docker-compose</a> and <a href="https://github.com/De1eF/DCH/blob/main/.env">env</a> files into the folder you have created </li>
- <li>Run command - <em>"docker pull delef/dcs-api"</em></li>
+ <li>Install dcs-api image into the folder</em></li>
  <li>Run command - <em>"docker compose up"</em></li>
  <li>You can control the workflow via Docker Desktop or Docker commands</li>
  <li>Endpoints may be viewed here <a href="http://127.0.0.1:1290/swagger-ui/index.html">Open Swagger</a> <br>
