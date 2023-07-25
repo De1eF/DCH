@@ -75,7 +75,7 @@ public class SecurityConfig {
                                 .permitAll()
 
                                 .requestMatchers("/check-token")
-                                .authenticated()
+                                .hasAnyRole("USER", "ADMIN")
 
                                 .requestMatchers(HttpMethod.GET, "/users/**")
                                 .hasAnyRole("USER", "ADMIN")
@@ -90,6 +90,9 @@ public class SecurityConfig {
                                 .hasRole("ADMIN")
 
                                 .requestMatchers("/sessions/**")
+                                .hasAnyRole("ADMIN", "USER")
+
+                                .requestMatchers("/portraits/**")
                                 .hasAnyRole("ADMIN", "USER")
 
                                 .anyRequest().authenticated()
