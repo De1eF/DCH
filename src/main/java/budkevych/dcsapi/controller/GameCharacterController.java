@@ -2,6 +2,7 @@ package budkevych.dcsapi.controller;
 
 import budkevych.dcsapi.dto.mapper.GameCharacterMapper;
 import budkevych.dcsapi.dto.mapper.OwnershipRequestMapper;
+import budkevych.dcsapi.dto.request.CountDto;
 import budkevych.dcsapi.dto.request.GameCharacterRequestDto;
 import budkevych.dcsapi.dto.request.OwnershipRequestDto;
 import budkevych.dcsapi.dto.response.ActionResponseDto;
@@ -114,6 +115,16 @@ public class GameCharacterController {
         return ActionResponseDto
                 .builder()
                 .message("Ownership added")
+                .build();
+    }
+
+    @GetMapping("/owners/requests/count")
+    @Operation(summary = "get count of incoming requests")
+    public CountDto countOwnershipRequests(Authentication auth) {
+        User user = authenticationService.getAuthenticated(auth);
+        return CountDto
+                .builder()
+                .count(characterService.countRequests(user.getId()))
                 .build();
     }
 

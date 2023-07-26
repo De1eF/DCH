@@ -15,6 +15,8 @@ public interface CharacterService {
 
     GameCharacter update(Long id, GameCharacter gameCharacter);
 
+    Long countRequests(Long ownerId);
+
     void requestOwnership(Long id, Long requesterId, Long ownerId);
 
     void acceptOwnership(Long requestId);

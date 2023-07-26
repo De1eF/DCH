@@ -91,6 +91,8 @@ public class CharacterServiceIml implements CharacterService {
         return oldGameCharacter;
     }
 
+
+
     @Override
     public GameCharacter addOwner(Long id, Long userId) {
         GameCharacter oldGameCharacter = find(id, (short) 0, true);
@@ -114,6 +116,11 @@ public class CharacterServiceIml implements CharacterService {
         ownershipRequest.setRequesterId(requesterId);
         ownershipRequest.setOwnerId(ownerId);
         ownershipRepository.save(ownershipRequest);
+    }
+
+    @Override
+    public Long countRequests(Long ownerId) {
+        return ownershipRepository.countByOwnerId(ownerId);
     }
 
     @Override
