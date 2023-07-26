@@ -1,6 +1,5 @@
 package budkevych.dcsapi.dto.response;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data

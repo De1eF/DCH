@@ -6,7 +6,6 @@ import budkevych.dcsapi.model.GameCharacter;
 import budkevych.dcsapi.model.ParamMap;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import lombok.RequiredArgsConstructor;

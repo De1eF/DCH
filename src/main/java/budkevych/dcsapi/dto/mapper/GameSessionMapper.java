@@ -5,8 +5,6 @@ import budkevych.dcsapi.dto.response.GameCharacterResponseDto;
 import budkevych.dcsapi.dto.response.GameSessionResponseDto;
 import budkevych.dcsapi.dto.response.UserResponseDto;
 import budkevych.dcsapi.model.GameSession;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;

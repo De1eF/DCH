@@ -10,7 +10,6 @@ import budkevych.dcsapi.dto.response.OwnershipRequestResponseDto;
 import budkevych.dcsapi.dto.response.TimestampResponseDto;
 import budkevych.dcsapi.exception.NoAccessException;
 import budkevych.dcsapi.model.GameCharacter;
-import budkevych.dcsapi.model.OwnershipRequest;
 import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.model.UserRole;
 import budkevych.dcsapi.security.AuthenticationService;
@@ -19,7 +18,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -141,6 +139,15 @@ public class GameCharacterController {
                     .build();
         } catch (NoAccessException e) {
             User user = authenticationService.getAuthenticated(auth);
+            if (characterService.getOwnershipRequests(dto.getOwnerId())
+                    .stream()
+                    .anyMatch(r -> r.getRequesterId().equals(user.getId())
+                            && r.getCharacterId().equals(dto.getCharacterId()))) {
+                return ActionResponseDto
+                        .builder()
+                        .message("Already requested")
+                        .build();
+            }
             characterService.requestOwnership(dto.getCharacterId(),
                     user.getId(), dto.getOwnerId());
             return ActionResponseDto
@@ -168,6 +175,12 @@ public class GameCharacterController {
                                          @PathVariable Long id,
                                          @PathVariable Long userId) {
         getAccessibleCharacter(auth, id);
+        if (!characterService.find(id, (short) 0, false).getId().equals(id)) {
+            return ActionResponseDto
+                    .builder()
+                    .message("User %s doesn't own character %s".formatted(userId, id))
+                    .build();
+        }
         characterService.removeOwner(id, userId);
         return ActionResponseDto
                 .builder()
@@ -205,7 +218,7 @@ public class GameCharacterController {
         User user = authenticationService.getAuthenticated(auth);
         if (!gameCharacter.getOwners().contains(user)
                 && user.getRoles().stream().noneMatch(
-                userRole -> userRole.getRoleName().equals(UserRole.RoleName.ADMIN))) {
+                    userRole -> userRole.getRoleName().equals(UserRole.RoleName.ADMIN))) {
             throw new NoAccessException("You can only access your characters");
         }
         return gameCharacter;

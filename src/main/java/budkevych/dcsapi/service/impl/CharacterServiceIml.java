@@ -27,15 +27,15 @@ public class CharacterServiceIml implements CharacterService {
         if (loadParamMap) {
             GameCharacter gameCharacter =
                     gameCharacterRepository.findByIdAndIsDeletedWithParamMap(id, isDeleted)
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Game character not found for id " + id));
+                            .orElseThrow(() -> new ResourceNotFoundException(
+                                    "Game character not found for id " + id));
             setOwnersRoles(gameCharacter);
             return gameCharacter;
         }
         GameCharacter gameCharacter =
                 gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Game character not found for id " + id));
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Game character not found for id " + id));
         //param map isn't loaded from the db, still has to be set to an empty one
         gameCharacter.setParamMap(ParamMap.builder().id(id).data("{}").build());
         setOwnersRoles(gameCharacter);
@@ -80,8 +80,8 @@ public class CharacterServiceIml implements CharacterService {
         oldGameCharacter.setName(gameCharacter.getName());
         ParamMap paramMap = gameCharacter.getParamMap();
         paramMap.setId(id);
-        if (gameCharacter.getOwners() != null &&
-         !gameCharacter.getOwners().isEmpty()) {
+        if (gameCharacter.getOwners() != null
+                && !gameCharacter.getOwners().isEmpty()) {
             oldGameCharacter.setOwners(gameCharacter.getOwners());
         }
         oldGameCharacter.setParamMap(paramMap);
@@ -126,7 +126,7 @@ public class CharacterServiceIml implements CharacterService {
     @Override
     public void acceptOwnership(Long requestId) {
         OwnershipRequest request = getOwnershipRequest(requestId);
-        addOwner(request.getCharacterId(), request.getOwnerId());
+        addOwner(request.getCharacterId(), request.getRequesterId());
         denyOwnership(requestId);
     }
 
