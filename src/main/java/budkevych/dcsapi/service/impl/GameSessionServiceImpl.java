@@ -63,7 +63,7 @@ public class GameSessionServiceImpl implements GameSessionService {
         GameSession gameSession = find(id);
         GameCharacter gameCharacter = characterService.find(characterId, (short) 0, false);
         gameSession.getCharactersInSession().add(gameCharacter);
-        gameSession.getUsers().add(userService.findById(gameCharacter.getUserId()));
+        gameSession.getUsers().addAll(gameCharacter.getOwners());
         gameSessionRepository.save(gameSession);
         return gameSession;
     }

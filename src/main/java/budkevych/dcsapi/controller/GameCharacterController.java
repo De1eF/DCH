@@ -1,12 +1,16 @@
 package budkevych.dcsapi.controller;
 
 import budkevych.dcsapi.dto.mapper.GameCharacterMapper;
+import budkevych.dcsapi.dto.mapper.OwnershipRequestMapper;
 import budkevych.dcsapi.dto.request.GameCharacterRequestDto;
+import budkevych.dcsapi.dto.request.OwnershipRequestDto;
 import budkevych.dcsapi.dto.response.ActionResponseDto;
 import budkevych.dcsapi.dto.response.GameCharacterResponseDto;
+import budkevych.dcsapi.dto.response.OwnershipRequestResponseDto;
 import budkevych.dcsapi.dto.response.TimestampResponseDto;
 import budkevych.dcsapi.exception.NoAccessException;
 import budkevych.dcsapi.model.GameCharacter;
+import budkevych.dcsapi.model.OwnershipRequest;
 import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.model.UserRole;
 import budkevych.dcsapi.security.AuthenticationService;
@@ -15,12 +19,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -37,6 +43,7 @@ public class GameCharacterController {
     private final CharacterService characterService;
     private final GameCharacterMapper mapper;
     private final AuthenticationService authenticationService;
+    private final OwnershipRequestMapper ownershipRequestMapper;
 
     @GetMapping("/check-update/{id}")
     @CrossOrigin
@@ -84,31 +91,97 @@ public class GameCharacterController {
                     .status(HttpStatus.FORBIDDEN)
                     .body("You cannot create more than 10 characters");
         }
-        gameCharacter.setUserId(forUser.getId());
+        gameCharacter.getOwners().add(forUser);
         return ResponseEntity
                 .ok(mapper.toDto(characterService.save(gameCharacter)));
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "update object in db \n"
             + "if user isn't specified in the body, will take currently logged in one")
-    public ResponseEntity<?> update(Authentication auth,
-                                    @PathVariable Long id,
-                                    @RequestBody @Valid GameCharacterRequestDto dto) {
+    public GameCharacterResponseDto update(Authentication auth,
+                                           @PathVariable Long id,
+                                           @RequestBody @Valid GameCharacterRequestDto dto) {
         getAccessibleCharacter(auth, id);
         GameCharacter gameCharacter = mapper.toModel(dto);
-        return ResponseEntity
-                .ok(mapper.toDto(characterService.update(id, gameCharacter)));
+        return mapper.toDto(characterService.update(id, gameCharacter));
     }
 
-    @DeleteMapping("{id}")
+    @PatchMapping("/owners/{id}")
+    @Operation(summary = "accept ownership request")
+    public ActionResponseDto acceptOwnership(Authentication auth,
+                                             @PathVariable Long id) {
+        checkOwnershipRequest(auth, id);
+        characterService.acceptOwnership(id);
+        return ActionResponseDto
+                .builder()
+                .message("Ownership added")
+                .build();
+    }
+
+    @GetMapping("/owners/requests")
+    @Operation(summary = "get your requests")
+    public List<OwnershipRequestResponseDto> getOwnershipRequests(Authentication auth) {
+        User user = authenticationService.getAuthenticated(auth);
+        return characterService.getOwnershipRequests(user.getId())
+                .stream()
+                .map(ownershipRequestMapper::toDto)
+                .toList();
+    }
+
+    @PutMapping("/owners/requests")
+    @Operation(summary = "request ownership")
+    public ActionResponseDto requestOwnership(Authentication auth,
+                                              @RequestBody @Valid OwnershipRequestDto dto) {
+        try {
+            getAccessibleCharacter(auth, dto.getCharacterId());
+            return ActionResponseDto
+                    .builder()
+                    .message("You are already an owner")
+                    .build();
+        } catch (NoAccessException e) {
+            User user = authenticationService.getAuthenticated(auth);
+            characterService.requestOwnership(dto.getCharacterId(),
+                    user.getId(), dto.getOwnerId());
+            return ActionResponseDto
+                    .builder()
+                    .message("Ownership requested")
+                    .build();
+        }
+    }
+
+    @DeleteMapping("/owners/requests/{id}")
+    @Operation(summary = "deny ownership request")
+    public ActionResponseDto denyOwnership(Authentication auth,
+                                           @PathVariable Long id) {
+        checkOwnershipRequest(auth, id);
+        characterService.denyOwnership(id);
+        return ActionResponseDto
+                .builder()
+                .message("Ownership denied")
+                .build();
+    }
+
+    @DeleteMapping("/{id}/owners/{userId}")
+    @Operation(summary = "remove owner")
+    public ActionResponseDto removeOwner(Authentication auth,
+                                         @PathVariable Long id,
+                                         @PathVariable Long userId) {
+        getAccessibleCharacter(auth, id);
+        characterService.removeOwner(id, userId);
+        return ActionResponseDto
+                .builder()
+                .message("Ownership removed for user %s".formatted(userId))
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
     @Operation(summary = "soft delete character by id")
-    public ResponseEntity<?> delete(Authentication auth,
+    public ActionResponseDto delete(Authentication auth,
                                     @PathVariable Long id) {
         getAccessibleCharacter(auth, id);
         characterService.delete(id);
-        return ResponseEntity
-                .ok(ActionResponseDto.builder().message("Character deleted").build());
+        return ActionResponseDto.builder().message("Character deleted").build();
     }
 
     @GetMapping("/recover/{id}")
@@ -119,13 +192,20 @@ public class GameCharacterController {
                 .ok(ActionResponseDto.builder().message("Character recovered").build());
     }
 
+    private void checkOwnershipRequest(Authentication auth, Long requestId) {
+        User user = authenticationService.getAuthenticated(auth);
+        if (!characterService.getOwnershipRequest(requestId).getOwnerId().equals(user.getId())) {
+            throw new NoAccessException("Not your request");
+        }
+    }
+
     private GameCharacter getAccessibleCharacter(Authentication auth,
                                                  Long id) {
         GameCharacter gameCharacter = characterService.find(id, (short) 0, false);
         User user = authenticationService.getAuthenticated(auth);
-        if (!gameCharacter.getUserId().equals(user.getId())
+        if (!gameCharacter.getOwners().contains(user)
                 && user.getRoles().stream().noneMatch(
-                    userRole -> userRole.getRoleName().equals(UserRole.RoleName.ADMIN))) {
+                userRole -> userRole.getRoleName().equals(UserRole.RoleName.ADMIN))) {
             throw new NoAccessException("You can only access your characters");
         }
         return gameCharacter;

@@ -9,37 +9,28 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GameCharacterRepository extends JpaRepository<GameCharacter, Long> {
-    @Query("SELECT NEW GameCharacter(c.id,"
-            + " c.lastUpdate,"
-            + " c.userId,"
-            + " c.name,"
-            + " c.portraitId,"
-            + " c.isDeleted,"
-            + " c.data) "
+    @Query("SELECT c "
             + "FROM GameCharacter c "
-            + "WHERE c.userId = :userId AND c.isDeleted = :isDeleted")
+            + "JOIN FETCH c.owners o "
+            + "WHERE o.id = :userId AND c.isDeleted = :isDeleted")
     List<GameCharacter> findAllByUserIdAndIsDeleted(Long userId, Short isDeleted);
 
     List<GameCharacter> findAllByIsDeleted(
             Short isDeleted);
 
-    @Query("SELECT NEW GameCharacter(c.id,"
-            + " c.lastUpdate,"
-            + " c.userId, "
-            + "c.name,"
-            + " c.portraitId,"
-            + " c.isDeleted,"
-            + " c.data) "
-            + "FROM GameCharacter c "
+    @Query("SELECT c FROM GameCharacter c LEFT JOIN FETCH c.owners "
             + "WHERE c.id = :id AND c.isDeleted = :isDeleted")
     Optional<GameCharacter> findByIdAndIsDeleted(
             Long id,
             Short isDeleted
     );
 
-    Long countAllByUserId(Long userId);
+    @Query("SELECT COUNT(c) FROM GameCharacter c JOIN c.owners o WHERE o.id = :userId")
+    Long countAllByOwners(Long userId);
 
-    @Query("SELECT c FROM GameCharacter c LEFT JOIN FETCH c.paramMap "
+    @Query("SELECT c FROM GameCharacter c "
+            + "LEFT JOIN FETCH c.owners "
+            + "LEFT JOIN FETCH c.paramMap "
             + "WHERE c.id = :id AND c.isDeleted = :isDeleted")
     Optional<GameCharacter> findByIdAndIsDeletedWithParamMap(Long id, Short isDeleted);
 }

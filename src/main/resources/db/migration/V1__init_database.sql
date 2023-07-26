@@ -39,6 +39,19 @@ CREATE TABLE IF NOT EXISTS characters (
     is_deleted INT
     ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS characters_users (
+      id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+      character_id BIGINT REFERENCES `characters` (`id`),
+      user_id BIGINT REFERENCES `users` (`id`)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS ownership_requests (
+    id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    character_id BIGINT,
+    requester_id BIGINT,
+    owner_id BIGINT
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS param_maps (
     id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     data VARCHAR(4096)

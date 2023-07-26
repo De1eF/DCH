@@ -2,35 +2,44 @@ package budkevych.dcsapi.service.impl;
 
 import budkevych.dcsapi.exception.ResourceNotFoundException;
 import budkevych.dcsapi.model.GameCharacter;
+import budkevych.dcsapi.model.OwnershipRequest;
 import budkevych.dcsapi.model.ParamMap;
 import budkevych.dcsapi.repository.GameCharacterRepository;
+import budkevych.dcsapi.repository.OwnershipRequestRepository;
 import budkevych.dcsapi.service.CharacterService;
+import budkevych.dcsapi.service.UserService;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
 public class CharacterServiceIml implements CharacterService {
-    private static final String DEFAULT_PORTRAIT =
-            "server/dcs-api/src/main/resources/pictures/portrait-default.png";
-
     private final GameCharacterRepository gameCharacterRepository;
+    private final UserService userService;
+    private final OwnershipRequestRepository ownershipRepository;
 
     @Override
     public GameCharacter find(Long id, Short isDeleted, boolean loadParamMap) {
         if (loadParamMap) {
-            return gameCharacterRepository.findByIdAndIsDeletedWithParamMap(id, isDeleted)
+            GameCharacter gameCharacter =
+                    gameCharacterRepository.findByIdAndIsDeletedWithParamMap(id, isDeleted)
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "Game character not found for id " + id));
+            setOwnersRoles(gameCharacter);
+            return gameCharacter;
         }
-        GameCharacter character = gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted)
+        GameCharacter gameCharacter =
+                gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Game character not found for id " + id));
         //param map isn't loaded from the db, still has to be set to an empty one
-        character.setParamMap(ParamMap.builder().id(id).data("{}").build());
-        return character;
+        gameCharacter.setParamMap(ParamMap.builder().id(id).data("{}").build());
+        setOwnersRoles(gameCharacter);
+        return gameCharacter;
     }
 
     @Override
@@ -38,13 +47,15 @@ public class CharacterServiceIml implements CharacterService {
         //param map isn't loaded from the db, still has to be set to an empty one
         return gameCharacterRepository.findAllByUserIdAndIsDeleted(userId, (short) 0)
                 .stream()
-                .peek(c -> c.setParamMap(ParamMap.builder().id(c.getId()).data("{}").build())
-                ).toList();
+                .peek(c -> {
+                    c.setParamMap(ParamMap.builder().id(c.getId()).data("{}").build());
+                    setOwnersRoles(c);
+                }).toList();
     }
 
     @Override
     public Long countAllByUserId(Long userId) {
-        return gameCharacterRepository.countAllByUserId(userId);
+        return gameCharacterRepository.countAllByOwners(userId);
     }
 
     @Override
@@ -69,10 +80,64 @@ public class CharacterServiceIml implements CharacterService {
         oldGameCharacter.setName(gameCharacter.getName());
         ParamMap paramMap = gameCharacter.getParamMap();
         paramMap.setId(id);
+        if (gameCharacter.getOwners() != null &&
+         !gameCharacter.getOwners().isEmpty()) {
+            oldGameCharacter.setOwners(gameCharacter.getOwners());
+        }
         oldGameCharacter.setParamMap(paramMap);
         oldGameCharacter.setLastUpdate(System.currentTimeMillis());
         oldGameCharacter.setPortraitId(gameCharacter.getPortraitId());
-        return gameCharacterRepository.save(oldGameCharacter);
+        gameCharacterRepository.save(oldGameCharacter);
+        return oldGameCharacter;
+    }
+
+    @Override
+    public GameCharacter addOwner(Long id, Long userId) {
+        GameCharacter oldGameCharacter = find(id, (short) 0, true);
+        oldGameCharacter.getOwners().add(userService.findById(userId));
+        gameCharacterRepository.save(oldGameCharacter);
+        return oldGameCharacter;
+    }
+
+    @Override
+    public GameCharacter removeOwner(Long id, Long userId) {
+        GameCharacter oldGameCharacter = find(id, (short) 0, true);
+        oldGameCharacter.getOwners().remove(userService.findById(userId));
+        gameCharacterRepository.save(oldGameCharacter);
+        return oldGameCharacter;
+    }
+
+    @Override
+    public void requestOwnership(Long id, Long requesterId, Long ownerId) {
+        OwnershipRequest ownershipRequest = new OwnershipRequest();
+        ownershipRequest.setCharacterId(id);
+        ownershipRequest.setRequesterId(requesterId);
+        ownershipRequest.setOwnerId(ownerId);
+        ownershipRepository.save(ownershipRequest);
+    }
+
+    @Override
+    public OwnershipRequest getOwnershipRequest(Long requestId) {
+        return ownershipRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Ownership request not found for id " + requestId));
+    }
+
+    @Override
+    public void acceptOwnership(Long requestId) {
+        OwnershipRequest request = getOwnershipRequest(requestId);
+        addOwner(request.getCharacterId(), request.getOwnerId());
+        denyOwnership(requestId);
+    }
+
+    @Override
+    public void denyOwnership(Long requestId) {
+        ownershipRepository.deleteById(requestId);
+    }
+
+    @Override
+    public List<OwnershipRequest> getOwnershipRequests(Long ownerId) {
+        return ownershipRepository.findAllByOwnerId(ownerId);
     }
 
     @Override
@@ -93,5 +158,16 @@ public class CharacterServiceIml implements CharacterService {
         gameCharacter.setIsDeleted((short) 0);
         save(gameCharacter);
         return gameCharacter;
+    }
+
+    private static void setOwnersRoles(GameCharacter gameCharacter) {
+        if (gameCharacter.getOwners() == null) {
+            gameCharacter.setOwners(new HashSet<>());
+            return;
+        }
+        gameCharacter.setOwners(gameCharacter.getOwners()
+                .stream()
+                .peek(o -> o.setRoles(new HashSet<>()))
+                .collect(Collectors.toSet()));
     }
 }

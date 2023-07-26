@@ -1,6 +1,7 @@
 package budkevych.dcsapi.service;
 
 import budkevych.dcsapi.model.GameCharacter;
+import budkevych.dcsapi.model.OwnershipRequest;
 import java.util.List;
 
 public interface CharacterService {
@@ -13,6 +14,20 @@ public interface CharacterService {
     GameCharacter save(GameCharacter gameCharacter);
 
     GameCharacter update(Long id, GameCharacter gameCharacter);
+
+    void requestOwnership(Long id, Long requesterId, Long ownerId);
+
+    void acceptOwnership(Long requestId);
+
+    void denyOwnership(Long requestId);
+
+    OwnershipRequest getOwnershipRequest(Long requestId);
+
+    List<OwnershipRequest> getOwnershipRequests(Long ownerId);
+
+    GameCharacter addOwner(Long id, Long userId);
+
+    GameCharacter removeOwner(Long id, Long userId);
 
     void delete(Long id);
 

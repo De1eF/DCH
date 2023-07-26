@@ -9,10 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class GameSessionMapper {
+    private final GameCharacterMapper gameCharacterMapper;
+    private final UserMapper userMapper;
+
     public GameSessionResponseDto toDto(GameSession session) {
         GameSessionResponseDto dto = new GameSessionResponseDto();
         dto.setId(session.getId());
@@ -22,30 +27,13 @@ public class GameSessionMapper {
         Set<GameCharacterResponseDto> gameCharacterResponseDtoSet =
                 session.getCharactersInSession()
                         .stream()
-                        .map(c -> {
-                            GameCharacterResponseDto gameCharacterResponseDto =
-                                    new GameCharacterResponseDto();
-                            gameCharacterResponseDto.setTimestamp(c.getLastUpdate());
-                            gameCharacterResponseDto.setName(c.getName());
-                            gameCharacterResponseDto.setId(c.getId());
-                            gameCharacterResponseDto.setUserId(c.getUserId());
-                            gameCharacterResponseDto.setParamMap(Map.of());
-                            return gameCharacterResponseDto;
-                        }).collect(Collectors.toSet());
+                        .map(gameCharacterMapper::toDto).collect(Collectors.toSet());
         dto.setGameCharacters(gameCharacterResponseDtoSet);
 
         Set<UserResponseDto> userResponseDtoSet =
                 session.getUsers()
                         .stream()
-                        .map(u -> {
-                            UserResponseDto userResponseDto =
-                                    new UserResponseDto();
-                            userResponseDto.setId(u.getId());
-                            userResponseDto.setEmail(u.getEmail());
-                            userResponseDto.setUsername(u.getUsername());
-                            userResponseDto.setRoles(List.of());
-                            return userResponseDto;
-                        }).collect(Collectors.toSet());
+                        .map(userMapper::mapToDto).collect(Collectors.toSet());
 
         dto.setUsers(userResponseDtoSet);
         dto.setCreatedOn(session.getSessionStartedAt());
