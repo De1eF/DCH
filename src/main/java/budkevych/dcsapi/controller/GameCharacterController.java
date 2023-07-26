@@ -15,6 +15,7 @@ import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.model.UserRole;
 import budkevych.dcsapi.security.AuthenticationService;
 import budkevych.dcsapi.service.CharacterService;
+import budkevych.dcsapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -43,18 +44,19 @@ public class GameCharacterController {
     private final GameCharacterMapper mapper;
     private final AuthenticationService authenticationService;
     private final OwnershipRequestMapper ownershipRequestMapper;
+    private final UserService userService;
 
     @GetMapping("/check-update/{id}")
     @CrossOrigin
     @Operation(summary = "checks if incoming object is up to date, returns new version if not")
     public ResponseEntity<?> getUpToDate(@PathVariable Long id,
                                          @RequestParam Long timestamp) {
-        GameCharacter gameCharacter = characterService.find(id, (short) 0, false);
+        GameCharacter gameCharacter = characterService.find(id, (short) 0, false, false);
         TimestampResponseDto timestampResponseDto = new TimestampResponseDto();
         timestampResponseDto.setTimestamp(gameCharacter.getLastUpdate());
         if (!gameCharacter.getLastUpdate().equals(timestamp)) {
             timestampResponseDto.setObject(mapper.toDto(
-                    characterService.find(id, (short) 0, true)));
+                    characterService.find(id, (short) 0, true, true)));
         }
         return ResponseEntity.ok(timestampResponseDto);
     }
@@ -62,7 +64,7 @@ public class GameCharacterController {
     @GetMapping("{id}")
     @Operation(summary = "get character by id")
     public ResponseEntity<?> get(@PathVariable Long id) {
-        GameCharacter gameCharacter = characterService.find(id, (short) 0, false);
+        GameCharacter gameCharacter = characterService.find(id, (short) 0, false, true);
         return ResponseEntity.ok(mapper.toDto(gameCharacter));
     }
 
@@ -134,7 +136,12 @@ public class GameCharacterController {
         User user = authenticationService.getAuthenticated(auth);
         return characterService.getOwnershipRequests(user.getId())
                 .stream()
-                .map(ownershipRequestMapper::toDto)
+                .map(r -> ownershipRequestMapper.toDto(
+                        r.getId(),
+                        r.getOwnerId(),
+                        userService.findById(r.getRequesterId()),
+                        characterService.find(r.getCharacterId(), (short)0, false, false)
+                ))
                 .toList();
     }
 
@@ -186,7 +193,7 @@ public class GameCharacterController {
                                          @PathVariable Long id,
                                          @PathVariable Long userId) {
         getAccessibleCharacter(auth, id);
-        if (!characterService.find(id, (short) 0, false).getId().equals(id)) {
+        if (!characterService.find(id, (short) 0, false, true).getId().equals(id)) {
             return ActionResponseDto
                     .builder()
                     .message("User %s doesn't own character %s".formatted(userId, id))
@@ -225,7 +232,7 @@ public class GameCharacterController {
 
     private GameCharacter getAccessibleCharacter(Authentication auth,
                                                  Long id) {
-        GameCharacter gameCharacter = characterService.find(id, (short) 0, false);
+        GameCharacter gameCharacter = characterService.find(id, (short) 0, false, true);
         User user = authenticationService.getAuthenticated(auth);
         if (!gameCharacter.getOwners().contains(user)
                 && user.getRoles().stream().noneMatch(

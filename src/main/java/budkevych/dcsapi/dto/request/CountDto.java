@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @Builder
 public class CountDto {
-    Long count;
+    private Long count;
 }

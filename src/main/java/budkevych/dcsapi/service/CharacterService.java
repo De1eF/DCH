@@ -5,7 +5,7 @@ import budkevych.dcsapi.model.OwnershipRequest;
 import java.util.List;
 
 public interface CharacterService {
-    GameCharacter find(Long id, Short isDeleted, boolean loadParamMap);
+    GameCharacter find(Long id, Short isDeleted, boolean loadParamMap, boolean loadOwners);
 
     List<GameCharacter> findAllByUserId(Long userId);
 

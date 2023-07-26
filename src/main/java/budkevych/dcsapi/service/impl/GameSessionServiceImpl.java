@@ -61,7 +61,7 @@ public class GameSessionServiceImpl implements GameSessionService {
     @Override
     public GameSession addCharacter(Long id, Long characterId) {
         GameSession gameSession = find(id);
-        GameCharacter gameCharacter = characterService.find(characterId, (short) 0, false);
+        GameCharacter gameCharacter = characterService.find(characterId, (short) 0, false, true);
         gameSession.getCharactersInSession().add(gameCharacter);
         gameSession.getUsers().addAll(gameCharacter.getOwners());
         gameSessionRepository.save(gameSession);

@@ -4,6 +4,7 @@ import budkevych.dcsapi.exception.ResourceNotFoundException;
 import budkevych.dcsapi.model.GameCharacter;
 import budkevych.dcsapi.model.OwnershipRequest;
 import budkevych.dcsapi.model.ParamMap;
+import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.repository.GameCharacterRepository;
 import budkevych.dcsapi.repository.OwnershipRequestRepository;
 import budkevych.dcsapi.service.CharacterService;
@@ -11,6 +12,7 @@ import budkevych.dcsapi.service.UserService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,28 +25,27 @@ public class CharacterServiceIml implements CharacterService {
     private final OwnershipRequestRepository ownershipRepository;
 
     @Override
-    public GameCharacter find(Long id, Short isDeleted, boolean loadParamMap) {
-        if (loadParamMap) {
-            GameCharacter gameCharacter =
-                    gameCharacterRepository.findByIdAndIsDeletedWithParamMap(id, isDeleted)
-                            .orElseThrow(() -> new ResourceNotFoundException(
-                                    "Game character not found for id " + id));
-            setOwnersRoles(gameCharacter);
-            return gameCharacter;
-        }
+    public GameCharacter find(Long id, Short isDeleted, boolean loadParamMap, boolean loadOwners) {
+        ParamMap paramMap = ParamMap.builder().id(id).data("{}").build();
+        Set<User> owners = new HashSet<>();
         GameCharacter gameCharacter =
                 gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted)
                         .orElseThrow(() -> new ResourceNotFoundException(
                                 "Game character not found for id " + id));
-        //param map isn't loaded from the db, still has to be set to an empty one
-        gameCharacter.setParamMap(ParamMap.builder().id(id).data("{}").build());
+        if (loadParamMap) {
+            paramMap = gameCharacterRepository.findByIdAndIsDeletedParamMap(id, isDeleted);
+        }
+        if (loadOwners) {
+            owners = gameCharacterRepository.findByIdAndIsDeletedOwners(id, isDeleted);
+        }
+        gameCharacter.setParamMap(paramMap);
+        gameCharacter.setOwners(owners);
         setOwnersRoles(gameCharacter);
         return gameCharacter;
     }
 
     @Override
     public List<GameCharacter> findAllByUserId(Long userId) {
-        //param map isn't loaded from the db, still has to be set to an empty one
         return gameCharacterRepository.findAllByUserIdAndIsDeleted(userId, (short) 0)
                 .stream()
                 .peek(c -> {
@@ -76,7 +77,7 @@ public class CharacterServiceIml implements CharacterService {
     @Override
     public GameCharacter update(Long id, GameCharacter gameCharacter)
             throws NoSuchElementException {
-        GameCharacter oldGameCharacter = find(id, (short) 0, true);
+        GameCharacter oldGameCharacter = find(id, (short) 0, true, true);
         oldGameCharacter.setName(gameCharacter.getName());
         ParamMap paramMap = gameCharacter.getParamMap();
         paramMap.setId(id);
@@ -91,11 +92,9 @@ public class CharacterServiceIml implements CharacterService {
         return oldGameCharacter;
     }
 
-
-
     @Override
     public GameCharacter addOwner(Long id, Long userId) {
-        GameCharacter oldGameCharacter = find(id, (short) 0, true);
+        GameCharacter oldGameCharacter = find(id, (short) 0, true, true);
         oldGameCharacter.getOwners().add(userService.findById(userId));
         gameCharacterRepository.save(oldGameCharacter);
         return oldGameCharacter;
@@ -103,7 +102,7 @@ public class CharacterServiceIml implements CharacterService {
 
     @Override
     public GameCharacter removeOwner(Long id, Long userId) {
-        GameCharacter oldGameCharacter = find(id, (short) 0, true);
+        GameCharacter oldGameCharacter = find(id, (short) 0, true, true);
         oldGameCharacter.getOwners().remove(userService.findById(userId));
         gameCharacterRepository.save(oldGameCharacter);
         return oldGameCharacter;
@@ -149,7 +148,7 @@ public class CharacterServiceIml implements CharacterService {
 
     @Override
     public void delete(Long id) {
-        GameCharacter gameCharacter = find(id, (short) 0, false);
+        GameCharacter gameCharacter = find(id, (short) 0, false, false);
         gameCharacter.setIsDeleted((short) 1);
         save(gameCharacter);
     }
@@ -161,7 +160,7 @@ public class CharacterServiceIml implements CharacterService {
 
     @Override
     public GameCharacter recover(Long id) throws NoSuchElementException {
-        GameCharacter gameCharacter = find(id, (short) 1, false);
+        GameCharacter gameCharacter = find(id, (short) 1, false, false);
         gameCharacter.setIsDeleted((short) 0);
         save(gameCharacter);
         return gameCharacter;
