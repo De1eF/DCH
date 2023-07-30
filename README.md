@@ -8,7 +8,6 @@ D&D Character Helper
  <li> Custom icons for users and their characters</li>
  <li> Real-time character synchronization with other users</li>
  <li> User's characters manipulation</li>
- <li> Real-time character synchronization with other users</li>
  <li> User browser</li>
  </ul>
 <br> 
