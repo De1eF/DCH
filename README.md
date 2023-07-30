@@ -4,12 +4,12 @@ D&D Character Helper
 <br> 
 <h2>Features</h2>
 <ul dir="auto">
- <li> Authentication, authorization, and account system
- <li> Custom icons for users and their characters
- <li> Real-time character synchronization with other users
- <li> User's characters manipulation
- <li> Real-time character synchronization with other users
- <li> User browser
+ <li> Authentication, authorization, and account system</li>
+ <li> Custom icons for users and their characters</li>
+ <li> Real-time character synchronization with other users</li>
+ <li> User's characters manipulation</li>
+ <li> Real-time character synchronization with other users</li>
+ <li> User browser</li>
  </ul>
 <br> 
 <h2>Technologies</h2>
