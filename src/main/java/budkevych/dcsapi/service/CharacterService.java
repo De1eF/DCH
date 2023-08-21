@@ -18,7 +18,7 @@ public interface CharacterService {
 
     Long countRequests(Long ownerId);
 
-    void requestOwnership(Long id, Long requesterId, Long ownerId);
+    OwnershipRequest requestOwnership(Long id, Long requesterId, Long ownerId);
 
     void acceptOwnership(Long requestId);
 

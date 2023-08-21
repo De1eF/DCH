@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class MailService {
+    private static JavaMailSenderImpl mailSender;
 
     private final JavaMailServiceImpl javaMailServiceImpl;
-    private static JavaMailSenderImpl mailSender;
 
     @PostConstruct
     private void postConstruct() {

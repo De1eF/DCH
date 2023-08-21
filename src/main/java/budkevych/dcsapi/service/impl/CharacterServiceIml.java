@@ -9,8 +9,13 @@ import budkevych.dcsapi.repository.GameCharacterRepository;
 import budkevych.dcsapi.repository.OwnershipRequestRepository;
 import budkevych.dcsapi.service.CharacterService;
 import budkevych.dcsapi.service.UserService;
+import budkevych.dcsapi.util.Replacer;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,30 +31,42 @@ public class CharacterServiceIml implements CharacterService {
     private final OwnershipRequestRepository ownershipRepository;
 
     @Override
-    public GameCharacter find(Long id, Short isDeleted, boolean loadParamMap, boolean loadOwners) {
+    public GameCharacter find(Long id,
+                              Short isDeleted,
+                              boolean loadParamMap,
+                              boolean loadOwners
+    ) {
         ParamMap paramMap = ParamMap.builder().id(id).data("{}").build();
         Set<User> owners = new HashSet<>();
         GameCharacter gameCharacter;
         if (loadParamMap) {
             if (loadOwners) {
-                gameCharacter = gameCharacterRepository.findByIdAndIsDeletedWithParamMapAndOwners(id, isDeleted)
+                gameCharacter = gameCharacterRepository
+                        .findByIdAndIsDeletedWithParamMapAndOwners(id, isDeleted)
                         .orElseThrow(() -> new ResourceNotFoundException(
-                                "Game character not found for id " + id));
+                                "Game character not found for id " + id)
+                        );
             } else {
-                gameCharacter = gameCharacterRepository.findByIdAndIsDeletedWithParamMap(id, isDeleted)
+                gameCharacter = gameCharacterRepository
+                        .findByIdAndIsDeletedWithParamMap(id, isDeleted)
                         .orElseThrow(() -> new ResourceNotFoundException(
-                                "Game character not found for id " + id));
+                                "Game character not found for id " + id)
+                        );
                 gameCharacter.setOwners(owners);
             }
         } else if (loadOwners) {
-            gameCharacter = gameCharacterRepository.findByIdAndIsDeletedWithOwners(id, isDeleted)
+            gameCharacter = gameCharacterRepository
+                    .findByIdAndIsDeletedWithOwners(id, isDeleted)
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            "Game character not found for id " + id));
+                            "Game character not found for id " + id)
+                    );
             gameCharacter.setParamMap(paramMap);
         } else {
-            gameCharacter = gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted)
+            gameCharacter = gameCharacterRepository
+                    .findByIdAndIsDeleted(id, isDeleted)
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            "Game character not found for id " + id));
+                            "Game character not found for id " + id)
+                    );
             gameCharacter.setParamMap(paramMap);
             gameCharacter.setOwners(owners);
         }
@@ -91,10 +108,25 @@ public class CharacterServiceIml implements CharacterService {
     @Override
     public GameCharacter update(Long id, GameCharacter gameCharacter) {
         GameCharacter oldGameCharacter = find(id, (short) 0, true, true);
-        oldGameCharacter.setName(gameCharacter.getName());
         oldGameCharacter.setLastUpdate(System.currentTimeMillis());
-        oldGameCharacter.setPortraitId(gameCharacter.getPortraitId());
-        oldGameCharacter.setData(gameCharacter.getData());
+        oldGameCharacter.setName(
+                Replacer.replace(
+                        oldGameCharacter.getName(),
+                        gameCharacter.getName()
+                )
+        );
+        oldGameCharacter.setPortraitId(
+                Replacer.replace(
+                        oldGameCharacter.getPortraitId(),
+                        gameCharacter.getPortraitId()
+                )
+        );
+        oldGameCharacter.setData(
+                Replacer.replace(
+                        oldGameCharacter.getData(),
+                        gameCharacter.getData()
+                )
+        );
 
         if (gameCharacter.getOwners() != null
                 && !gameCharacter.getOwners().isEmpty()) {
@@ -128,12 +160,13 @@ public class CharacterServiceIml implements CharacterService {
     }
 
     @Override
-    public void requestOwnership(Long id, Long requesterId, Long ownerId) {
+    public OwnershipRequest requestOwnership(Long id, Long requesterId, Long ownerId) {
         OwnershipRequest ownershipRequest = new OwnershipRequest();
         ownershipRequest.setCharacterId(id);
         ownershipRequest.setRequesterId(requesterId);
         ownershipRequest.setOwnerId(ownerId);
         ownershipRepository.save(ownershipRequest);
+        return ownershipRequest;
     }
 
     @Override
@@ -197,26 +230,14 @@ public class CharacterServiceIml implements CharacterService {
     }
 
     private static String replaceValues(String old, String nw) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("{");
-
-        old = old.substring(1, old.length() - 1);
-        String[] toReplaceWith = nw.substring(1, nw.length() - 1).split(",");
-
-        String[] toReplace = old.split(",");
-        for(int i = 0; i < toReplace.length; i++) {
-            String[] keyValue = toReplace[i].split(":", 2);
-            String key = keyValue[0];
-            for (String toReplaceWithObj : toReplaceWith) {
-                String[] toReplaceWithKeyVale =  toReplaceWithObj.split(":", 2);
-                String toReplaceWithKey = toReplaceWithKeyVale[0];
-
-                if (key.equals(toReplaceWithKey)) {
-                    toReplace[i] = toReplaceWithObj;
-                }
-            }
-            stringBuilder.append(toReplace[i]).append(i == toReplace.length - 1 ? "" : ",");
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> toReplace = mapper.readValue(old, HashMap.class);
+            Map<String, String> toReplaceWith = mapper.readValue(nw, HashMap.class);
+            toReplace.putAll(toReplaceWith);
+            return mapper.writeValueAsString(toReplace);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Unable to merge json values", e);
         }
-        return stringBuilder.append("}").toString();
     }
 }

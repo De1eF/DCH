@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
 public interface GameSessionRepository extends JpaRepository<GameSession, Long> {
     @Query("SELECT s FROM GameSession s JOIN FETCH s.users u WHERE u.id = :userId")

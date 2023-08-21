@@ -35,11 +35,11 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RequiredArgsConstructor
 public class UserController {
-    @Value("${frontend.address}")
-    private String frontAddress;
     private static final String MAIL_HTML =
             "src/main/resources/mail/mailPasswordChange.html";
 
+    @Value("frontend.address")
+    private String frontAddress;
     private final UserService userService;
     private final RoleService roleService;
     private final UserMapper userMapper;

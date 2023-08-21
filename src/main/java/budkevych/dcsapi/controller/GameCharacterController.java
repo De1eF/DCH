@@ -2,10 +2,10 @@ package budkevych.dcsapi.controller;
 
 import budkevych.dcsapi.dto.mapper.GameCharacterMapper;
 import budkevych.dcsapi.dto.mapper.OwnershipRequestMapper;
-import budkevych.dcsapi.dto.response.CountDto;
 import budkevych.dcsapi.dto.request.GameCharacterRequestDto;
 import budkevych.dcsapi.dto.request.OwnershipRequestDto;
 import budkevych.dcsapi.dto.response.ActionResponseDto;
+import budkevych.dcsapi.dto.response.CountDto;
 import budkevych.dcsapi.dto.response.GameCharacterResponseDto;
 import budkevych.dcsapi.dto.response.OwnershipRequestResponseDto;
 import budkevych.dcsapi.dto.response.TimestampResponseDto;
@@ -121,8 +121,10 @@ public class GameCharacterController {
     @PutMapping("/{id}/portrait")
     @Operation(summary = "only update portrait")
     public GameCharacterResponseDto updatePortrait(Authentication auth,
-                                                   @PathVariable Long id,
-                                                   @RequestBody @Valid GameCharacterRequestDto dto) {
+                                                   @PathVariable
+                                                   Long id,
+                                                   @RequestBody @Valid
+                                                   GameCharacterRequestDto dto) {
         getAccessibleCharacter(auth, id);
         GameCharacter gameCharacter = characterService.find(id, (short) 0, true, true);
         gameCharacter.setPortraitId(dto.getPortraitId());
@@ -257,7 +259,7 @@ public class GameCharacterController {
         User user = authenticationService.getAuthenticated(auth);
         if (!gameCharacter.getOwners().contains(user)
                 && user.getRoles().stream().noneMatch(
-                userRole -> userRole.getRoleName().equals(UserRole.RoleName.ADMIN))) {
+                    userRole -> userRole.getRoleName().equals(UserRole.RoleName.ADMIN))) {
             throw new NoAccessException("You can only access your characters");
         }
         return gameCharacter;

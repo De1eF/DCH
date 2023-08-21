@@ -8,11 +8,13 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @Configuration
 public class JavaMailServiceImpl {
+    private static final String MAIL_HTML =
+            "src/main/resources/mail/mailPasswordChange.html";
+
     @Value("${google.login}")
     private String login;
     @Value("${google.password}")
     private String password;
-    private static final String host = "smtp.gmail.com";
 
     @Bean
     public JavaMailSenderImpl mailSender() {

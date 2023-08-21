@@ -1,14 +1,18 @@
 package budkevych.dcsapi.service;
 
 import budkevych.dcsapi.model.GameCharacter;
+import budkevych.dcsapi.model.OwnershipRequest;
 import budkevych.dcsapi.model.ParamMap;
 import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.repository.GameCharacterRepository;
+import budkevych.dcsapi.repository.OwnershipRequestRepository;
 import budkevych.dcsapi.service.impl.CharacterServiceIml;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import budkevych.dcsapi.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +37,13 @@ class CharacterServiceImplTest {
     }
 
     @Mock
+    private OwnershipRequestRepository reqRep;
+
+    @Mock
     private GameCharacterRepository charRep;
+
+    @Mock
+    private UserServiceImpl userServ;
 
     @Test
     void findOk() {
@@ -41,7 +51,7 @@ class CharacterServiceImplTest {
         fromDb.setId(0L);
         fromDb.setName("Vasylij");
         fromDb.setLastUpdate(10000000L);
-        fromDb.setData("{param:1}");
+        fromDb.setData("{\"param\":1}");
         fromDb.setIsDeleted((short)0);
         fromDb.setPortraitId(0L);
         fromDb.setOwners(null);
@@ -53,7 +63,7 @@ class CharacterServiceImplTest {
         expected.setId(0L);
         expected.setName("Vasylij");
         expected.setLastUpdate(10000000L);
-        expected.setData("{param:1}");
+        expected.setData("{\"param\":1}");
         expected.setIsDeleted((short)0);
         expected.setPortraitId(0L);
         expected.setOwners(new HashSet<>());
@@ -70,11 +80,11 @@ class CharacterServiceImplTest {
         fromDbWithParamMap.setId(0L);
         fromDbWithParamMap.setName("Vasylij");
         fromDbWithParamMap.setLastUpdate(10000000L);
-        fromDbWithParamMap.setData("{param:1}");
+        fromDbWithParamMap.setData("{\"param\":1}");
         fromDbWithParamMap.setIsDeleted((short)0);
         fromDbWithParamMap.setPortraitId(0L);
         fromDbWithParamMap.setOwners(null);
-        fromDbWithParamMap.setParamMap(new ParamMap(0L, "{param:1}"));
+        fromDbWithParamMap.setParamMap(new ParamMap(0L, "{\"param\":1}"));
         Mockito.when(charRep.findByIdAndIsDeletedWithParamMap(0L, (short)0))
                 .thenReturn(Optional.of(fromDbWithParamMap));
 
@@ -82,11 +92,11 @@ class CharacterServiceImplTest {
         expected.setId(0L);
         expected.setName("Vasylij");
         expected.setLastUpdate(10000000L);
-        expected.setData("{param:1}");
+        expected.setData("{\"param\":1}");
         expected.setIsDeleted((short)0);
         expected.setPortraitId(0L);
         expected.setOwners(new HashSet<>());
-        expected.setParamMap(new ParamMap(0L, "{param:1}"));
+        expected.setParamMap(new ParamMap(0L, "{\"param\":1}"));
 
         GameCharacter actual = charServ.find(0L, (short)0, true, false);
 
@@ -106,7 +116,7 @@ class CharacterServiceImplTest {
         fromDbWithOwners.setId(0L);
         fromDbWithOwners.setName("Vasylij");
         fromDbWithOwners.setLastUpdate(10000000L);
-        fromDbWithOwners.setData("{param:1}");
+        fromDbWithOwners.setData("{\"param\":1}");
         fromDbWithOwners.setIsDeleted((short)0);
         fromDbWithOwners.setPortraitId(0L);
         fromDbWithOwners.setOwners(Set.of(owner));
@@ -118,7 +128,7 @@ class CharacterServiceImplTest {
         expected.setId(0L);
         expected.setName("Vasylij");
         expected.setLastUpdate(10000000L);
-        expected.setData("{param:1}");
+        expected.setData("{\"param\":1}");
         expected.setIsDeleted((short)0);
         expected.setPortraitId(0L);
         expected.setOwners(Set.of(owner));
@@ -142,11 +152,11 @@ class CharacterServiceImplTest {
         fromDbWithOwnersAndParamMap.setId(0L);
         fromDbWithOwnersAndParamMap.setName("Vasylij");
         fromDbWithOwnersAndParamMap.setLastUpdate(10000000L);
-        fromDbWithOwnersAndParamMap.setData("{param:1}");
+        fromDbWithOwnersAndParamMap.setData("{\"param\":1}");
         fromDbWithOwnersAndParamMap.setIsDeleted((short)0);
         fromDbWithOwnersAndParamMap.setPortraitId(0L);
         fromDbWithOwnersAndParamMap.setOwners(Set.of(owner2));
-        fromDbWithOwnersAndParamMap.setParamMap(new ParamMap(0L, "{param:1}"));
+        fromDbWithOwnersAndParamMap.setParamMap(new ParamMap(0L, "{\"param\":1}"));
         Mockito.when(charRep.findByIdAndIsDeletedWithParamMapAndOwners(0L, (short)0))
                 .thenReturn(Optional.of(fromDbWithOwnersAndParamMap));
 
@@ -154,11 +164,11 @@ class CharacterServiceImplTest {
         expected.setId(0L);
         expected.setName("Vasylij");
         expected.setLastUpdate(10000000L);
-        expected.setData("{param:1}");
+        expected.setData("{\"param\":1}");
         expected.setIsDeleted((short)0);
         expected.setPortraitId(0L);
         expected.setOwners(Set.of(owner2));
-        expected.setParamMap(new ParamMap(0L, "{param:1}"));
+        expected.setParamMap(new ParamMap(0L, "{\"param\":1}"));
 
         GameCharacter actual = charServ.find(0L, (short)0, true, true);
 
@@ -171,7 +181,7 @@ class CharacterServiceImplTest {
         fromDbForUser.setId(0L);
         fromDbForUser.setName("Vasylij");
         fromDbForUser.setLastUpdate(10000000L);
-        fromDbForUser.setData("{param:1}");
+        fromDbForUser.setData("{\"param\":1}");
         fromDbForUser.setIsDeleted((short)0);
         fromDbForUser.setPortraitId(0L);
         fromDbForUser.setOwners(null);
@@ -183,7 +193,7 @@ class CharacterServiceImplTest {
         expected.setId(0L);
         expected.setName("Vasylij");
         expected.setLastUpdate(10000000L);
-        expected.setData("{param:1}");
+        expected.setData("{\"param\":1}");
         expected.setIsDeleted((short)0);
         expected.setPortraitId(0L);
         expected.setOwners(new HashSet<>());
@@ -221,49 +231,287 @@ class CharacterServiceImplTest {
 
     @Test
     void update() {
+        GameCharacter toSave = new GameCharacter();
+        toSave.setName("name");
+        toSave.setIsDeleted((short)0);
+        toSave.setOwners(new HashSet<>());
+        toSave.setPortraitId(null);
+        toSave.setParamMap(new ParamMap(0L, "{\"param\":2}"));
+
+        User owner2 = new User();
+        owner2.setId(0L);
+        owner2.setUsername("Martin");
+        owner2.setUsername("$idp3904-g0jf");
+        owner2.setEmail("martin@mail.com");
+        owner2.setPortraitId(0L);
+        owner2.setRoles(new HashSet<>());
+        GameCharacter fromDbWithOwnersAndParamMap = new GameCharacter();
+        fromDbWithOwnersAndParamMap.setId(0L);
+        fromDbWithOwnersAndParamMap.setName("Vasylij");
+        fromDbWithOwnersAndParamMap.setLastUpdate(10000000L);
+        fromDbWithOwnersAndParamMap.setData("{\"param\":1}");
+        fromDbWithOwnersAndParamMap.setIsDeleted((short)0);
+        fromDbWithOwnersAndParamMap.setPortraitId(0L);
+        fromDbWithOwnersAndParamMap.setOwners(Set.of(owner2));
+        fromDbWithOwnersAndParamMap.setParamMap(new ParamMap(0L, "{\"param\":1}"));
+
+        GameCharacter expected = new GameCharacter();
+        expected.setId(0L);
+        expected.setName("name");
+        expected.setLastUpdate(10000000L);
+        expected.setData("{\"param\":1}");
+        expected.setIsDeleted((short)0);
+        expected.setPortraitId(0L);
+        expected.setOwners(Set.of(owner2));
+        expected.setParamMap(new ParamMap(0L, "{\"param\":2}"));
+
+        Mockito.when(charRep.findByIdAndIsDeletedWithParamMapAndOwners(0L, (short)0))
+                .thenReturn(Optional.of(fromDbWithOwnersAndParamMap));
+
+        GameCharacter actual = charServ.update(0L, toSave);
+        actual.setLastUpdate(10000000L); //got to find a way to mock System.currentTimeMillis()
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    void countRequests() {
+    void updateParamReplaceWithNull() {
+        GameCharacter toSave = new GameCharacter();
+        toSave.setName("name");
+        toSave.setIsDeleted((short)0);
+        toSave.setOwners(new HashSet<>());
+        toSave.setPortraitId(null);
+        toSave.setParamMap(new ParamMap(0L, "{}"));
+
+        User owner2 = new User();
+        owner2.setId(0L);
+        owner2.setUsername("Martin");
+        owner2.setUsername("$idp3904-g0jf");
+        owner2.setEmail("martin@mail.com");
+        owner2.setPortraitId(0L);
+        owner2.setRoles(new HashSet<>());
+        GameCharacter fromDbWithOwnersAndParamMap = new GameCharacter();
+        fromDbWithOwnersAndParamMap.setId(0L);
+        fromDbWithOwnersAndParamMap.setName("Vasylij");
+        fromDbWithOwnersAndParamMap.setLastUpdate(10000000L);
+        fromDbWithOwnersAndParamMap.setData("{\"param\":1}");
+        fromDbWithOwnersAndParamMap.setIsDeleted((short)0);
+        fromDbWithOwnersAndParamMap.setPortraitId(0L);
+        fromDbWithOwnersAndParamMap.setOwners(Set.of(owner2));
+        fromDbWithOwnersAndParamMap.setParamMap(new ParamMap(0L, "{\"param\":1}"));
+
+        String expected = "{\"param\":1}";
+
+        Mockito.when(charRep.findByIdAndIsDeletedWithParamMapAndOwners(0L, (short)0))
+                .thenReturn(Optional.of(fromDbWithOwnersAndParamMap));
+
+        String actual = charServ.update(0L, toSave).getParamMap().getData();
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void updateParamAdd() {
+        GameCharacter toSave = new GameCharacter();
+        toSave.setName("name");
+        toSave.setIsDeleted((short)0);
+        toSave.setOwners(new HashSet<>());
+        toSave.setPortraitId(null);
+        toSave.setParamMap(new ParamMap(0L, "{\"param1\":1,\"param\":2}"));
+
+        User owner2 = new User();
+        owner2.setId(0L);
+        owner2.setUsername("Martin");
+        owner2.setUsername("$idp3904-g0jf");
+        owner2.setEmail("martin@mail.com");
+        owner2.setPortraitId(0L);
+        owner2.setRoles(new HashSet<>());
+        GameCharacter fromDbWithOwnersAndParamMap = new GameCharacter();
+        fromDbWithOwnersAndParamMap.setId(0L);
+        fromDbWithOwnersAndParamMap.setName("Vasylij");
+        fromDbWithOwnersAndParamMap.setLastUpdate(10000000L);
+        fromDbWithOwnersAndParamMap.setData("{\"param\":1}");
+        fromDbWithOwnersAndParamMap.setIsDeleted((short)0);
+        fromDbWithOwnersAndParamMap.setPortraitId(0L);
+        fromDbWithOwnersAndParamMap.setOwners(Set.of(owner2));
+        fromDbWithOwnersAndParamMap.setParamMap(new ParamMap(0L, "{\"param\":1}"));
+
+        String expected = "{\"param\":2,\"param1\":1}";
+
+        Mockito.when(charRep.findByIdAndIsDeletedWithParamMapAndOwners(0L, (short)0))
+                .thenReturn(Optional.of(fromDbWithOwnersAndParamMap));
+
+        GameCharacter result = charServ.update(0L, toSave);
+        String actual = result.getParamMap().getData();
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void updateParamAddToEmpty() {
+        GameCharacter toSave = new GameCharacter();
+        toSave.setName("name");
+        toSave.setIsDeleted((short)0);
+        toSave.setOwners(new HashSet<>());
+        toSave.setPortraitId(null);
+        toSave.setParamMap(new ParamMap(0L, "{\"param1\":1,\"param\":2}"));
+
+        User owner2 = new User();
+        owner2.setId(0L);
+        owner2.setUsername("Martin");
+        owner2.setUsername("$idp3904-g0jf");
+        owner2.setEmail("martin@mail.com");
+        owner2.setPortraitId(0L);
+        owner2.setRoles(new HashSet<>());
+        GameCharacter fromDbWithOwnersAndParamMap = new GameCharacter();
+        fromDbWithOwnersAndParamMap.setId(0L);
+        fromDbWithOwnersAndParamMap.setName("Vasylij");
+        fromDbWithOwnersAndParamMap.setLastUpdate(10000000L);
+        fromDbWithOwnersAndParamMap.setData("{\"param\":1}");
+        fromDbWithOwnersAndParamMap.setIsDeleted((short)0);
+        fromDbWithOwnersAndParamMap.setPortraitId(0L);
+        fromDbWithOwnersAndParamMap.setOwners(Set.of(owner2));
+        fromDbWithOwnersAndParamMap.setParamMap(new ParamMap(0L, "{}"));
+
+        String expected = "{\"param\":2,\"param1\":1}";
+
+        Mockito.when(charRep.findByIdAndIsDeletedWithParamMapAndOwners(0L, (short)0))
+                .thenReturn(Optional.of(fromDbWithOwnersAndParamMap));
+
+        GameCharacter result = charServ.update(0L, toSave);
+        String actual = result.getParamMap().getData();
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void requestOwnership() {
+        Mockito.when(reqRep.save(any(OwnershipRequest.class))).thenReturn(null);
+
+        OwnershipRequest expected = new OwnershipRequest();
+        expected.setOwnerId(0L);
+        expected.setCharacterId(0L);
+        expected.setRequesterId(1L);
+
+        OwnershipRequest actual = charServ.requestOwnership(0L,1L,0L);
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    void acceptOwnership() {
+    void addOwnerCountOk() {
+        User owner1 = new User();
+        owner1.setId(0L);
+        owner1.setUsername("Martin");
+        owner1.setUsername("$idp3904-g0jf");
+        owner1.setEmail("martin@mail.com");
+        owner1.setPortraitId(0L);
+        owner1.setRoles(new HashSet<>());
+
+        User owner2 = new User();
+        owner2.setId(1L);
+        owner2.setUsername("Martin2");
+        owner2.setUsername("$idp3904-g0jf");
+        owner2.setEmail("martin@mail.com");
+        owner2.setPortraitId(0L);
+        owner2.setRoles(new HashSet<>());
+        GameCharacter fromDbWithOwnersAndParamMap = new GameCharacter();
+        fromDbWithOwnersAndParamMap.setId(0L);
+        fromDbWithOwnersAndParamMap.setName("Vasylij");
+        fromDbWithOwnersAndParamMap.setLastUpdate(10000000L);
+        fromDbWithOwnersAndParamMap.setData("{param:1}");
+        fromDbWithOwnersAndParamMap.setIsDeleted((short)0);
+        fromDbWithOwnersAndParamMap.setPortraitId(0L);
+        fromDbWithOwnersAndParamMap.setOwners(Set.of(owner1));
+        fromDbWithOwnersAndParamMap.setParamMap(new ParamMap(0L, "{param:1}"));
+
+        Mockito.when(charRep.findByIdAndIsDeletedWithParamMapAndOwners(0L, (short)0))
+                .thenReturn(Optional.of(fromDbWithOwnersAndParamMap));
+        Mockito.when(charRep.save(any(GameCharacter.class))).thenReturn(null);
+        Mockito.when(userServ.findById(1L)).thenReturn(owner2);
+
+        int expected = 2;
+        GameCharacter result = charServ.addOwner(0L, 1L);
+        int actual = result.getOwners().size();
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    void denyOwnership() {
-    }
+    void addOwnerAlreadyExistsCountOk() {
+        User owner1 = new User();
+        owner1.setId(0L);
+        owner1.setUsername("Martin");
+        owner1.setUsername("$idp3904-g0jf");
+        owner1.setEmail("martin@mail.com");
+        owner1.setPortraitId(0L);
+        owner1.setRoles(new HashSet<>());
 
-    @Test
-    void getOwnershipRequest() {
-    }
+        User owner2 = new User();
+        owner2.setId(1L);
+        owner2.setUsername("Martin2");
+        owner2.setUsername("$idp3904-g0jf");
+        owner2.setEmail("martin@mail.com");
+        owner2.setPortraitId(0L);
+        owner2.setRoles(new HashSet<>());
+        GameCharacter fromDbWithOwnersAndParamMap = new GameCharacter();
+        fromDbWithOwnersAndParamMap.setId(0L);
+        fromDbWithOwnersAndParamMap.setName("Vasylij");
+        fromDbWithOwnersAndParamMap.setLastUpdate(10000000L);
+        fromDbWithOwnersAndParamMap.setData("{param:1}");
+        fromDbWithOwnersAndParamMap.setIsDeleted((short)0);
+        fromDbWithOwnersAndParamMap.setPortraitId(0L);
+        fromDbWithOwnersAndParamMap.setOwners(Set.of(owner1, owner2));
+        fromDbWithOwnersAndParamMap.setParamMap(new ParamMap(0L, "{param:1}"));
 
-    @Test
-    void getOwnershipRequests() {
-    }
+        Mockito.when(charRep.findByIdAndIsDeletedWithParamMapAndOwners(0L, (short)0))
+                .thenReturn(Optional.of(fromDbWithOwnersAndParamMap));
+        Mockito.when(charRep.save(any(GameCharacter.class))).thenReturn(null);
+        Mockito.when(userServ.findById(1L)).thenReturn(owner2);
 
-    @Test
-    void addOwner() {
+        int expected = 2;
+        GameCharacter result = charServ.addOwner(0L, 1L);
+        int actual = result.getOwners().size();
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void removeOwner() {
-    }
+        User owner1 = new User();
+        owner1.setId(0L);
+        owner1.setUsername("Martin");
+        owner1.setUsername("$idp3904-g0jf");
+        owner1.setEmail("martin@mail.com");
+        owner1.setPortraitId(0L);
+        owner1.setRoles(new HashSet<>());
 
-    @Test
-    void delete() {
-    }
+        User owner2 = new User();
+        owner2.setId(1L);
+        owner2.setUsername("Martin2");
+        owner2.setUsername("$idp3904-g0jf");
+        owner2.setEmail("martin@mail.com");
+        owner2.setPortraitId(0L);
+        owner2.setRoles(new HashSet<>());
+        GameCharacter fromDbWithOwnersAndParamMap = new GameCharacter();
+        fromDbWithOwnersAndParamMap.setId(0L);
+        fromDbWithOwnersAndParamMap.setName("Vasylij");
+        fromDbWithOwnersAndParamMap.setLastUpdate(10000000L);
+        fromDbWithOwnersAndParamMap.setData("{param:1}");
+        fromDbWithOwnersAndParamMap.setIsDeleted((short)0);
+        fromDbWithOwnersAndParamMap.setPortraitId(0L);
+        fromDbWithOwnersAndParamMap.setOwners(Set.of(owner1, owner2));
+        fromDbWithOwnersAndParamMap.setParamMap(new ParamMap(0L, "{param:1}"));
 
-    @Test
-    void permanentDelete() {
-    }
+        Mockito.when(charRep.findByIdAndIsDeletedWithParamMapAndOwners(0L, (short)0))
+                .thenReturn(Optional.of(fromDbWithOwnersAndParamMap));
+        Mockito.when(charRep.save(any(GameCharacter.class))).thenReturn(null);
+        Mockito.when(userServ.findById(1L)).thenReturn(owner2);
 
-    @Test
-    void recover() {
+        int expected = 1;
+        GameCharacter result = charServ.removeOwner(0L, 1L);
+        int actual = result.getOwners().size();
+
+        Assertions.assertEquals(expected, actual);
     }
 }
