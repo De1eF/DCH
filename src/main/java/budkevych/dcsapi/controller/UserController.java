@@ -38,7 +38,7 @@ public class UserController {
     private static final String MAIL_HTML =
             "src/main/resources/mail/mailPasswordChange.html";
 
-    @Value("frontend.address")
+    @Value("${frontend.address}")
     private String frontAddress;
     private final UserService userService;
     private final RoleService roleService;
