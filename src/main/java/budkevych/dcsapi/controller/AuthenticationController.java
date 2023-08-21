@@ -1,6 +1,5 @@
 package budkevych.dcsapi.controller;
 
-import budkevych.dcsapi.config.ConfigProperties;
 import budkevych.dcsapi.dto.mapper.UserMapper;
 import budkevych.dcsapi.dto.request.UserLoginRequestDto;
 import budkevych.dcsapi.dto.request.UserRequestDto;
@@ -18,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
     private static final String MAIL_HTML =
             "src/main/resources/mail/mailAuthentication.html";
+    @Value("${frontend.address}")
+    private String frontAddress;
 
-    private final ConfigProperties configProperties;
     private final AuthenticationService authenticationService;
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -67,7 +68,7 @@ public class AuthenticationController {
                 userLoginDto.getLogin(),
                 "Your one click authentication",
                 fileService.readAll(MAIL_HTML)
-                        .formatted(configProperties.getAddress(), token));
+                        .formatted(frontAddress, token));
         return ResponseEntity
                 .ok(ActionResponseDto.builder().message("Email sent").build());
     }

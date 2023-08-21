@@ -40,7 +40,7 @@ public class GameSessionServiceImpl implements GameSessionService {
     public GameSession add(GameSession gameSession, User originalUser) {
         gameSession.setLastUpdate(System.currentTimeMillis());
         gameSession.setUsers(Set.of(originalUser));
-        gameSession.setSessionStartedAt(LocalDateTime.now());
+        gameSession.setStartedAt(LocalDateTime.now());
         gameSession.setCharactersInSession(new HashSet<>());
         return gameSessionRepository.save(gameSession);
     }
@@ -53,7 +53,7 @@ public class GameSessionServiceImpl implements GameSessionService {
     @Override
     public GameSession updateName(Long id, String name) {
         GameSession gameSession = find(id);
-        gameSession.setSessionName(name);
+        gameSession.setName(name);
         gameSessionRepository.save(gameSession);
         return gameSession;
     }

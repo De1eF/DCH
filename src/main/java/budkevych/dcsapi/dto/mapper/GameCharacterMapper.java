@@ -23,6 +23,7 @@ public class GameCharacterMapper {
         dto.setTimestamp(character.getLastUpdate());
         dto.setOwners(character.getOwners().stream().map(userMapper::mapToDto).toList());
         dto.setName(character.getName());
+        dto.setPortraitId(character.getPortraitId());
         try {
             dto.setData(objectMapper.readValue(
                     character.getData(),

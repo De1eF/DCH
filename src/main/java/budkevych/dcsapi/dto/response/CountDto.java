@@ -1,4 +1,4 @@
-package budkevych.dcsapi.dto.request;
+package budkevych.dcsapi.dto.response;
 
 import lombok.Builder;
 import lombok.Data;

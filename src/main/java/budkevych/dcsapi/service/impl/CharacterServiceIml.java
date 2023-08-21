@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,25 +29,37 @@ public class CharacterServiceIml implements CharacterService {
     public GameCharacter find(Long id, Short isDeleted, boolean loadParamMap, boolean loadOwners) {
         ParamMap paramMap = ParamMap.builder().id(id).data("{}").build();
         Set<User> owners = new HashSet<>();
-        GameCharacter gameCharacter =
-                gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted)
+        GameCharacter gameCharacter;
+        if (loadParamMap) {
+            if (loadOwners) {
+                gameCharacter = gameCharacterRepository.findByIdAndIsDeletedWithParamMapAndOwners(id, isDeleted)
                         .orElseThrow(() -> new ResourceNotFoundException(
                                 "Game character not found for id " + id));
-        if (loadParamMap) {
-            paramMap = gameCharacterRepository.findByIdAndIsDeletedParamMap(id, isDeleted);
+            } else {
+                gameCharacter = gameCharacterRepository.findByIdAndIsDeletedWithParamMap(id, isDeleted)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Game character not found for id " + id));
+                gameCharacter.setOwners(owners);
+            }
+        } else if (loadOwners) {
+            gameCharacter = gameCharacterRepository.findByIdAndIsDeletedWithOwners(id, isDeleted)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Game character not found for id " + id));
+            gameCharacter.setParamMap(paramMap);
+        } else {
+            gameCharacter = gameCharacterRepository.findByIdAndIsDeleted(id, isDeleted)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Game character not found for id " + id));
+            gameCharacter.setParamMap(paramMap);
+            gameCharacter.setOwners(owners);
         }
-        if (loadOwners) {
-            owners = gameCharacterRepository.findByIdAndIsDeletedOwners(id, isDeleted);
-        }
-        gameCharacter.setParamMap(paramMap);
-        gameCharacter.setOwners(owners);
         setOwnersRoles(gameCharacter);
         return gameCharacter;
     }
 
     @Override
-    public List<GameCharacter> findAllByUserId(Long userId) {
-        return gameCharacterRepository.findAllByUserIdAndIsDeleted(userId, (short) 0)
+    public List<GameCharacter> findAllByUserId(Long userId, PageRequest pageRequest) {
+        return gameCharacterRepository.findAllByUserIdAndIsDeleted(userId, (short) 0, pageRequest)
                 .stream()
                 .peek(c -> {
                     c.setParamMap(ParamMap.builder().id(c.getId()).data("{}").build());
@@ -71,23 +84,29 @@ public class CharacterServiceIml implements CharacterService {
         if (gameCharacter.getParamMap() == null) {
             gameCharacter.setParamMap(new ParamMap());
         }
-        return gameCharacterRepository.save(gameCharacter);
+        gameCharacterRepository.save(gameCharacter);
+        return gameCharacter;
     }
 
     @Override
-    public GameCharacter update(Long id, GameCharacter gameCharacter)
-            throws NoSuchElementException {
+    public GameCharacter update(Long id, GameCharacter gameCharacter) {
         GameCharacter oldGameCharacter = find(id, (short) 0, true, true);
         oldGameCharacter.setName(gameCharacter.getName());
-        ParamMap paramMap = gameCharacter.getParamMap();
-        paramMap.setId(id);
+        oldGameCharacter.setLastUpdate(System.currentTimeMillis());
+        oldGameCharacter.setPortraitId(gameCharacter.getPortraitId());
+        oldGameCharacter.setData(gameCharacter.getData());
+
         if (gameCharacter.getOwners() != null
                 && !gameCharacter.getOwners().isEmpty()) {
             oldGameCharacter.setOwners(gameCharacter.getOwners());
         }
+
+        ParamMap paramMap = oldGameCharacter.getParamMap();
+        String oldParamMapData = paramMap.getData();
+        String newParamMapData = gameCharacter.getParamMap().getData();
+        paramMap.setData(replaceValues(oldParamMapData, newParamMapData));
         oldGameCharacter.setParamMap(paramMap);
-        oldGameCharacter.setLastUpdate(System.currentTimeMillis());
-        oldGameCharacter.setPortraitId(gameCharacter.getPortraitId());
+
         gameCharacterRepository.save(oldGameCharacter);
         return oldGameCharacter;
     }
@@ -175,5 +194,29 @@ public class CharacterServiceIml implements CharacterService {
                 .stream()
                 .peek(o -> o.setRoles(new HashSet<>()))
                 .collect(Collectors.toSet()));
+    }
+
+    private static String replaceValues(String old, String nw) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("{");
+
+        old = old.substring(1, old.length() - 1);
+        String[] toReplaceWith = nw.substring(1, nw.length() - 1).split(",");
+
+        String[] toReplace = old.split(",");
+        for(int i = 0; i < toReplace.length; i++) {
+            String[] keyValue = toReplace[i].split(":", 2);
+            String key = keyValue[0];
+            for (String toReplaceWithObj : toReplaceWith) {
+                String[] toReplaceWithKeyVale =  toReplaceWithObj.split(":", 2);
+                String toReplaceWithKey = toReplaceWithKeyVale[0];
+
+                if (key.equals(toReplaceWithKey)) {
+                    toReplace[i] = toReplaceWithObj;
+                }
+            }
+            stringBuilder.append(toReplace[i]).append(i == toReplace.length - 1 ? "" : ",");
+        }
+        return stringBuilder.append("}").toString();
     }
 }

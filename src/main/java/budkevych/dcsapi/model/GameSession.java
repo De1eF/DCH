@@ -30,9 +30,9 @@ public class GameSession {
     @Column(name = "last_update")
     private Long lastUpdate;
     @Column(name = "session_name")
-    private String sessionName;
+    private String name;
     @Column(name = "session_started_at")
-    private LocalDateTime sessionStartedAt;
+    private LocalDateTime startedAt;
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany
@@ -50,6 +50,6 @@ public class GameSession {
 
     @PrePersist
     void prePersist() {
-        sessionStartedAt = LocalDateTime.now();
+        startedAt = LocalDateTime.now();
     }
 }

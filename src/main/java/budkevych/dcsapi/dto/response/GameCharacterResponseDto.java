@@ -10,6 +10,7 @@ public class GameCharacterResponseDto {
     private Long timestamp;
     private List<UserResponseDto> owners;
     private String name;
+    private Long portraitId;
     private Map<String, Object> data;
     private Map<String, Object> paramMap;
 }

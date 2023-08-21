@@ -1,6 +1,7 @@
 package budkevych.dcsapi.service.impl;
 
 import budkevych.dcsapi.config.JavaMailServiceImpl;
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
@@ -13,12 +14,16 @@ import org.springframework.stereotype.Service;
 public class MailService {
 
     private final JavaMailServiceImpl javaMailServiceImpl;
+    private static JavaMailSenderImpl mailSender;
+
+    @PostConstruct
+    private void postConstruct() {
+        mailSender = javaMailServiceImpl.mailSender();
+    }
 
     public void sendEmail(String toEmail,
                           String subject,
                           String body) {
-        JavaMailSenderImpl mailSender = javaMailServiceImpl.mailSender();
-
         try {
             MimeMessage message = mailSender.createMimeMessage();
             message.setContent(body, "text/html; charset=utf-8");

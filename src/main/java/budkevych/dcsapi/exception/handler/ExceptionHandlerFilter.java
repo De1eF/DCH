@@ -1,6 +1,7 @@
-package budkevych.dcsapi.exception;
+package budkevych.dcsapi.exception.handler;
 
 import budkevych.dcsapi.dto.response.ExceptionResponseDto;
+import budkevych.dcsapi.exception.AuthenticationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

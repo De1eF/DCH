@@ -3,11 +3,12 @@ package budkevych.dcsapi.service;
 import budkevych.dcsapi.model.GameCharacter;
 import budkevych.dcsapi.model.OwnershipRequest;
 import java.util.List;
+import org.springframework.data.domain.PageRequest;
 
 public interface CharacterService {
     GameCharacter find(Long id, Short isDeleted, boolean loadParamMap, boolean loadOwners);
 
-    List<GameCharacter> findAllByUserId(Long userId);
+    List<GameCharacter> findAllByUserId(Long userId, PageRequest pageRequest);
 
     Long countAllByUserId(Long userId);
 

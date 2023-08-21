@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public interface GameSessionRepository extends JpaRepository<GameSession, Long> {
     @Query("SELECT s FROM GameSession s JOIN FETCH s.users u WHERE u.id = :userId")
     List<GameSession> findAllByUser(Long userId);

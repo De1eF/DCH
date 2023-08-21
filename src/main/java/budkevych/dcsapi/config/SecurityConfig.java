@@ -1,10 +1,11 @@
 package budkevych.dcsapi.config;
 
-import budkevych.dcsapi.exception.ExceptionHandlerFilter;
+import budkevych.dcsapi.exception.handler.ExceptionHandlerFilter;
 import budkevych.dcsapi.security.jwt.JwtTokenFilter;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -28,9 +29,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+    @Value("${frontend.address}")
+    private String frontAddress;
+
     private final UserDetailsService userDetailsService;
     private final JwtTokenFilter jwtTokenFilter;
-    private final ConfigProperties addressProvider;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
 
     @Bean
@@ -109,7 +112,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
-                addressProvider.getAddress(),
+                frontAddress,
                 "http://127.0.0.1:5500"));
         configuration.setAllowedMethods(Arrays.asList(
                 "GET",

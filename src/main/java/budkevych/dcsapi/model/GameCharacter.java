@@ -49,24 +49,4 @@ public class GameCharacter {
     private Long portraitId = 0L;
     @Column(name = "is_deleted")
     private Short isDeleted;
-
-    public GameCharacter() {
-
-    }
-
-    public GameCharacter(Long id,
-                         Long lastUpdate,
-                         Set<User> owners,
-                         String name,
-                         Long portraitId,
-                         Short isDeleted,
-                         String data) {
-        this.id = id;
-        this.lastUpdate = lastUpdate;
-        this.owners = owners;
-        this.name = name;
-        this.portraitId = portraitId;
-        this.isDeleted = isDeleted;
-        this.data = data;
-    }
 }

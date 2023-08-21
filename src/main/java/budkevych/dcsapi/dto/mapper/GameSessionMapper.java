@@ -19,7 +19,7 @@ public class GameSessionMapper {
     public GameSessionResponseDto toDto(GameSession session) {
         GameSessionResponseDto dto = new GameSessionResponseDto();
         dto.setId(session.getId());
-        dto.setName(session.getSessionName());
+        dto.setName(session.getName());
         dto.setTimestamp(session.getLastUpdate());
 
         Set<GameCharacterResponseDto> gameCharacterResponseDtoSet =
@@ -34,13 +34,13 @@ public class GameSessionMapper {
                         .map(userMapper::mapToDto).collect(Collectors.toSet());
 
         dto.setUsers(userResponseDtoSet);
-        dto.setCreatedOn(session.getSessionStartedAt());
+        dto.setCreatedOn(session.getStartedAt());
         return dto;
     }
 
     public GameSession toModel(GameSessionRequestDto dto) {
         GameSession gameSession = new GameSession();
-        gameSession.setSessionName(dto.getName());
+        gameSession.setName(dto.getName());
         return gameSession;
     }
 }

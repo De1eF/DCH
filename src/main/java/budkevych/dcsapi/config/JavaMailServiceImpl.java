@@ -1,19 +1,26 @@
 package budkevych.dcsapi.config;
 
 import java.util.Properties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @Configuration
 public class JavaMailServiceImpl {
+    @Value("${google.login}")
+    private String login;
+    @Value("${google.password}")
+    private String password;
+    private static final String host = "smtp.gmail.com";
+
     @Bean
     public JavaMailSenderImpl mailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
+        mailSender.setHost(host);
         mailSender.setPort(587);
-        mailSender.setUsername("horyzont.auth@gmail.com");
-        mailSender.setPassword("ehpfpjpgwjkuvehh");
+        mailSender.setUsername(login);
+        mailSender.setPassword(password);
 
         Properties mailProperties = new Properties();
         mailProperties.setProperty("mail.smtp.auth", "true");

@@ -2,7 +2,7 @@ package budkevych.dcsapi.controller;
 
 import budkevych.dcsapi.dto.mapper.GameCharacterMapper;
 import budkevych.dcsapi.dto.mapper.OwnershipRequestMapper;
-import budkevych.dcsapi.dto.request.CountDto;
+import budkevych.dcsapi.dto.response.CountDto;
 import budkevych.dcsapi.dto.request.GameCharacterRequestDto;
 import budkevych.dcsapi.dto.request.OwnershipRequestDto;
 import budkevych.dcsapi.dto.response.ActionResponseDto;
@@ -20,6 +20,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -70,9 +72,17 @@ public class GameCharacterController {
 
     @GetMapping("/for-user/{user-id}")
     @Operation(summary = "get all characters of specific user")
-    public List<GameCharacterResponseDto> getForUser(@PathVariable("user-id") Long userId) {
+    public List<GameCharacterResponseDto> getForUser(@PathVariable("user-id")
+                                                     Long userId,
+                                                     @RequestParam(defaultValue = "0")
+                                                     Integer page,
+                                                     @RequestParam(defaultValue = "20")
+                                                     Integer count) {
+        Sort.Order order = new Sort.Order(Sort.Direction.DESC, "lastUpdate");
+        Sort sort = Sort.by(order);
+        PageRequest pageRequest = PageRequest.of(page, count, sort);
         List<GameCharacter> gameCharacterList =
-                characterService.findAllByUserId(userId);
+                characterService.findAllByUserId(userId, pageRequest);
         return gameCharacterList
                 .stream()
                 .map(mapper::toDto)
@@ -108,6 +118,17 @@ public class GameCharacterController {
         return mapper.toDto(characterService.update(id, gameCharacter));
     }
 
+    @PutMapping("/{id}/portrait")
+    @Operation(summary = "only update portrait")
+    public GameCharacterResponseDto updatePortrait(Authentication auth,
+                                                   @PathVariable Long id,
+                                                   @RequestBody @Valid GameCharacterRequestDto dto) {
+        getAccessibleCharacter(auth, id);
+        GameCharacter gameCharacter = characterService.find(id, (short) 0, true, true);
+        gameCharacter.setPortraitId(dto.getPortraitId());
+        return mapper.toDto(characterService.update(id, gameCharacter));
+    }
+
     @PatchMapping("/owners/{id}")
     @Operation(summary = "accept ownership request")
     public ActionResponseDto acceptOwnership(Authentication auth,
@@ -140,7 +161,7 @@ public class GameCharacterController {
                         r.getId(),
                         r.getOwnerId(),
                         userService.findById(r.getRequesterId()),
-                        characterService.find(r.getCharacterId(), (short)0, false, false)
+                        characterService.find(r.getCharacterId(), (short) 0, false, false)
                 ))
                 .toList();
     }
@@ -236,7 +257,7 @@ public class GameCharacterController {
         User user = authenticationService.getAuthenticated(auth);
         if (!gameCharacter.getOwners().contains(user)
                 && user.getRoles().stream().noneMatch(
-                    userRole -> userRole.getRoleName().equals(UserRole.RoleName.ADMIN))) {
+                userRole -> userRole.getRoleName().equals(UserRole.RoleName.ADMIN))) {
             throw new NoAccessException("You can only access your characters");
         }
         return gameCharacter;

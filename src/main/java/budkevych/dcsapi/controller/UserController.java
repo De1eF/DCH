@@ -1,11 +1,12 @@
 package budkevych.dcsapi.controller;
 
-import budkevych.dcsapi.config.ConfigProperties;
 import budkevych.dcsapi.dto.mapper.UserMapper;
+import budkevych.dcsapi.dto.request.PasswordChangeRequestDto;
 import budkevych.dcsapi.dto.request.UserRequestDto;
 import budkevych.dcsapi.dto.request.UserRolesRequestDto;
 import budkevych.dcsapi.dto.response.ActionResponseDto;
 import budkevych.dcsapi.dto.response.UserResponseDto;
+import budkevych.dcsapi.exception.AuthenticationException;
 import budkevych.dcsapi.model.User;
 import budkevych.dcsapi.security.AuthenticationService;
 import budkevych.dcsapi.service.FileService;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RequiredArgsConstructor
 public class UserController {
+    @Value("${frontend.address}")
+    private String frontAddress;
     private static final String MAIL_HTML =
             "src/main/resources/mail/mailPasswordChange.html";
 
@@ -42,7 +46,6 @@ public class UserController {
     private final AuthenticationService authenticationService;
     private final MailService mailService;
     private final FileService fileService;
-    private final ConfigProperties configProperties;
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/me")
@@ -74,7 +77,7 @@ public class UserController {
                 authenticatedUser.getEmail(),
                 "Password change",
                 fileService.readAll(MAIL_HTML)
-                        .formatted(configProperties.getAddress(), authenticatedUser.getEmail()));
+                        .formatted(frontAddress, authenticatedUser.getEmail()));
         return ActionResponseDto.builder().message("Email sent").build();
     }
 
@@ -91,12 +94,17 @@ public class UserController {
     @PutMapping("/me/change-password")
     @Operation(summary = "update password for user")
     public UserResponseDto updatePassword(Authentication auth,
-                                          @RequestBody UserRequestDto requestDto) {
-        User user = userMapper.mapToModel(requestDto);
+                                          @RequestBody PasswordChangeRequestDto requestDto) {
+        if (passwordEncoder.matches(
+                authenticationService.getAuthenticated(auth).getPassword(),
+                requestDto.getOldPassword())) {
+            throw new AuthenticationException("Old password is incorrect");
+        }
+        User user = new User();
         user.setUsername(null);
         user.setPortraitId(null);
         user.setEmail(null);
-        user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        user.setPassword(passwordEncoder.encode(requestDto.getNewPassword()));
         User authenticatedUser = authenticationService.getAuthenticated(auth);
         return userMapper.mapToDto(userService.update(authenticatedUser.getId(), user));
     }
