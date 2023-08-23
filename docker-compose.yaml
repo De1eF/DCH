@@ -5,7 +5,7 @@ services:
     image: mysql:8.0.0
     env_file: ./.env
     environment:
-      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_ROOT_PASSWORD= #Secreted
       - MYSQL_DATABASE=square_db
     ports:
       - ${MYSQLDB_LOCAL_PORT}:${MYSQLDB_DOCKER_PORT}
